@@ -1,0 +1,84 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "cfg": 7,
+      "denoise": 1.0,
+      "latent_image": ["5", 0],
+      "model": ["20", 0],
+      "negative": ["7", 0],
+      "positive": ["6", 0],
+      "sampler_name": "euler_ancestral",
+      "scheduler": "normal",
+      "seed": 200,
+      "steps": 30
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "v1-5-pruned-emaonly.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "batch_size": 4,
+      "height": 512,
+      "width": 512
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["4", 1],
+      "text": "pixel art sprite, isometric top-down 3/4 view, small mech robot facing bottom-right, melee combat mech with blade arm and pile bunker arm, angular chunky armor, dark metal with blue-gray outline shadow border, muted military colors, dark background, single game sprite, tiny low-resolution pixel art, limited palette"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["4", 1],
+      "text": "multiple characters, turnaround, reference sheet, blurry, smooth, 3d render, realistic, photo, text, watermark, scenery, high detail, large, complex, front view, side view, colorful, bright, gradient"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["3", 0],
+      "vae": ["4", 2]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "striker_ipa",
+      "images": ["8", 0]
+    }
+  },
+  "17": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "itb_composite.png"
+    }
+  },
+  "19": {
+    "class_type": "IPAdapterUnifiedLoader",
+    "inputs": {
+      "model": ["4", 0],
+      "preset": "PLUS (high strength)"
+    }
+  },
+  "20": {
+    "class_type": "IPAdapter",
+    "inputs": {
+      "model": ["19", 0],
+      "ipadapter": ["19", 1],
+      "image": ["17", 0],
+      "weight": 0.75,
+      "start_at": 0.0,
+      "end_at": 1.0,
+      "weight_type": "style transfer"
+    }
+  }
+}

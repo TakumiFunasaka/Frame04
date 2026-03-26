@@ -1,0 +1,59 @@
+{
+  "base_prompt": "single character sprite, pixel art mech, 16-bit retro game sprite, isometric 3/4 top-down view, {mech_type}, {color_scheme}, simple chunky design, solid black background, centered, one character only, into the breach game style, tactical mech game asset, magitech military robot",
+  "negative_prompt": "multiple characters, turnaround sheet, reference sheet, model sheet, front and back, several views, collage, blurry, smooth, 3d render, realistic, photograph, gradient, anti-aliased, text, watermark, signature, dithering, complex details, large image, full body portrait, background scenery, landscape",
+  "defaults": {
+    "color_scheme": "dark gunmetal gray with purple-blue energy accents and glowing visor"
+  },
+  "variants": [
+    {
+      "id": "striker",
+      "mech_type": "aggressive medium-weight bipedal melee mech, pile bunker on right arm, blade weapon on left arm, angular sharp armor plates, combat stance leaning forward",
+      "color_scheme": "dark gunmetal gray body with purple-blue energy lines and glowing visor, red accent on blade"
+    },
+    {
+      "id": "gunner",
+      "mech_type": "sleek ranged bipedal mech, long rifle on right arm, sensor visor on head, light armor with targeting equipment, steady aiming stance",
+      "color_scheme": "dark blue-gray body with green targeting laser glow, white sensor accents"
+    },
+    {
+      "id": "blaster",
+      "mech_type": "stocky wide bipedal mech, twin shoulder-mounted cannons, heavy barrel arms, wide stance artillery pose",
+      "color_scheme": "dark red-brown body with orange heat vents glowing, brass barrel accents"
+    },
+    {
+      "id": "shielder",
+      "mech_type": "bulky heavy bipedal mech, large tower shield on left arm, thick armor plates everywhere, defensive crouching pose",
+      "color_scheme": "heavy blue-gray armor with cyan energy shield glow, white plate accents"
+    },
+    {
+      "id": "medic",
+      "mech_type": "medium bipedal support mech, repair arm with tool attachments, antenna dish on back, medical cross marking",
+      "color_scheme": "white and pale green body with soft green healing glow, clean minimal markings"
+    },
+    {
+      "id": "jammer",
+      "mech_type": "thin angular bipedal mech, electronic warfare antennae array on head, sparking disruption emitters on arms, hunched sneaky pose",
+      "color_scheme": "dark purple-black body with yellow electric sparks, jagged angular design"
+    },
+    {
+      "id": "booster",
+      "mech_type": "lightweight bipedal support mech, energy projector arms, backpack generator unit, hovering upright pose",
+      "color_scheme": "silver-white body with golden energy accents, glowing power conduits"
+    },
+    {
+      "id": "phantom",
+      "mech_type": "sleek ninja-like bipedal stealth mech, twin daggers, slim profile, active camouflage panels, agile crouching pose",
+      "color_scheme": "matte black body with faint teal edge glow, minimal silhouette, stealthy"
+    },
+    {
+      "id": "fortress",
+      "mech_type": "massive heavy bipedal tank mech, extremely thick armor, built-in arm cannon, immovable wide stance",
+      "color_scheme": "dark olive and steel body with orange reactor glow, battle-scarred heavy plates"
+    },
+    {
+      "id": "overload",
+      "mech_type": "unstable-looking bipedal mech, cracked glowing core visible in chest, overheating vents, energy arcing from body, dangerous stance",
+      "color_scheme": "charred dark body with bright red-orange magma cracks, volatile energy leaking"
+    }
+  ]
+}

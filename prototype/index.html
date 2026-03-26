@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRAME:04 - Roguelike Prototype</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div id="setup-screen" class="screen active">
+  <h1>[ FRAME:04 ] ROGUELIKE RUN</h1>
+
+  <h2>// SELECT 4 FRAMES</h2>
+  <div class="frame-grid" id="frame-grid"></div>
+  <p id="select-count" style="color:#888; margin:4px 0;">Selected: 0/4</p>
+
+  <h2>// ALLOCATE STATUS POINTS</h2>
+  <p class="sp-remaining">Remaining SP: <span id="sp-remaining">24</span> / 24</p>
+  <div class="stat-alloc" id="stat-alloc"></div>
+
+  <div class="btn-row" style="margin-top:16px;">
+    <button class="btn-primary" id="btn-start" disabled>BEGIN RUN</button>
+  </div>
+</div>
+
+<!-- MAP SCREEN -->
+<div id="map-screen" class="screen">
+  <h1>[ MAP ]</h1>
+  <div class="run-hud" id="map-hud"></div>
+  <div id="map-act-title" class="map-act-title"></div>
+  <div class="map-legend">
+    <span><span class="legend-dot" style="border-color:#f88;background:#200;"></span> Enemy</span>
+    <span><span class="legend-dot" style="border-color:#fa0;background:#220;"></span> Elite</span>
+    <span><span class="legend-dot" style="border-color:#4af;background:#024;"></span> Rest</span>
+    <span><span class="legend-dot" style="border-color:#a6a;background:#202;"></span> Unknown</span>
+    <span><span class="legend-dot" style="border-color:#f44;background:#400;"></span> BOSS</span>
+  </div>
+  <div class="map-container" id="map-container"></div>
+  <div class="btn-row">
+    <button id="btn-abandon-run" class="btn-danger">ABANDON RUN</button>
+  </div>
+</div>
+
+<!-- BATTLE SCREEN -->
+<div id="battle-screen" class="screen">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap;">
+    <h1>[ BATTLE ]</h1>
+    <div>
+      <span class="turn-info" id="turn-info">TURN 1</span>
+      <span class="en-display" style="margin-left:16px;">EN: <span id="en-display">3</span></span>
+    </div>
+  </div>
+  <div class="run-hud" id="battle-hud"></div>
+
+  <div class="battle-area">
+    <div class="enemy-side">
+      <h3>// HOSTILES</h3>
+      <div id="enemy-units"></div>
+    </div>
+    <div class="ally-side">
+      <h3>// SQUAD</h3>
+      <div id="ally-units"></div>
+    </div>
+  </div>
+
+  <div class="items-bar" id="items-bar">
+    <span style="color:#888; font-size:11px;">ITEMS:</span>
+  </div>
+
+  <div class="hand-area">
+    <h3>// HAND <span id="deck-info" style="color:#666; font-weight:normal;"></span></h3>
+    <div class="hand-cards" id="hand-cards"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-danger" id="btn-end-turn">END TURN</button>
+  </div>
+
+  <div class="log-area" id="log-area"></div>
+</div>
+
+<!-- TARGET SELECT MODAL -->
+<div id="target-modal" class="target-select" style="display:none;">
+  <div class="target-select-inner">
+    <h3 id="target-title">Select Target</h3>
+    <div id="target-buttons"></div>
+    <button style="margin-top:8px;" onclick="closeTargetModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ITEM TARGET MODAL -->
+<div id="item-target-modal" class="target-select" style="display:none;">
+  <div class="target-select-inner">
+    <h3 id="item-target-title">Select Target</h3>
+    <div id="item-target-buttons"></div>
+    <button style="margin-top:8px;" onclick="closeItemTargetModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- REWARD SCREEN -->
+<div id="reward-screen" class="screen">
+  <h1>[ BATTLE COMPLETE ]</h1>
+  <div id="reward-sp-section" class="reward-section">
+    <h3>// SP GAINED: <span id="reward-sp-amount"></span></h3>
+    <p class="sp-remaining">Remaining SP: <span id="reward-sp-remaining">0</span></p>
+    <div class="sp-alloc-mini" id="reward-stat-alloc"></div>
+  </div>
+  <div id="reward-upgrade-section" class="reward-section">
+    <h3>// CARD UPGRADE - Pick 1 (or skip)</h3>
+    <div class="reward-card-list" id="reward-card-list"></div>
+    <button id="btn-skip-upgrade" style="margin-top:4px;">SKIP UPGRADE</button>
+  </div>
+  <div id="reward-item-section" class="reward-section">
+    <h3>// ITEM DROP</h3>
+    <div class="reward-item-list" id="reward-item-list"></div>
+    <button id="btn-skip-item" style="margin-top:4px;">SKIP ITEM</button>
+  </div>
+  <div class="btn-row" style="margin-top:16px;">
+    <button class="btn-primary" id="btn-continue-run" disabled>CONTINUE</button>
+  </div>
+</div>
+
+<!-- REST SCREEN -->
+<div id="rest-screen" class="screen">
+  <h1>[ DOCK - REST POINT ]</h1>
+  <div class="rest-visual" id="rest-visual"></div>
+  <div class="btn-row" style="justify-content:center;">
+    <button class="btn-primary" id="btn-leave-rest">DEPART</button>
+  </div>
+</div>
+
+<!-- UNKNOWN EVENT SCREEN -->
+<div id="event-screen" class="screen">
+  <h1>[ UNKNOWN SIGNAL ]</h1>
+  <div id="event-description" style="margin:12px 0; color:#a6a;"></div>
+  <div class="event-choices" id="event-choices"></div>
+</div>
+
+<!-- RUN END SCREEN -->
+<div id="runend-screen" class="screen">
+  <h1 id="runend-title"></h1>
+  <div class="run-stats" id="runend-stats"></div>
+  <div class="btn-row">
+    <button class="btn-primary" id="btn-new-run">NEW RUN</button>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

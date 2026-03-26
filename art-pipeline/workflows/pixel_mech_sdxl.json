@@ -1,0 +1,69 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "cfg": 10,
+      "denoise": 1.0,
+      "latent_image": ["5", 0],
+      "model": ["10", 0],
+      "negative": ["7", 0],
+      "positive": ["6", 0],
+      "sampler_name": "euler_ancestral",
+      "scheduler": "normal",
+      "seed": 42,
+      "steps": 35
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "batch_size": 1,
+      "height": 768,
+      "width": 768
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["10", 1],
+      "text": "single character sprite, pixel art mech, 16-bit retro game sprite, isometric 3/4 top-down view, aggressive medium-weight bipedal melee mech, pile bunker on right arm, blade weapon on left arm, angular sharp armor plates, glowing purple-blue visor, dark gunmetal gray body with purple-blue energy accents, combat stance leaning forward, simple chunky design, solid black background, centered, one character only, into the breach game style, tactical mech game asset, magitech military robot"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["10", 1],
+      "text": "multiple characters, turnaround sheet, reference sheet, model sheet, front and back, several views, collage, blurry, smooth, 3d render, realistic, photograph, gradient, anti-aliased, text, watermark, signature, dithering, complex details, large image, full body portrait, background scenery, landscape"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["3", 0],
+      "vae": ["4", 2]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "striker",
+      "images": ["8", 0]
+    }
+  },
+  "10": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "clip": ["4", 1],
+      "lora_name": "pixel-art-xl.safetensors",
+      "model": ["4", 0],
+      "strength_clip": 1.2,
+      "strength_model": 1.2
+    }
+  }
+}
