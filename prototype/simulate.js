@@ -23,11 +23,13 @@ const FRAME_PRESETS = {
   blaster:    { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
   shielder:   { OUT: 0, SHL: 0.6, CTRL: 0.2, DRV: 0.2 },
   medic:      { OUT: 0, SHL: 0.2, CTRL: 0.6, DRV: 0.2 },
-  jammer:     { OUT: 0.5, SHL: 0.1, CTRL: 0.1, DRV: 0.3 },
+  jammer:     { OUT: 0, SHL: 0.1, CTRL: 0.6, DRV: 0.3 },
+  cracker:    { OUT: 0.3, SHL: 0.1, CTRL: 0.4, DRV: 0.2 },
   booster:    { OUT: 0, SHL: 0.2, CTRL: 0.2, DRV: 0.6 },
   phantom:    { OUT: 0.3, SHL: 0, CTRL: 0, DRV: 0.7 },
-  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
   overload:   { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
+  // Expansion
+  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
   // PROTOCOL:EX
   converter:  { OUT: 0.5, SHL: 0.2, CTRL: 0.1, DRV: 0.2 },
   linker:     { OUT: 0, SHL: 0.3, CTRL: 0.3, DRV: 0.4 },
@@ -154,6 +156,7 @@ function createBattleState(frameKeys, enemyDefs) {
         ...c, id: `${fk}_${i}_${ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false
       })),
       buffs: {}, persistentBarrier: 0, attackLocked: false, counterDmg: 0, reactive: false, siegeBuff: 0, spikeReflect: 0,
+      fullDriveActive: false,
       _reactiveBarrierRemaining: 0,
       // Expansion persistent state
       elementCoat: null, absorbField: false, elementStacks: 0,
@@ -174,7 +177,8 @@ function createBattleState(frameKeys, enemyDefs) {
     atk: e.atk, drv: e.drv || 0,
     patterns: [...e.patterns], patternIdx: 0,
     intent: null, targetIdx: 0,
-    statuses: {}, debuffs: {},
+    statuses: { overheat: 0, vulnerability: 0, shock: 0, slow: 0 },
+    debuffs: {},
     marked: false, markBonus: 0,
     scanned: false, weakPointBonus: 0,
   }));
@@ -198,15 +202,14 @@ function createBattleState(frameKeys, enemyDefs) {
 
 function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
   let dmg = baseDmg;
-  if (ally.buffs.outBonus && card.stat === 'OUT') dmg += ally.buffs.outBonus;
-  if (ally.buffs.outBonus && card.stat === 'OUT') dmg += ally.buffs.outBonus;
 
-  // Seeker scan bonus
+  // Seeker scan bonus (expansion)
   if (enemy.scanned) dmg = Math.floor(dmg * 1.2);
 
-  // Evasion check
+  // Evasion check (slow reduces enemy DRV by 5)
   if (!card.unavoidable) {
     let effectiveDRV = enemy.drv || 0;
+    if (enemy.statuses.slow > 0) effectiveDRV -= 5;
     if (enemy.debuffs.agiReduction) effectiveDRV -= enemy.debuffs.agiReduction.val;
     const attackerDRV = ally.stats.DRV + (card.bonusDEX || 0);
     const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - attackerDRV * 1.0));
@@ -215,10 +218,15 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
     }
   }
 
-  // Shocked bonus for electromagnetic
-  if (card.dmgType === 'electromagnetic' && enemy.statuses.shocked) {
-    dmg = Math.floor(dmg * 1.5);
-    enemy.statuses.shocked = false;
+  // Shock: damage taken x1.2
+  if (enemy.statuses.shock > 0) {
+    dmg = Math.floor(dmg * 1.2);
+  }
+
+  // Vulnerability: add N to damage, then consume
+  if (enemy.statuses.vulnerability > 0) {
+    dmg += enemy.statuses.vulnerability;
+    enemy.statuses.vulnerability = 0;
   }
 
   // Barrier removal
@@ -237,29 +245,19 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
     enemy.hp -= remaining;
   }
 
-  // Element coat: add status effects from physical attacks
-  if (card.dmgType === 'physical' && ally.elementCoat) {
+  // Element coat (expansion)
+  if (ally.elementCoat) {
     if (ally.elementCoat === 'heat') {
       enemy.statuses.overheat = (enemy.statuses.overheat || 0) + 1;
     } else if (ally.elementCoat === 'shock') {
-      enemy.statuses.shocked = true;
+      enemy.statuses.shock = (enemy.statuses.shock || 0) + 1;
     }
   }
 
-  // Apply statuses from attack
-  if (card.applyStatus) {
-    const st = card.applyStatus;
-    if (st.type === 'overheat') {
-      enemy.statuses.overheat = (enemy.statuses.overheat || 0) + st.stacks;
-    }
-    if (st.type === 'frozen') {
-      if (!st.chance || Math.random() * 100 < st.chance) {
-        enemy.statuses.frozen = true;
-      }
-    }
-  }
+  // Apply statuses from attack card (AFTER damage)
+  simApplyCardStatuses(ally, enemy, card);
 
-  // Debuffs from attack
+  // Legacy debuffs (expansion)
   if (card.debuffAGI) {
     enemy.debuffs.agiReduction = { val: card.debuffAGI, dur: card.debuffDur || 1 };
   }
@@ -269,7 +267,6 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
 
   if (enemy.hp <= 0) {
     enemy.hp = 0; enemy.dead = true;
-    // Parts salvage check
     state.allies.forEach(a => {
       if (!a.dead && a.partsSalvageActive) {
         state.en = Math.min(state.en + 1, state.enCap);
@@ -281,7 +278,7 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
     });
   }
 
-  // Linker attack sync
+  // Linker attack sync (expansion)
   if (ally.linkedTo >= 0 && ally.linkMode === 'attack_sync' && !enemy.dead) {
     const partner = state.allies[ally.linkedTo];
     if (partner && !partner.dead) {
@@ -290,6 +287,32 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
         enemy.hp -= syncDmg;
         if (enemy.hp <= 0) { enemy.hp = 0; enemy.dead = true; }
       }
+    }
+  }
+}
+
+// Apply status effects from a card (simulate.js version - no logging)
+function simApplyCardStatuses(ally, enemy, card) {
+  if (!card.applyStatus) return;
+  const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
+  const ctrlMultiplier = 1 + (ally.stats.CTRL || 0) * 0.04;
+  const upgraded = card.upgraded && card.upgrade;
+
+  for (const st of statuses) {
+    if (st.type === 'overheat') {
+      let stacks = st.stacks + (upgraded && card.upgrade.stacks ? card.upgrade.stacks : 0);
+      stacks = Math.floor(stacks * ctrlMultiplier);
+      enemy.statuses.overheat = (enemy.statuses.overheat || 0) + stacks;
+    } else if (st.type === 'vulnerability') {
+      let stacks = st.stacks + (upgraded && card.upgrade.stacks ? card.upgrade.stacks : 0);
+      stacks = Math.floor(stacks * ctrlMultiplier);
+      enemy.statuses.vulnerability = (enemy.statuses.vulnerability || 0) + stacks;
+    } else if (st.type === 'shock') {
+      let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
+      enemy.statuses.shock = (enemy.statuses.shock || 0) + turns;
+    } else if (st.type === 'slow') {
+      let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
+      enemy.statuses.slow = (enemy.statuses.slow || 0) + turns;
     }
   }
 }
@@ -431,14 +454,22 @@ function drawCard(state) {
 
 function executeCardHeadless(state, card, handIdx, targetId) {
   const ally = state.allies[card.ownerIdx];
-  state.en -= card.cost;
 
-  let bonusDmg = (ally.buffs.dmgBonus || 0) + (ally.buffs.chargeshot || 0) + (ally.buffs.powerlink || 0) + (ally.buffs.warcryBonus || 0);
+  // Full Drive: reduce cost by 1 if active
+  let actualCost = card.cost;
+  if (state.allies.some(a => a.fullDriveActive) && card.effect !== 'full_drive') {
+    actualCost = Math.max(0, actualCost - 1);
+    state.allies.forEach(a => { a.fullDriveActive = false; });
+  }
+  state.en -= actualCost;
+
+  let bonusDmg = (ally.buffs.dmgBonus || 0) + (ally.buffs.warcryBonus || 0);
 
   switch (card.type) {
     case 'attack': {
       const statVal = card.stat === 'OUT' ? ally.stats.OUT : 0;
-      let baseDmg = Math.round(card.baseDmg * (1 + statVal * 0.04)) + bonusDmg;
+      let cardBaseDmg = card.baseDmg + (card.upgraded && card.upgrade && card.upgrade.baseDmg ? card.upgrade.baseDmg : 0);
+      let baseDmg = Math.round(cardBaseDmg * (1 + statVal * 0.04)) + bonusDmg;
       const hits = card.hits || 1;
 
       // Expansion attack effects
@@ -458,8 +489,8 @@ function executeCardHeadless(state, card, handIdx, targetId) {
           dealDmgToEnemy(state, ally, enemy, baseDmg, card);
           if (stacks >= card.accumThreshold && !enemy.dead) {
             enemy.statuses.overheat = (enemy.statuses.overheat || 0) + 2;
-            enemy.statuses.shocked = true;
-            enemy.debuffs.agiReduction = { val: 5, dur: 1 };
+            enemy.statuses.shock = (enemy.statuses.shock || 0) + 1;
+            enemy.statuses.slow = (enemy.statuses.slow || 0) + 1;
           }
         });
       } else if (card.effect === 'rail_cannon') {
@@ -491,25 +522,31 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         if (!enemy || enemy.dead) break;
         for (let h = 0; h < hits; h++) {
           let dmg = baseDmg;
-          if (card.backstab && enemy.targetIdx !== ally.id) dmg *= 2;
-          if (card.doubleOnOverheat && enemy.statuses.overheat) dmg *= 2;
+          if (card.backstabBonus && enemy.targetIdx !== ally.id) {
+            let bonus = card.backstabBonus + (card.upgraded && card.upgrade && card.upgrade.backstabBonus ? card.upgrade.backstabBonus : 0);
+            dmg += bonus;
+          }
+          if (card.overheatBonus && enemy.statuses.overheat > 0) {
+            let bonus = card.overheatBonus + (card.upgraded && card.upgrade && card.upgrade.overheatBonus ? card.upgrade.overheatBonus : 0);
+            dmg += bonus;
+          }
+          if (card.vulnerabilityBonus && enemy.statuses.vulnerability > 0) {
+            let bonus = card.vulnerabilityBonus + (card.upgraded && card.upgrade && card.upgrade.vulnerabilityBonus ? card.upgrade.vulnerabilityBonus : 0);
+            dmg += bonus;
+          }
           if (enemy.marked) dmg += enemy.markBonus;
           if (enemy.weakPointBonus) dmg += enemy.weakPointBonus;
-          if (ally.buffs.overdrive) dmg = baseDmg;
           dealDmgToEnemy(state, ally, enemy, dmg, card);
           if (enemy.dead) break;
-        }
-        if (ally.buffs.overdrive) {
-          for (let h = 0; h < hits; h++) {
-            if (enemy.dead) break;
-            dealDmgToEnemy(state, ally, enemy, baseDmg, card);
-          }
         }
         if (enemy.dead && card.onKill) handleOnKill(state, ally, card.onKill);
       } else if (card.target === 'enemy_all') {
         state.enemies.filter(e => !e.dead).forEach(enemy => {
           let dmg = baseDmg;
-          if (card.doubleOnOverheat && enemy.statuses.overheat) dmg *= 2;
+          if (card.overheatBonus && enemy.statuses.overheat > 0) {
+            let bonus = card.overheatBonus + (card.upgraded && card.upgrade && card.upgrade.overheatBonus ? card.upgrade.overheatBonus : 0);
+            dmg += bonus;
+          }
           if (enemy.marked) dmg += enemy.markBonus;
           if (enemy.weakPointBonus) dmg += enemy.weakPointBonus;
           dealDmgToEnemy(state, ally, enemy, dmg, card);
@@ -525,25 +562,27 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         }
       }
 
-      if (card.selfBuffAGI) ally.buffs.agiBonus = (ally.buffs.agiBonus || 0) + card.selfBuffAGI;
-      if (card.selfRemoveBarrier) ally.barrier = 0;
+      // Self field (Shielder Shield Bash)
+      if (card.selfField) {
+        let fieldAmt = card.selfField + (card.upgraded && card.upgrade && card.upgrade.selfField ? card.upgrade.selfField : 0);
+        fieldAmt = Math.round(fieldAmt * (1 + ally.stats.SHL * 0.04));
+        ally.barrier += fieldAmt;
+      }
+      // Self heal (Medic Drain Lance, Overload Drain Shot)
+      if (card.selfHeal) {
+        let healAmt = card.selfHeal + (card.upgraded && card.upgrade && card.upgrade.selfHeal ? card.upgrade.selfHeal : 0);
+        healAmt = Math.round(healAmt * (1 + ally.stats.CTRL * 0.04));
+        ally.hp = Math.min(ally.maxHP, ally.hp + healAmt);
+      }
+      // Self damage (Overload)
       if (card.selfDmg && !card.effect) {
-        ally.hp -= card.selfDmg;
+        let selfDmg = card.selfDmg + (card.upgraded && card.upgrade && card.upgrade.selfDmg ? card.upgrade.selfDmg : 0);
+        ally.hp -= selfDmg;
         if (ally.hp <= 0) killAlly(ally, state);
       }
-      if (card.selfStatus) {
-        ally.buffs[card.selfStatus.type] = (ally.buffs[card.selfStatus.type] || 0) + card.selfStatus.stacks;
-      }
-      if (card.drain && targetId != null) {
-        const enemy = state.enemies[targetId];
-        if (enemy && !enemy.dead) {
-          const healAmt = Math.floor(baseDmg * card.drain);
-          ally.hp = Math.min(ally.maxHP, ally.hp + healAmt);
-        }
-      }
+      if (card.selfRemoveBarrier) ally.barrier = 0;
+      if (card.selfBuffAGI) ally.buffs.agiBonus = (ally.buffs.agiBonus || 0) + card.selfBuffAGI;
 
-      if (ally.buffs.chargeshot) delete ally.buffs.chargeshot;
-      if (ally.buffs.powerlink) delete ally.buffs.powerlink;
       if (ally.buffs.warcryBonus) delete ally.buffs.warcryBonus;
       break;
     }
@@ -607,28 +646,9 @@ function executeCardHeadless(state, card, handIdx, targetId) {
       break;
     }
     case 'buff': {
-      if (card.effect === 'overdrive') {
-        state.allies.filter(a => !a.dead).forEach(a => {
-          a.buffs.overdrive = true;
-        });
-      } else if (card.effect === 'chargeshot') {
-        ally.buffs.chargeshot = card.chargeAmount;
-      } else if (card.effect === 'limiter') {
-        ally.hp -= card.selfDmg;
-        ally.buffs.dmgBonus = (ally.buffs.dmgBonus || 0) + card.amount;
-        if (ally.hp <= 0) killAlly(ally, state);
-      } else if (card.effect === 'powerlink') {
-        const target = state.allies[targetId];
-        if (target) target.buffs.powerlink = (target.buffs.powerlink || 0) + card.amount;
-      } else if (card.effect === 'accel') {
+      if (card.effect === 'accel') {
         const target = state.allies[targetId];
         if (target) target.buffs.agiBonus = (target.buffs.agiBonus || 0) + card.amount;
-      } else if (card.effect === 'fullboost') {
-        state.allies.filter(a => !a.dead).forEach(a => {
-          a.buffs.outBonus = (a.buffs.outBonus || 0) + card.amount;
-          a.buffs.outBonus = (a.buffs.outBonus || 0) + card.amount;
-        });
-        state.en = Math.min(state.en + 1, state.enCap);
       } else if (card.effect === 'smoke') {
         state.allies.filter(a => !a.dead).forEach(a => {
           a.buffs.agiBonus = (a.buffs.agiBonus || 0) + card.amount;
@@ -673,48 +693,28 @@ function executeCardHeadless(state, card, handIdx, targetId) {
       if (card.target === 'enemy_single') {
         const enemy = state.enemies[targetId];
         if (!enemy || enemy.dead) break;
-        if (card.effect === 'mark') {
-          enemy.marked = true;
-          enemy.markBonus = card.amount;
+        // Apply status effects (new 4-status system)
+        if (card.applyStatus) {
+          simApplyCardStatuses(ally, enemy, card);
         }
-        if (card.effect === 'systemcrash') {
-          let statusCount = 0;
-          for (const s in enemy.statuses) { if (enemy.statuses[s]) { enemy.statuses[s] += 2; statusCount++; } }
-          const dmg = statusCount * card.crashDmg;
-          if (dmg > 0) {
-            enemy.hp -= dmg;
-            if (enemy.hp <= 0) { enemy.hp = 0; enemy.dead = true; }
-          }
-        }
+        // Expansion effects
+        if (card.effect === 'mark') { enemy.marked = true; enemy.markBonus = card.amount; }
         if (card.effect === 'scan') enemy.scanned = true;
         if (card.effect === 'weak_point') {
           const bonus = enemy.scanned ? card.scannedBonus : card.unscannedBonus;
           enemy.weakPointBonus = (enemy.weakPointBonus || 0) + bonus;
         }
-        if (card.applyStatus) {
-          const st = card.applyStatus;
-          if (st.type === 'poison') {
-            enemy.statuses.poison = (enemy.statuses.poison || 0) + st.stacks;
-          }
-        }
         if (card.debuffATK) {
           enemy.debuffs.atkReduction = (enemy.debuffs.atkReduction || 0) + card.debuffATK;
         }
       } else if (card.target === 'enemy_all') {
-        if (card.effect === 'slowAll') {
+        // Apply status to all enemies (new system)
+        if (card.applyStatus) {
           state.enemies.filter(e => !e.dead).forEach(e => {
-            e.debuffs.agiReduction = { val: card.amount, dur: 1 };
+            simApplyCardStatuses(ally, e, card);
           });
         }
-        if (card.effect === 'emp') {
-          state.enemies.filter(e => !e.dead).forEach(e => {
-            if (e.statuses.shocked) {
-              e.hp -= card.empDmg;
-              if (e.hp <= 0) { e.hp = 0; e.dead = true; }
-            }
-            e.statuses.shocked = true;
-          });
-        }
+        // Expansion effects
         if (card.effect === 'analyze_field') {
           state.enemies.filter(e => !e.dead).forEach(e => { e.scanned = true; });
         }
@@ -724,6 +724,8 @@ function executeCardHeadless(state, card, handIdx, targetId) {
     case 'special': {
       if (card.effect === 'encharge') {
         state.en = Math.min(state.en + card.amount, state.enCap);
+      } else if (card.effect === 'full_drive') {
+        state.allies.forEach(a => { a.fullDriveActive = true; });
       } else if (card.effect === 'reboot') {
         const target = state.allies[targetId];
         if (target) {
@@ -886,23 +888,26 @@ function startTurn(state) {
     a.buffs = a.buffs.dmgBonus ? { dmgBonus: a.buffs.dmgBonus } : {};
   });
 
-  // Reset enemy barrier, process statuses
+  // Reset full drive at turn start
+  state.allies.forEach(a => { a.fullDriveActive = false; });
+
+  // Reset enemy barrier, process statuses (new 4-status system)
   state.enemies.forEach(e => {
     if (e.dead) return;
     e.barrier = 0;
-    if (e.statuses.overheat && e.statuses.overheat > 0) {
+    // Overheat: deal N damage, N decreases by 1
+    if (e.statuses.overheat > 0) {
       const dmg = e.statuses.overheat;
       e.hp -= dmg;
       e.statuses.overheat--;
       if (e.hp <= 0) { e.hp = 0; e.dead = true; }
     }
-    if (e.statuses.poison && e.statuses.poison > 0) {
-      const dmg = e.statuses.poison;
-      e.hp -= dmg;
-      e.statuses.poison--;
-      if (e.hp <= 0) { e.hp = 0; e.dead = true; }
-    }
-    if (e.statuses.frozen) { e.statuses.frozen = false; }
+    // Vulnerability persists (consumed on hit)
+    // Shock: decrement turns
+    if (e.statuses.shock > 0) { e.statuses.shock--; }
+    // Slow: decrement turns
+    if (e.statuses.slow > 0) { e.statuses.slow--; }
+    // Legacy debuffs for expansion frames
     if (e.debuffs.agiReduction) {
       e.debuffs.agiReduction.dur--;
       if (e.debuffs.agiReduction.dur <= 0) delete e.debuffs.agiReduction;
@@ -964,7 +969,7 @@ function endTurn(state) {
 
   // Enemy actions
   state.enemies.forEach(e => {
-    if (e.dead || e.statuses.frozen) return;
+    if (e.dead) return;
     const aliveAllies = state.allies.filter(a => !a.dead);
     if (aliveAllies.length === 0) return;
     let target = state.allies[e.targetIdx];
@@ -1064,10 +1069,8 @@ function aiSelectTarget(state, card) {
 
     // For provoke, target enemy attacking an ally with low HP
     if (card.target === 'provoke') {
-      // Find enemy targeting the squishiest ally
       const attacking = alive.filter(e => e.intent === 'attack' || e.intent === 'attack_heavy');
       if (attacking.length > 0) {
-        // Prefer enemy targeting our lowest-HP ally
         attacking.sort((a, b) => {
           const tA = state.allies[a.targetIdx];
           const tB = state.allies[b.targetIdx];
@@ -1079,14 +1082,22 @@ function aiSelectTarget(state, card) {
       }
     }
 
-    // For system crash, prefer enemy with most statuses
-    if (card.effect === 'systemcrash') {
-      alive.sort((a, b) => {
-        const countA = Object.values(a.statuses).filter(v => v).length;
-        const countB = Object.values(b.statuses).filter(v => v).length;
-        return countB - countA;
-      });
-      return alive[0].id;
+    // For vulnerability bonus cards, prefer vulnerable enemy
+    if (card.vulnerabilityBonus) {
+      const vulnerable = alive.filter(e => e.statuses.vulnerability > 0);
+      if (vulnerable.length > 0) {
+        vulnerable.sort((a, b) => a.hp - b.hp);
+        return vulnerable[0].id;
+      }
+    }
+
+    // For overheat bonus cards, prefer overheated enemy
+    if (card.overheatBonus) {
+      const overheated = alive.filter(e => e.statuses.overheat > 0);
+      if (overheated.length > 0) {
+        overheated.sort((a, b) => a.hp - b.hp);
+        return overheated[0].id;
+      }
     }
 
     // Default: lowest HP
@@ -1107,15 +1118,6 @@ function aiSelectTarget(state, card) {
       // Barrier: put on the enemy's target (most threatened ally)
       const threatened = findMostThreatenedAlly(state);
       return threatened ? threatened.id : alive[0].id;
-    }
-    if (card.effect === 'powerlink') {
-      // Buff the strongest attacker
-      const attackers = alive.filter(a => {
-        const fk = a.frameKey;
-        return ['striker','gunner','blaster','overload','phantom'].includes(fk);
-      });
-      if (attackers.length > 0) return attackers[0].id;
-      return alive[0].id;
     }
     if (card.effect === 'accel') {
       // Boost the most threatened ally
@@ -1181,23 +1183,32 @@ function estimateCardValue(state, card) {
 
   switch (card.type) {
     case 'attack': {
-      const baseDmg = Math.round(card.baseDmg * (1 + statVal * 0.04)) + (ally.buffs.dmgBonus || 0) + (ally.buffs.chargeshot || 0) + (ally.buffs.powerlink || 0) + (ally.buffs.warcryBonus || 0);
+      const baseDmg = Math.round(card.baseDmg * (1 + statVal * 0.04)) + (ally.buffs.dmgBonus || 0) + (ally.buffs.warcryBonus || 0);
       const hits = card.hits || 1;
       value = baseDmg * hits;
 
       if (card.target === 'enemy_all') value *= aliveEnemies.length * 0.8;
       if (card.target === 'enemy_random') value *= 0.9;
-      if (card.doubleOnOverheat) {
-        const overheated = aliveEnemies.filter(e => e.statuses.overheat);
-        if (overheated.length > 0) value *= 1.8;
+      if (card.overheatBonus) {
+        const overheated = aliveEnemies.filter(e => e.statuses.overheat > 0);
+        if (overheated.length > 0) value += card.overheatBonus * (card.target === 'enemy_all' ? overheated.length : 1);
       }
-      if (ally.buffs.overdrive) value *= 1.8;
-      if (card.backstab) value *= 1.5; // rough estimate
-      if (card.drain) value += baseDmg * card.drain * 0.5;
+      if (card.vulnerabilityBonus) {
+        const vulnerable = aliveEnemies.filter(e => e.statuses.vulnerability > 0);
+        if (vulnerable.length > 0) value += card.vulnerabilityBonus;
+      }
+      if (card.backstabBonus) value += card.backstabBonus * 0.5; // rough estimate, 50% chance
+      if (card.selfHeal) value += card.selfHeal * 0.5;
+      if (card.selfField) value += card.selfField * 0.5;
       if (card.selfDmg) value -= card.selfDmg * 0.8;
       if (card.applyStatus) {
-        if (card.applyStatus.type === 'overheat') value += card.applyStatus.stacks * 3;
-        if (card.applyStatus.type === 'frozen') value += 5;
+        const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
+        for (const st of statuses) {
+          if (st.type === 'overheat') value += st.stacks * 3;
+          if (st.type === 'vulnerability') value += st.stacks * 2;
+          if (st.type === 'shock') value += st.turns * 4;
+          if (st.type === 'slow') value += st.turns * 3;
+        }
       }
       if (card.removeBarrier) value += 5;
       if (card.unavoidable) value += 3;
@@ -1307,25 +1318,20 @@ function estimateCardValue(state, card) {
       break;
     }
     case 'debuff': {
-      if (card.effect === 'mark') {
-        value = card.amount + 3;
-      } else if (card.effect === 'systemcrash') {
-        const bestTarget = aliveEnemies.reduce((best, e) => {
-          const count = Object.values(e.statuses).filter(v => v).length;
-          return count > best ? count : best;
-        }, 0);
-        value = bestTarget * card.crashDmg + (bestTarget > 0 ? 5 : -5);
-      } else if (card.effect === 'slowAll') {
-        value = card.amount * 0.5 * aliveEnemies.length;
-      } else if (card.effect === 'emp') {
-        const shockedCount = aliveEnemies.filter(e => e.statuses.shocked).length;
-        value = shockedCount * card.empDmg + aliveEnemies.length * 2;
-      }
+      // New 4-status system debuffs
       if (card.applyStatus) {
-        if (card.applyStatus.type === 'poison') value += card.applyStatus.stacks * 2;
+        const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
+        const targetCount = card.target === 'enemy_all' ? aliveEnemies.length : 1;
+        for (const st of statuses) {
+          if (st.type === 'overheat') value += st.stacks * 3 * targetCount;
+          if (st.type === 'vulnerability') value += st.stacks * 2 * targetCount;
+          if (st.type === 'shock') value += st.turns * 4 * targetCount;
+          if (st.type === 'slow') value += st.turns * 3 * targetCount;
+        }
       }
-      if (card.debuffATK) value += card.debuffATK * 2;
       // Expansion debuffs
+      if (card.effect === 'mark') value = card.amount + 3;
+      if (card.debuffATK) value += card.debuffATK * 2;
       if (card.effect === 'scan') {
         const unscanned = aliveEnemies.filter(e => !e.scanned);
         value = unscanned.length > 0 ? 10 : -5;
@@ -1341,6 +1347,10 @@ function estimateCardValue(state, card) {
       if (card.effect === 'encharge') {
         const unplayable = state.hand.filter(c => c.playable && c.cost > state.en && c.cost <= state.en + card.amount);
         value = unplayable.length > 0 ? 8 : 3;
+      } else if (card.effect === 'full_drive') {
+        // Value = the EN saved on next card
+        const playable = state.hand.filter(c => c.playable && c.cost > 0 && c !== card);
+        value = playable.length > 0 ? 7 : 2;
       } else if (card.effect === 'reboot') {
         const deadAllies = state.allies.filter(a => a.dead);
         value = deadAllies.length > 0 ? 15 : -100;
@@ -1495,23 +1505,32 @@ function estimateCardValueSmart(state, card) {
 
   switch (card.type) {
     case 'attack': {
-      const baseDmg = Math.round(card.baseDmg * (1 + statVal * 0.04)) + (ally.buffs.dmgBonus || 0) + (ally.buffs.chargeshot || 0) + (ally.buffs.powerlink || 0) + (ally.buffs.warcryBonus || 0);
+      const baseDmg = Math.round(card.baseDmg * (1 + statVal * 0.04)) + (ally.buffs.dmgBonus || 0) + (ally.buffs.warcryBonus || 0);
       const hits = card.hits || 1;
       value = baseDmg * hits;
 
       if (card.target === 'enemy_all') value *= aliveEnemies.length * 0.8;
       if (card.target === 'enemy_random') value *= 0.9;
-      if (card.doubleOnOverheat) {
-        const overheated = aliveEnemies.filter(e => e.statuses.overheat);
-        if (overheated.length > 0) value *= 1.8;
+      if (card.overheatBonus) {
+        const overheated = aliveEnemies.filter(e => e.statuses.overheat > 0);
+        if (overheated.length > 0) value += card.overheatBonus * (card.target === 'enemy_all' ? overheated.length : 1);
       }
-      if (ally.buffs.overdrive) value *= 1.8;
-      if (card.backstab) value *= 1.5;
-      if (card.drain) value += baseDmg * card.drain * 0.5;
+      if (card.vulnerabilityBonus) {
+        const vulnerable = aliveEnemies.filter(e => e.statuses.vulnerability > 0);
+        if (vulnerable.length > 0) value += card.vulnerabilityBonus;
+      }
+      if (card.backstabBonus) value += card.backstabBonus * 0.5;
+      if (card.selfHeal) value += card.selfHeal * 0.5;
+      if (card.selfField) value += card.selfField * 0.5;
       if (card.selfDmg) value -= card.selfDmg * 0.8;
       if (card.applyStatus) {
-        if (card.applyStatus.type === 'overheat') value += card.applyStatus.stacks * 3;
-        if (card.applyStatus.type === 'frozen') value += 5;
+        const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
+        for (const st of statuses) {
+          if (st.type === 'overheat') value += st.stacks * 3;
+          if (st.type === 'vulnerability') value += st.stacks * 2;
+          if (st.type === 'shock') value += st.turns * 4;
+          if (st.type === 'slow') value += st.turns * 3;
+        }
       }
       if (card.removeBarrier) value += 5;
       if (card.unavoidable) value += 3;
@@ -1611,23 +1630,8 @@ function estimateCardValueSmart(state, card) {
       break;
     }
     case 'buff': {
-      if (card.effect === 'overdrive') {
-        const attacksInHand = state.hand.filter(c => c.type === 'attack' && c.ownerIdx === ally.id && c.playable);
-        value = attacksInHand.length > 0 ? 20 : 8;
-      } else if (card.effect === 'chargeshot') {
-        value = card.chargeAmount * 1.5;
-      } else if (card.effect === 'limiter') {
-        if (ally.hp > ally.maxHP * 0.4) {
-          value = card.amount * 2;
-        } else {
-          value = -5;
-        }
-      } else if (card.effect === 'powerlink') {
-        value = card.amount * 1.5;
-      } else if (card.effect === 'accel') {
+      if (card.effect === 'accel') {
         value = 6;
-      } else if (card.effect === 'fullboost') {
-        value = card.amount * aliveAllies.length + 3;
       } else if (card.effect === 'smoke') {
         value = 5 + incomingDmg * 0.1;
       } else if (card.effect === 'element_coat_heat' || card.effect === 'element_coat_shock') {
@@ -1658,23 +1662,18 @@ function estimateCardValueSmart(state, card) {
       break;
     }
     case 'debuff': {
-      if (card.effect === 'mark') {
-        value = card.amount + 3;
-      } else if (card.effect === 'systemcrash') {
-        const bestTarget = aliveEnemies.reduce((best, e) => {
-          const count = Object.values(e.statuses).filter(v => v).length;
-          return count > best ? count : best;
-        }, 0);
-        value = bestTarget * card.crashDmg + (bestTarget > 0 ? 5 : -5);
-      } else if (card.effect === 'slowAll') {
-        value = card.amount * 0.5 * aliveEnemies.length;
-      } else if (card.effect === 'emp') {
-        const shockedCount = aliveEnemies.filter(e => e.statuses.shocked).length;
-        value = shockedCount * card.empDmg + aliveEnemies.length * 2;
-      }
+      // New 4-status system debuffs
       if (card.applyStatus) {
-        if (card.applyStatus.type === 'poison') value += card.applyStatus.stacks * 2;
+        const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
+        const targetCount = card.target === 'enemy_all' ? aliveEnemies.length : 1;
+        for (const st of statuses) {
+          if (st.type === 'overheat') value += st.stacks * 3 * targetCount;
+          if (st.type === 'vulnerability') value += st.stacks * 2.5 * targetCount;
+          if (st.type === 'shock') value += st.turns * 5 * targetCount;
+          if (st.type === 'slow') value += st.turns * 3 * targetCount;
+        }
       }
+      if (card.effect === 'mark') value = card.amount + 3;
       if (card.debuffATK) value += card.debuffATK * 2;
 
       // Smart: Scan is a persistent debuff, value = DPS * 0.2 * remainingTurns
@@ -1714,6 +1713,9 @@ function estimateCardValueSmart(state, card) {
         } else {
           value = 3;
         }
+      } else if (card.effect === 'full_drive') {
+        const playable = state.hand.filter(c => c.playable && c.cost > 0 && c !== card);
+        value = playable.length > 0 ? 8 : 2;
       } else if (card.effect === 'reboot') {
         const deadAllies = state.allies.filter(a => a.dead);
         value = deadAllies.length > 0 ? 15 : -100;

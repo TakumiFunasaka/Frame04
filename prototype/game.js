@@ -312,6 +312,7 @@ function startRun() {
       hp: maxHP, maxHP, barrier: 0, dead: false,
       cards: frame.cards.map((c, ci) => ({ ...c, id: `${fk}_${i}_${ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false })),
       buffs: {}, persistentBarrier: 0, attackLocked: false, counterDmg: 0, reactive: false, siegeBuff: 0, spikeReflect: 0,
+      fullDriveActive: false,  // booster: next card costs -1 EN
       // Expansion persistent state
       elementCoat: null,      // 'heat' or 'shock' - converter coating
       absorbField: false,     // converter absorb field active
@@ -521,11 +522,13 @@ const FRAME_PRESETS = {
   blaster:    { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
   shielder:   { OUT: 0, SHL: 0.6, CTRL: 0.2, DRV: 0.2 },
   medic:      { OUT: 0, SHL: 0.2, CTRL: 0.6, DRV: 0.2 },
-  jammer:     { OUT: 0.5, SHL: 0.1, CTRL: 0.1, DRV: 0.3 },
+  jammer:     { OUT: 0, SHL: 0.1, CTRL: 0.6, DRV: 0.3 },
+  cracker:    { OUT: 0.3, SHL: 0.1, CTRL: 0.4, DRV: 0.2 },
   booster:    { OUT: 0, SHL: 0.2, CTRL: 0.2, DRV: 0.6 },
   phantom:    { OUT: 0.3, SHL: 0, CTRL: 0, DRV: 0.7 },
-  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
   overload:   { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
+  // Expansion (not in base selection)
+  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
   // PROTOCOL:EX
   converter:  { OUT: 0.5, SHL: 0.2, CTRL: 0.1, DRV: 0.2 },
   linker:     { OUT: 0, SHL: 0.3, CTRL: 0.3, DRV: 0.4 },
@@ -720,7 +723,9 @@ function startBattle(encounterType) {
     atk: Math.floor(e.atk * depthScale), drv: e.drv || 0,
     patterns: e.patterns, patternIdx: 0,
     intent: null, targetIdx: 0,
-    statuses: {}, debuffs: {},
+    // New status system: overheat(N stacks), vulnerability(N stacks), shock(T turns), slow(T turns)
+    statuses: { overheat: 0, vulnerability: 0, shock: 0, slow: 0 },
+    debuffs: {},
     marked: false, markBonus: 0,
     scanned: false, weakPointBonus: 0,
   }));
@@ -735,6 +740,7 @@ function startBattle(encounterType) {
     a.reactive = false;
     a.siegeBuff = 0;
     a.spikeReflect = 0;
+    a.fullDriveActive = false;
     // Reset expansion per-battle state
     a.elementCoat = null;
     a.absorbField = false;
@@ -817,25 +823,31 @@ function nextTurn() {
     a.buffs = a.buffs.dmgBonus ? { dmgBonus: a.buffs.dmgBonus } : {};
   });
 
-  // Reset enemy barrier, process statuses
+  // Reset full drive at turn start (it only lasts within a turn)
+  state.allies.forEach(a => { a.fullDriveActive = false; });
+
+  // Reset enemy barrier, process statuses (new 4-status system)
   state.enemies.forEach(e => {
     if (e.dead) return;
     e.barrier = 0;
-    if (e.statuses.overheat && e.statuses.overheat > 0) {
+    // Overheat: deal N damage, then N decreases by 1
+    if (e.statuses.overheat > 0) {
       const dmg = e.statuses.overheat;
       e.hp -= dmg;
       addLog(`${e.name}: 過熱ダメージ ${dmg}`, 'dmg');
       e.statuses.overheat--;
       if (e.hp <= 0) { e.hp = 0; e.dead = true; addLog(`${e.name} 撃破!`, 'info'); }
     }
-    if (e.statuses.poison && e.statuses.poison > 0) {
-      const dmg = e.statuses.poison;
-      e.hp -= dmg;
-      addLog(`${e.name}: 汚染ダメージ ${dmg}`, 'dmg');
-      e.statuses.poison--;
-      if (e.hp <= 0) { e.hp = 0; e.dead = true; addLog(`${e.name} 撃破!`, 'info'); }
+    // Vulnerability persists until consumed by damage (no turn decay)
+    // Shock: decrement turns
+    if (e.statuses.shock > 0) {
+      e.statuses.shock--;
     }
-    if (e.statuses.frozen) { e.statuses.frozen = false; }
+    // Slow: decrement turns
+    if (e.statuses.slow > 0) {
+      e.statuses.slow--;
+    }
+    // Legacy debuffs for expansion frames
     if (e.debuffs.agiReduction) {
       e.debuffs.agiReduction.dur--;
       if (e.debuffs.agiReduction.dur <= 0) delete e.debuffs.agiReduction;
@@ -912,10 +924,7 @@ function endTurn() {
 
   // Enemy actions
   state.enemies.forEach(e => {
-    if (e.dead || e.statuses.frozen) {
-      if (e.statuses.frozen) { addLog(`${e.name}: 凍結で行動不能`, 'status'); }
-      return;
-    }
+    if (e.dead) return;
     const aliveAllies = state.allies.filter(a => !a.dead);
     if (aliveAllies.length === 0) return;
     let target = state.allies[e.targetIdx];
@@ -1148,7 +1157,12 @@ let pendingCard = null;
 function playCard(handIdx) {
   const card = state.hand[handIdx];
   if (!card || !card.playable || state.battleOver) return;
-  if (card.cost > state.en) return;
+  // Check cost with full drive discount
+  let effectiveCost = card.cost;
+  if (state.allies.some(a => a.fullDriveActive) && card.effect !== 'full_drive') {
+    effectiveCost = Math.max(0, effectiveCost - 1);
+  }
+  if (effectiveCost > state.en) return;
 
   const ally = state.allies[card.ownerIdx];
   if (ally.dead && card.type !== 'special') return;
@@ -1192,14 +1206,22 @@ function executeCard(targetId) {
   pendingCard = null;
   closeTargetModal();
 
-  state.en -= card.cost;
+  // Full Drive: reduce cost by 1 if active
+  let actualCost = card.cost;
+  if (state.allies.some(a => a.fullDriveActive) && card.effect !== 'full_drive') {
+    actualCost = Math.max(0, actualCost - 1);
+    state.allies.forEach(a => { a.fullDriveActive = false; });
+    if (actualCost < card.cost) addLog(`フルドライブ! EN消費-1`, 'status');
+  }
+  state.en -= actualCost;
 
-  let bonusDmg = (ally.buffs.dmgBonus || 0) + (ally.buffs.chargeshot || 0) + (ally.buffs.powerlink || 0) + (ally.buffs.warcryBonus || 0);
+  let bonusDmg = (ally.buffs.dmgBonus || 0) + (ally.buffs.warcryBonus || 0);
 
   switch (card.type) {
     case 'attack': {
       const statVal = card.stat === 'OUT' ? ally.stats.OUT : 0;
-      let baseDmg = Math.round(card.baseDmg * (1 + statVal * 0.04)) + bonusDmg;
+      let cardBaseDmg = card.baseDmg + (card.upgraded && card.upgrade && card.upgrade.baseDmg ? card.upgrade.baseDmg : 0);
+      let baseDmg = Math.round(cardBaseDmg * (1 + statVal * 0.04)) + bonusDmg;
       const hits = card.hits || 1;
 
       // --- Expansion: Converter reverse_charge / fusion_burst ---
@@ -1222,12 +1244,11 @@ function executeCard(targetId) {
           dealDmgToEnemy(ally, enemy, baseDmg, card);
           if (stacks >= card.accumThreshold && !enemy.dead) {
             enemy.statuses.overheat = (enemy.statuses.overheat || 0) + 2;
-            enemy.statuses.shocked = true;
-            enemy.debuffs.agiReduction = { val: 5, dur: 1 };
+            enemy.statuses.shock = (enemy.statuses.shock || 0) + 1;
+            enemy.statuses.slow = (enemy.statuses.slow || 0) + 1;
           }
         });
         addLog(`${ally.name}: フュージョンバースト ${baseDmg}全体ダメ (蓄積${stacks}消費)`, 'dmg');
-      // --- Expansion: Launcher rail/satellite cannon ---
       } else if (card.effect === 'rail_cannon') {
         baseDmg = Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) + bonusDmg;
         ally.loadCounter = 0;
@@ -1243,7 +1264,6 @@ function executeCard(targetId) {
           dealDmgToEnemy(ally, enemy, baseDmg, card);
         });
         addLog(`${ally.name}: サテライトキャノン ${baseDmg}全体ダメ!`, 'dmg');
-      // --- Expansion: Bulk counter blow ---
       } else if (card.effect === 'counter_blow') {
         baseDmg = Math.round((ally.damageCounter * card.counterMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) + bonusDmg;
         ally.damageCounter = 0;
@@ -1252,15 +1272,12 @@ function executeCard(targetId) {
           dealDmgToEnemy(ally, enemy, baseDmg, card);
           addLog(`${ally.name}: カウンターブロー ${baseDmg}ダメ!`, 'dmg');
         }
-      // --- Expansion: Seeker exploit ---
       } else if (card.effect === 'exploit') {
         const enemy = state.enemies[targetId];
         if (enemy && !enemy.dead) {
           let statusCount = 0;
           for (const s in enemy.statuses) { if (enemy.statuses[s]) statusCount++; }
-          if (enemy.scanned) {
-            baseDmg += statusCount * card.perStatusBonus;
-          }
+          if (enemy.scanned) baseDmg += statusCount * card.perStatusBonus;
           dealDmgToEnemy(ally, enemy, baseDmg, card);
           addLog(`${ally.name}: エクスプロイト ${baseDmg}ダメ (状態異常${statusCount}種)`, 'dmg');
         }
@@ -1270,35 +1287,39 @@ function executeCard(targetId) {
         if (!enemy || enemy.dead) { /* skip */ } else {
           for (let h = 0; h < hits; h++) {
             let dmg = baseDmg;
-            if (card.backstab && enemy.targetIdx !== ally.id) dmg *= 2;
-            if (card.doubleOnOverheat && enemy.statuses.overheat) dmg *= 2;
+            // Backstab bonus: +N if target is targeting another ally
+            if (card.backstabBonus && enemy.targetIdx !== ally.id) {
+              let bonus = card.backstabBonus + (card.upgraded && card.upgrade && card.upgrade.backstabBonus ? card.upgrade.backstabBonus : 0);
+              dmg += bonus;
+            }
+            // Overheat bonus (Blaster Meltdown)
+            if (card.overheatBonus && enemy.statuses.overheat > 0) {
+              let bonus = card.overheatBonus + (card.upgraded && card.upgrade && card.upgrade.overheatBonus ? card.upgrade.overheatBonus : 0);
+              dmg += bonus;
+            }
+            // Vulnerability bonus (Cracker Crackshot)
+            if (card.vulnerabilityBonus && enemy.statuses.vulnerability > 0) {
+              let bonus = card.vulnerabilityBonus + (card.upgraded && card.upgrade && card.upgrade.vulnerabilityBonus ? card.upgrade.vulnerabilityBonus : 0);
+              dmg += bonus;
+            }
             if (enemy.marked) dmg += enemy.markBonus;
-            if (enemy.weakPointBonus) { dmg += enemy.weakPointBonus; }
-            if (ally.buffs.overdrive) dmg = baseDmg;
+            if (enemy.weakPointBonus) dmg += enemy.weakPointBonus;
             dealDmgToEnemy(ally, enemy, dmg, card);
             if (enemy.dead) break;
           }
-          if (ally.buffs.overdrive) {
-            for (let h = 0; h < hits; h++) {
-              if (enemy.dead) break;
-              dealDmgToEnemy(ally, enemy, baseDmg, card);
-            }
-          }
-          // Check on-kill effects (scavenger)
-          if (enemy.dead && card.onKill) {
-            handleOnKill(ally, card.onKill);
-          }
+          if (enemy.dead && card.onKill) handleOnKill(ally, card.onKill);
         }
       } else if (card.target === 'enemy_all') {
         state.enemies.filter(e => !e.dead).forEach(enemy => {
           let dmg = baseDmg;
-          if (card.doubleOnOverheat && enemy.statuses.overheat) dmg *= 2;
-          if (enemy.marked) dmg += enemy.markBonus;
-          if (enemy.weakPointBonus) { dmg += enemy.weakPointBonus; }
-          dealDmgToEnemy(ally, enemy, dmg, card);
-          if (enemy.dead && card.onKill) {
-            handleOnKill(ally, card.onKill);
+          if (card.overheatBonus && enemy.statuses.overheat > 0) {
+            let bonus = card.overheatBonus + (card.upgraded && card.upgrade && card.upgrade.overheatBonus ? card.upgrade.overheatBonus : 0);
+            dmg += bonus;
           }
+          if (enemy.marked) dmg += enemy.markBonus;
+          if (enemy.weakPointBonus) dmg += enemy.weakPointBonus;
+          dealDmgToEnemy(ally, enemy, dmg, card);
+          if (enemy.dead && card.onKill) handleOnKill(ally, card.onKill);
         });
       } else if (card.target === 'enemy_random') {
         for (let h = 0; h < hits; h++) {
@@ -1306,30 +1327,34 @@ function executeCard(targetId) {
           if (alive.length === 0) break;
           const enemy = alive[Math.floor(Math.random() * alive.length)];
           dealDmgToEnemy(ally, enemy, baseDmg, card);
-          if (enemy.dead && card.onKill) {
-            handleOnKill(ally, card.onKill);
-          }
+          if (enemy.dead && card.onKill) handleOnKill(ally, card.onKill);
         }
       }
 
-      if (card.selfBuffAGI) ally.buffs.agiBonus = (ally.buffs.agiBonus || 0) + card.selfBuffAGI;
-      if (card.selfRemoveBarrier) ally.barrier = 0;
+      // Self field (Shielder Shield Bash)
+      if (card.selfField) {
+        let fieldAmt = card.selfField + (card.upgraded && card.upgrade && card.upgrade.selfField ? card.upgrade.selfField : 0);
+        fieldAmt = Math.round(fieldAmt * (1 + ally.stats.SHL * 0.04));
+        ally.barrier += fieldAmt;
+        addLog(`${ally.name}: フィールド +${fieldAmt}`, 'barrier');
+      }
+      // Self heal (Medic Drain Lance, Overload Drain Shot)
+      if (card.selfHeal) {
+        let healAmt = card.selfHeal + (card.upgraded && card.upgrade && card.upgrade.selfHeal ? card.upgrade.selfHeal : 0);
+        healAmt = Math.round(healAmt * (1 + ally.stats.CTRL * 0.04));
+        ally.hp = Math.min(ally.maxHP, ally.hp + healAmt);
+        addLog(`${ally.name}: HP +${healAmt}`, 'heal');
+      }
+      // Self damage (Overload)
       if (card.selfDmg && !card.effect) {
-        ally.hp -= card.selfDmg;
-        addLog(`${ally.name}: 自傷 ${card.selfDmg}`, 'dmg');
+        let selfDmg = card.selfDmg + (card.upgraded && card.upgrade && card.upgrade.selfDmg ? card.upgrade.selfDmg : 0);
+        ally.hp -= selfDmg;
+        addLog(`${ally.name}: 自傷 ${selfDmg}`, 'dmg');
         if (ally.hp <= 0) killAlly(ally);
       }
-      if (card.selfStatus) {
-        ally.buffs[card.selfStatus.type] = (ally.buffs[card.selfStatus.type] || 0) + card.selfStatus.stacks;
-      }
-      if (card.drain && !state.enemies[targetId]?.dead) {
-        const healAmt = Math.floor(baseDmg * card.drain);
-        ally.hp = Math.min(ally.maxHP, ally.hp + healAmt);
-        addLog(`${ally.name}: HP吸収 +${healAmt}`, 'heal');
-      }
+      if (card.selfRemoveBarrier) ally.barrier = 0;
+      if (card.selfBuffAGI) ally.buffs.agiBonus = (ally.buffs.agiBonus || 0) + card.selfBuffAGI;
 
-      if (ally.buffs.chargeshot) delete ally.buffs.chargeshot;
-      if (ally.buffs.powerlink) delete ally.buffs.powerlink;
       if (ally.buffs.warcryBonus) delete ally.buffs.warcryBonus;
       break;
     }
@@ -1499,64 +1524,38 @@ function executeCard(targetId) {
       if (card.target === 'enemy_single') {
         const enemy = state.enemies[targetId];
         if (!enemy || enemy.dead) break;
+        // Apply status effects (new 4-status system)
+        if (card.applyStatus) {
+          applyCardStatuses(ally, enemy, card);
+        }
+        // Expansion: mark
         if (card.effect === 'mark') {
           enemy.marked = true;
           enemy.markBonus = card.amount;
           addLog(`${enemy.name}: マーク! 次攻撃 +${card.amount}`, 'status');
         }
-        if (card.effect === 'systemcrash') {
-          let statusCount = 0;
-          for (const s in enemy.statuses) { if (enemy.statuses[s]) { enemy.statuses[s] += 2; statusCount++; } }
-          const dmg = statusCount * card.crashDmg;
-          if (dmg > 0) {
-            enemy.hp -= dmg;
-            addLog(`${enemy.name}: システムクラッシュ ${dmg}ダメージ (${statusCount}種)`, 'dmg');
-            if (enemy.hp <= 0) { enemy.hp = 0; enemy.dead = true; addLog(`${enemy.name} 撃破!`, 'info'); }
-          } else {
-            addLog(`${enemy.name}: 状態異常なし、効果なし`, 'info');
-          }
-        }
-        // Seeker: scan
+        // Expansion: scan
         if (card.effect === 'scan') {
           enemy.scanned = true;
           addLog(`${enemy.name}: スキャン(持続)。被ダメ+20%`, 'status');
         }
-        // Seeker: weak point
         if (card.effect === 'weak_point') {
           const bonus = enemy.scanned ? card.scannedBonus : card.unscannedBonus;
           enemy.weakPointBonus = (enemy.weakPointBonus || 0) + bonus;
           addLog(`${enemy.name}: ウィークポイント +${bonus}`, 'status');
-        }
-        if (card.applyStatus) {
-          const st = card.applyStatus;
-          if (st.type === 'poison') {
-            enemy.statuses.poison = (enemy.statuses.poison || 0) + st.stacks;
-            addLog(`${enemy.name}: 汚染 ${st.stacks}`, 'status');
-          }
         }
         if (card.debuffATK) {
           enemy.debuffs.atkReduction = (enemy.debuffs.atkReduction || 0) + card.debuffATK;
           addLog(`${enemy.name}: 攻撃力 -${card.debuffATK}`, 'status');
         }
       } else if (card.target === 'enemy_all') {
-        if (card.effect === 'slowAll') {
+        // Apply status to all enemies (new system)
+        if (card.applyStatus) {
           state.enemies.filter(e => !e.dead).forEach(e => {
-            e.debuffs.agiReduction = { val: card.amount, dur: 1 };
-          });
-          addLog(`敵全体: DRV -${card.amount}`, 'status');
-        }
-        if (card.effect === 'emp') {
-          state.enemies.filter(e => !e.dead).forEach(e => {
-            if (e.statuses.shocked) {
-              e.hp -= card.empDmg;
-              addLog(`${e.name}: EMP追撃 ${card.empDmg}`, 'dmg');
-              if (e.hp <= 0) { e.hp = 0; e.dead = true; addLog(`${e.name} 撃破!`, 'info'); }
-            }
-            e.statuses.shocked = true;
-            addLog(`${e.name}: 感電`, 'status');
+            applyCardStatuses(ally, e, card);
           });
         }
-        // Seeker: analyze field (scan all)
+        // Expansion: analyze field (scan all)
         if (card.effect === 'analyze_field') {
           state.enemies.filter(e => !e.dead).forEach(e => {
             e.scanned = true;
@@ -1570,6 +1569,10 @@ function executeCard(targetId) {
       if (card.effect === 'encharge') {
         state.en = Math.min(state.en + card.amount, state.enCap);
         addLog(`EN +${card.amount}`, 'info');
+      } else if (card.effect === 'full_drive') {
+        // Next card this turn costs -1 EN (min 0)
+        state.allies.forEach(a => { a.fullDriveActive = true; });
+        addLog(`フルドライブ! 次のカードEN-1`, 'status');
       } else if (card.effect === 'reboot') {
         const target = state.allies[targetId];
         target.dead = false;
@@ -1755,16 +1758,16 @@ function executeCard(targetId) {
 
 function dealDmgToEnemy(ally, enemy, baseDmg, card) {
   let dmg = baseDmg;
-  if (ally.buffs.outBonus && card.stat === 'OUT') dmg += ally.buffs.outBonus;
-  if (ally.buffs.outBonus && card.stat === 'OUT') dmg += ally.buffs.outBonus;
 
-  // Seeker scan bonus: +20% damage to scanned enemies
+  // Seeker scan bonus: +20% damage to scanned enemies (expansion)
   if (enemy.scanned) {
     dmg = Math.floor(dmg * 1.2);
   }
 
+  // Evasion check (slow reduces enemy DRV by 5)
   if (!card.unavoidable) {
     let effectiveDRV = enemy.drv || 0;
+    if (enemy.statuses.slow > 0) effectiveDRV -= 5;
     if (enemy.debuffs.agiReduction) effectiveDRV -= enemy.debuffs.agiReduction.val;
     const attackerDRV = ally.stats.DRV + (card.bonusDEX || 0);
     const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - attackerDRV * 1.0));
@@ -1774,17 +1777,26 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
     }
   }
 
-  if (card.dmgType === 'electromagnetic' && enemy.statuses.shocked) {
-    dmg = Math.floor(dmg * 1.5);
-    enemy.statuses.shocked = false;
-    addLog(`感電ボーナス! x1.5`, 'status');
+  // Shock: damage taken ×1.2 while shocked
+  if (enemy.statuses.shock > 0) {
+    dmg = Math.floor(dmg * 1.2);
+    addLog(`感電ボーナス! ×1.2`, 'status');
   }
 
+  // Vulnerability: add N to damage, then consume
+  if (enemy.statuses.vulnerability > 0) {
+    dmg += enemy.statuses.vulnerability;
+    addLog(`脆弱消費! +${enemy.statuses.vulnerability}`, 'status');
+    enemy.statuses.vulnerability = 0;
+  }
+
+  // Barrier removal (Armor Break)
   if (card.removeBarrier) {
     if (enemy.barrier > 0) addLog(`${enemy.name}: フィールド除去!`, 'barrier');
     enemy.barrier = 0;
   }
 
+  // Barrier absorption
   let remaining = dmg;
   if (enemy.barrier > 0 && !card.removeBarrier) {
     const absorbed = Math.min(enemy.barrier, remaining);
@@ -1797,31 +1809,21 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
     addLog(`${ally.name} → ${enemy.name}: ${remaining}ダメージ`, 'dmg');
   }
 
-  // Element coat: add status effects from physical attacks
-  if (card.dmgType === 'physical' && ally.elementCoat) {
+  // Element coat: add status effects from physical attacks (expansion)
+  if (ally.elementCoat) {
     if (ally.elementCoat === 'heat') {
       enemy.statuses.overheat = (enemy.statuses.overheat || 0) + 1;
       addLog(`${enemy.name}: 熱量付与 → 過熱+1`, 'status');
     } else if (ally.elementCoat === 'shock') {
-      enemy.statuses.shocked = true;
-      addLog(`${enemy.name}: 電磁付与 → 感電`, 'status');
+      enemy.statuses.shock = (enemy.statuses.shock || 0) + 1;
+      addLog(`${enemy.name}: 電磁付与 → 感電+1T`, 'status');
     }
   }
 
-  if (card.applyStatus) {
-    const st = card.applyStatus;
-    if (st.type === 'overheat') {
-      enemy.statuses.overheat = (enemy.statuses.overheat || 0) + st.stacks;
-      addLog(`${enemy.name}: 過熱 ${st.stacks}`, 'status');
-    }
-    if (st.type === 'frozen') {
-      if (!st.chance || Math.random() * 100 < st.chance) {
-        enemy.statuses.frozen = true;
-        addLog(`${enemy.name}: 凍結!`, 'status');
-      }
-    }
-  }
+  // Apply statuses from attack card (AFTER damage - vulnerability from this card doesn't benefit this attack)
+  applyCardStatuses(ally, enemy, card);
 
+  // Legacy debuffs for expansion frames
   if (card.debuffAGI) {
     enemy.debuffs.agiReduction = { val: card.debuffAGI, dur: card.debuffDur || 1 };
     addLog(`${enemy.name}: DRV -${card.debuffAGI}`, 'status');
@@ -1833,14 +1835,13 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
   if (enemy.hp <= 0) {
     enemy.hp = 0; enemy.dead = true;
     addLog(`${enemy.name} 撃破!`, 'info');
-    // Parts salvage: on any kill, check if any ally has parts_salvage active
+    // Parts salvage (expansion)
     state.allies.forEach(a => {
       if (!a.dead && a.partsSalvageActive) {
         state.en = Math.min(state.en + 1, state.enCap);
         ally.hp = Math.min(ally.maxHP, ally.hp + 3);
         addLog(`パーツ回収: EN+1, ${ally.name} HP+3`, 'info');
       }
-      // Junk shield bonus on kill
       if (!a.dead && a.junkShieldActive) {
         a.barrier += a.junkShieldBonus;
         addLog(`${a.name}: ジャンクシールド +${a.junkShieldBonus}フィールド`, 'barrier');
@@ -1848,7 +1849,7 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
     });
   }
 
-  // Linker attack sync: when a linked ally attacks, partner deals 30% damage
+  // Linker attack sync (expansion)
   if (ally.linkedTo >= 0 && ally.linkMode === 'attack_sync' && !enemy.dead) {
     const partner = state.allies[ally.linkedTo];
     if (partner && !partner.dead) {
@@ -1858,6 +1859,37 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
         addLog(`${partner.name}: シンクロ追撃 ${syncDmg}`, 'dmg');
         if (enemy.hp <= 0) { enemy.hp = 0; enemy.dead = true; addLog(`${enemy.name} 撃破!`, 'info'); }
       }
+    }
+  }
+}
+
+// Apply status effects from a card to an enemy (used by both attack and debuff cards)
+// CTRL scaling: overheat/vulnerability scale with applier CTRL, shock/slow do NOT
+function applyCardStatuses(ally, enemy, card) {
+  if (!card.applyStatus) return;
+  const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
+  const ctrlMultiplier = 1 + (ally.stats.CTRL || 0) * 0.04;
+  const upgraded = card.upgraded && card.upgrade;
+
+  for (const st of statuses) {
+    if (st.type === 'overheat') {
+      let stacks = st.stacks + (upgraded && card.upgrade.stacks ? card.upgrade.stacks : 0);
+      stacks = Math.floor(stacks * ctrlMultiplier);
+      enemy.statuses.overheat = (enemy.statuses.overheat || 0) + stacks;
+      addLog(`${enemy.name}: 過熱(${stacks})`, 'status');
+    } else if (st.type === 'vulnerability') {
+      let stacks = st.stacks + (upgraded && card.upgrade.stacks ? card.upgrade.stacks : 0);
+      stacks = Math.floor(stacks * ctrlMultiplier);
+      enemy.statuses.vulnerability = (enemy.statuses.vulnerability || 0) + stacks;
+      addLog(`${enemy.name}: 脆弱(${stacks})`, 'status');
+    } else if (st.type === 'shock') {
+      let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
+      enemy.statuses.shock = (enemy.statuses.shock || 0) + turns;
+      addLog(`${enemy.name}: 感電(${turns}T)`, 'status');
+    } else if (st.type === 'slow') {
+      let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
+      enemy.statuses.slow = (enemy.statuses.slow || 0) + turns;
+      addLog(`${enemy.name}: 減速(${turns}T)`, 'status');
     }
   }
 }
@@ -1966,81 +1998,24 @@ function getUpgradedCard(card) {
   u.upgraded = true;
   u.name = card.name + '+';
 
-  // Upgrade logic based on card type
-  if (u.type === 'attack') {
-    u.baseDmg = Math.ceil(card.baseDmg * 1.3);
-    u.desc = card.desc.replace(/(\d+)\+/, u.baseDmg + '+');
-    // Rebuild desc to show upgraded values
-    u.desc = buildUpgradedAttackDesc(u, card);
-  } else if (u.type === 'defend') {
-    u.baseBarrier = Math.ceil(card.baseBarrier * 1.3);
-    u.desc = buildUpgradedDefendDesc(u, card);
-  } else if (u.type === 'heal') {
-    if (u.baseHeal) {
-      u.baseHeal = Math.ceil(card.baseHeal * 1.4);
-      u.desc = buildUpgradedHealDesc(u, card);
-    }
-  } else if (u.type === 'buff') {
-    if (u.amount) u.amount = card.amount + 2;
-    if (u.chargeAmount) u.chargeAmount = card.chargeAmount + 3;
-    u.desc = card.desc + ' [強化]';
-  } else if (u.type === 'debuff') {
-    if (u.amount) u.amount = card.amount + 2;
-    if (u.crashDmg) u.crashDmg = card.crashDmg + 2;
-    if (u.empDmg) u.empDmg = card.empDmg + 4;
-    u.desc = card.desc + ' [強化]';
-  } else if (u.type === 'special') {
-    if (u.effect === 'encharge') u.amount = card.amount + 1;
-    u.desc = card.desc + ' [強化]';
+  // New upgrade system: use the upgrade field from card data
+  if (card.upgrade) {
+    const up = card.upgrade;
+    if (up.baseDmg) u.baseDmg = (card.baseDmg || 0) + up.baseDmg;
+    if (up.baseBarrier) u.baseBarrier = (card.baseBarrier || 0) + up.baseBarrier;
+    if (up.baseHeal) u.baseHeal = (card.baseHeal || 0) + up.baseHeal;
+    if (up.selfField) u.selfField = (card.selfField || 0) + up.selfField;
+    if (up.selfHeal) u.selfHeal = (card.selfHeal || 0) + up.selfHeal;
+    if (up.selfDmg) u.selfDmg = Math.max(0, (card.selfDmg || 0) + up.selfDmg); // selfDmg upgrade is negative (reduction)
+    if (up.backstabBonus) u.backstabBonus = (card.backstabBonus || 0) + up.backstabBonus;
+    if (up.overheatBonus) u.overheatBonus = (card.overheatBonus || 0) + up.overheatBonus;
+    if (up.vulnerabilityBonus) u.vulnerabilityBonus = (card.vulnerabilityBonus || 0) + up.vulnerabilityBonus;
+    // Status stacks/turns are handled at apply time via card.upgraded check
   }
 
+  // Update description
+  u.desc = card.desc + ' [+]';
   return u;
-}
-
-function buildUpgradedAttackDesc(u, orig) {
-  let d = `敵`;
-  if (u.target === 'enemy_single') d += '1体に';
-  else if (u.target === 'enemy_all') d += '全体に';
-  else if (u.target === 'enemy_random') d += 'ランダムに';
-  d += `${u.baseDmg}+${u.stat}`;
-  if (u.dmgType === 'physical') d += '物理';
-  else if (u.dmgType === 'electromagnetic') d += '電磁';
-  else if (u.dmgType === 'heat') d += '熱量';
-  else if (u.dmgType === 'cold') d += '冷却';
-  if (u.hits && u.hits > 1) d += ` x${u.hits}`;
-  if (u.unavoidable) d += ' 回避不可';
-  if (u.removeBarrier) d += ' フィールド除去';
-  if (u.doubleOnOverheat) d += ' 過熱2倍';
-  if (u.drain) d += ` ${Math.floor(u.drain*100)}%吸収`;
-  if (u.backstab) d += ' 背面2倍';
-  d += ' [+]';
-  return d;
-}
-
-function buildUpgradedDefendDesc(u, orig) {
-  let d = '';
-  if (u.target === 'self' || u.target === 'provoke') d += '自機';
-  else if (u.target === 'ally_single') d += '味方1機';
-  else if (u.target === 'ally_all') d += '全機';
-  d += `フィールド${u.baseBarrier}+${u.stat}`;
-  if (u.persistent) d += '(持続)';
-  if (u.counterDmg) d += ` 反撃${u.counterDmg}`;
-  if (u.reactive) d += ' 残フィールド反撃';
-  if (u.lockAttack) d += ' 攻撃不可';
-  if (u.siegeBuff) d += ` 次T攻撃+${u.siegeBuff}`;
-  if (u.target === 'provoke') d = '挑発+' + d;
-  d += ' [+]';
-  return d;
-}
-
-function buildUpgradedHealDesc(u, orig) {
-  let d = '';
-  if (u.target === 'self') d += '自機';
-  else if (u.target === 'ally_single') d += '味方1機';
-  else if (u.target === 'ally_all') d += '全機';
-  d += `HP${u.baseHeal}+${u.stat}回復`;
-  d += ' [+]';
-  return d;
 }
 
 // ============================================================
@@ -2642,13 +2617,15 @@ function renderBattle() {
   const handDiv = document.getElementById('hand-cards');
   handDiv.innerHTML = '';
   state.hand.forEach((c, i) => {
-    const canPlay = c.playable && c.cost <= state.en && !state.battleOver;
+    const fullDriveDiscount = state.allies.some(a => a.fullDriveActive) && c.effect !== 'full_drive' ? 1 : 0;
+    const effectiveCost = Math.max(0, c.cost - fullDriveDiscount);
+    const canPlay = c.playable && effectiveCost <= state.en && !state.battleOver;
     const owner = state.allies[c.ownerIdx];
     const isLocked = owner && owner.attackLocked && c.type === 'attack';
     const upgradedClass = c.upgraded ? 'upgraded' : '';
     handDiv.innerHTML += `
       <div class="card ${(!canPlay || isLocked) ? 'unplayable' : ''} ${upgradedClass}" onclick="${canPlay && !isLocked ? `playCard(${i})` : ''}">
-        <span class="ccost">EN${c.cost}</span>
+        <span class="ccost">${fullDriveDiscount > 0 && c.cost > 0 ? `<s>EN${c.cost}</s> EN${effectiveCost}` : `EN${c.cost}`}</span>
         <span class="cname">${c.name}</span>
         <span class="cframe">${owner ? owner.name : '?'}</span>
         <div class="cdesc">${c.desc}</div>
@@ -2702,10 +2679,10 @@ function getIntentText(e) {
 
 function getEnemyStatusText(e) {
   const parts = [];
-  if (e.statuses.overheat) parts.push(`過熱(${e.statuses.overheat})`);
-  if (e.statuses.frozen) parts.push('凍結');
-  if (e.statuses.shocked) parts.push('感電');
-  if (e.statuses.poison) parts.push(`汚染(${e.statuses.poison})`);
+  if (e.statuses.overheat > 0) parts.push(`過熱(${e.statuses.overheat})`);
+  if (e.statuses.vulnerability > 0) parts.push(`脆弱(${e.statuses.vulnerability})`);
+  if (e.statuses.shock > 0) parts.push(`感電(${e.statuses.shock}T)`);
+  if (e.statuses.slow > 0) parts.push(`減速(${e.statuses.slow}T)`);
   if (e.debuffs.agiReduction) parts.push(`DRV-${e.debuffs.agiReduction.val}`);
   if (e.debuffs.atkReduction) parts.push(`ATK-${e.debuffs.atkReduction}`);
   if (e.marked) parts.push('マーク');
@@ -2716,11 +2693,9 @@ function getEnemyStatusText(e) {
 
 function getAllyBuffText(a) {
   const parts = [];
-  if (a.buffs.overdrive) parts.push('OD');
+  if (a.fullDriveActive) parts.push('FD');
   if (a.buffs.agiBonus) parts.push(`DRV+${a.buffs.agiBonus}`);
   if (a.buffs.dmgBonus) parts.push(`ATK+${a.buffs.dmgBonus}`);
-  if (a.buffs.chargeshot) parts.push(`チャージ+${a.buffs.chargeshot}`);
-  if (a.buffs.powerlink) parts.push(`PL+${a.buffs.powerlink}`);
   if (a.buffs.warcryBonus) parts.push(`WC+${a.buffs.warcryBonus}`);
   if (a.buffs.overheat) parts.push(`過熱(${a.buffs.overheat})`);
   if (a.attackLocked) parts.push('攻撃不可');

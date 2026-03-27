@@ -14,51 +14,54 @@
       {
         "name": "パイルバンカー",
         "cost": 2,
-        "desc": "敵1体に8+OUTの物理ダメージ",
+        "desc": "敵1体に13ダメージ",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 8,
+        "baseDmg": 13,
         "stat": "OUT",
-        "dmgType": "physical"
+        "upgrade": { "baseDmg": 2 }
       },
       {
         "name": "ラッシュブレード",
         "cost": 1,
-        "desc": "敵1体に4+OUTの物理ダメージ",
+        "desc": "敵1体に6ダメージ",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 4,
+        "baseDmg": 6,
         "stat": "OUT",
-        "dmgType": "physical"
+        "upgrade": { "baseDmg": 2 }
       },
       {
         "name": "ラッシュブレード",
         "cost": 1,
-        "desc": "敵1体に4+OUTの物理ダメージ",
+        "desc": "敵1体に6ダメージ",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 4,
+        "baseDmg": 6,
         "stat": "OUT",
-        "dmgType": "physical"
+        "upgrade": { "baseDmg": 2 }
       },
       {
         "name": "アーマーブレイク",
         "cost": 1,
-        "desc": "敵1体に3+OUTダメージ。フィールド全除去",
+        "desc": "敵1体に4ダメージ。フィールド全除去",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 3,
+        "baseDmg": 4,
         "stat": "OUT",
-        "dmgType": "physical",
-        "removeBarrier": true
+        "removeBarrier": true,
+        "upgrade": { "baseDmg": 2 }
       },
       {
-        "name": "オーバードライブ",
+        "name": "ランページ",
         "cost": 2,
-        "desc": "全機の攻撃が今ターン2回ヒット",
-        "type": "buff",
-        "target": "ally_all",
-        "effect": "overdrive"
+        "desc": "ランダムな敵に3ダメージ×5回",
+        "type": "attack",
+        "target": "enemy_random",
+        "baseDmg": 3,
+        "stat": "OUT",
+        "hits": 5,
+        "upgrade": { "baseDmg": 2 }
       }
     ]
   },
@@ -77,58 +80,56 @@
       {
         "name": "スナイプショット",
         "cost": 2,
-        "desc": "敵1体に7+OUT。DEX+5",
+        "desc": "敵1体に9ダメージ。脆弱(4)付与",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 7,
+        "baseDmg": 9,
         "stat": "OUT",
-        "dmgType": "physical",
-        "bonusDEX": 5
+        "applyStatus": { "type": "vulnerability", "stacks": 4 },
+        "upgrade": { "baseDmg": 2, "stacks": 1 }
       },
       {
         "name": "バーストファイア",
         "cost": 1,
-        "desc": "敵1体に3+OUTを2回",
+        "desc": "敵1体に5ダメージ",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 3,
+        "baseDmg": 5,
         "stat": "OUT",
-        "dmgType": "physical",
-        "hits": 2
+        "upgrade": { "baseDmg": 2 }
       },
       {
         "name": "トレーサー弾",
         "cost": 0,
-        "desc": "敵1体に2+OUT。AGI-10(2T)",
+        "desc": "敵1体に2ダメージ。脆弱(3)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 2,
         "stat": "OUT",
-        "dmgType": "physical",
-        "debuffAGI": 10,
-        "debuffDur": 2
+        "applyStatus": { "type": "vulnerability", "stacks": 3 },
+        "upgrade": { "baseDmg": 2, "stacks": 1 }
       },
       {
         "name": "サプレッション",
         "cost": 1,
-        "desc": "敵1体に4+OUT。攻撃力-2",
+        "desc": "敵1体に5ダメージ。減速(1T)付与",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 4,
+        "baseDmg": 5,
         "stat": "OUT",
-        "dmgType": "physical",
-        "debuffATK": 2
+        "applyStatus": { "type": "slow", "turns": 1 },
+        "upgrade": { "baseDmg": 2, "turns": 1 }
       },
       {
         "name": "デッドアイ",
         "cost": 2,
-        "desc": "敵1体に12+OUT。回避不可",
+        "desc": "敵1体に10ダメージ。回避不可",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 12,
+        "baseDmg": 10,
         "stat": "OUT",
-        "dmgType": "physical",
-        "unavoidable": true
+        "unavoidable": true,
+        "upgrade": { "baseDmg": 2 }
       }
     ]
   },
@@ -147,57 +148,56 @@
       {
         "name": "プラズマキャノン",
         "cost": 2,
-        "desc": "敵全体に4+OUTの電磁ダメージ",
+        "desc": "敵全体に5ダメージ",
         "type": "attack",
         "target": "enemy_all",
-        "baseDmg": 4,
+        "baseDmg": 5,
         "stat": "OUT",
-        "dmgType": "electromagnetic"
+        "upgrade": { "baseDmg": 2 }
       },
       {
         "name": "ヒートバースト",
         "cost": 1,
-        "desc": "敵1体に5+OUT熱量。過熱(2)",
+        "desc": "敵1体に6ダメージ。過熱(2)付与",
         "type": "attack",
         "target": "enemy_single",
-        "baseDmg": 5,
-        "stat": "OUT",
-        "dmgType": "heat",
-        "applyStatus": {
-          "type": "overheat",
-          "stacks": 2
-        }
-      },
-      {
-        "name": "クラスターボム",
-        "cost": 2,
-        "desc": "ランダム敵に3+OUTを3回",
-        "type": "attack",
-        "target": "enemy_random",
-        "baseDmg": 3,
-        "stat": "OUT",
-        "dmgType": "physical",
-        "hits": 3
-      },
-      {
-        "name": "チャージショット",
-        "cost": 0,
-        "desc": "次の自機攻撃+5",
-        "type": "buff",
-        "target": "self",
-        "effect": "chargeshot",
-        "chargeAmount": 5
-      },
-      {
-        "name": "サーマルメルト",
-        "cost": 3,
-        "desc": "敵全体に6+OUT熱量。過熱敵に2倍",
-        "type": "attack",
-        "target": "enemy_all",
         "baseDmg": 6,
         "stat": "OUT",
-        "dmgType": "heat",
-        "doubleOnOverheat": true
+        "applyStatus": { "type": "overheat", "stacks": 2 },
+        "upgrade": { "baseDmg": 2, "stacks": 1 }
+      },
+      {
+        "name": "ヒートバースト",
+        "cost": 1,
+        "desc": "敵1体に6ダメージ。過熱(2)付与",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 6,
+        "stat": "OUT",
+        "applyStatus": { "type": "overheat", "stacks": 2 },
+        "upgrade": { "baseDmg": 2, "stacks": 1 }
+      },
+      {
+        "name": "サーマルウェーブ",
+        "cost": 2,
+        "desc": "敵全体に4ダメージ。過熱(2)付与",
+        "type": "attack",
+        "target": "enemy_all",
+        "baseDmg": 4,
+        "stat": "OUT",
+        "applyStatus": { "type": "overheat", "stacks": 2 },
+        "upgrade": { "baseDmg": 2, "stacks": 1 }
+      },
+      {
+        "name": "メルトダウン",
+        "cost": 3,
+        "desc": "敵全体に7ダメージ。過熱状態の敵には+5",
+        "type": "attack",
+        "target": "enemy_all",
+        "baseDmg": 7,
+        "stat": "OUT",
+        "overheatBonus": 5,
+        "upgrade": { "baseDmg": 2, "overheatBonus": 2 }
       }
     ]
   },
@@ -214,50 +214,55 @@
     "pack": "base",
     "cards": [
       {
-        "name": "フォースフィールド",
+        "name": "シールドバッシュ",
         "cost": 1,
-        "desc": "自機にフィールド8+SHL",
-        "type": "defend",
-        "target": "self",
-        "baseBarrier": 8,
-        "stat": "SHL"
+        "desc": "敵1体に4ダメージ。自機にフィールド4付与",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 4,
+        "stat": "OUT",
+        "selfField": 4,
+        "upgrade": { "baseDmg": 2, "selfField": 2 }
       },
       {
         "name": "プロヴォーク",
         "cost": 1,
-        "desc": "挑発: ターゲット変更+フィールド4+SHL",
+        "desc": "敵1体のターゲットを自機に変更。自機にフィールド5付与",
         "type": "defend",
         "target": "provoke",
-        "baseBarrier": 4,
-        "stat": "SHL"
-      },
-      {
-        "name": "プロヴォーク",
-        "cost": 1,
-        "desc": "挑発: ターゲット変更+フィールド4+SHL",
-        "type": "defend",
-        "target": "provoke",
-        "baseBarrier": 4,
-        "stat": "SHL"
-      },
-      {
-        "name": "カウンターガード",
-        "cost": 1,
-        "desc": "自機フィールド5+SHL。削れたら反撃5",
-        "type": "defend",
-        "target": "self",
         "baseBarrier": 5,
         "stat": "SHL",
-        "counterDmg": 5
+        "upgrade": { "baseBarrier": 2 }
+      },
+      {
+        "name": "プロヴォーク",
+        "cost": 1,
+        "desc": "敵1体のターゲットを自機に変更。自機にフィールド5付与",
+        "type": "defend",
+        "target": "provoke",
+        "baseBarrier": 5,
+        "stat": "SHL",
+        "upgrade": { "baseBarrier": 2 }
       },
       {
         "name": "フルガード",
         "cost": 2,
-        "desc": "全機にフィールド4+SHL",
+        "desc": "味方全機にフィールド5付与",
         "type": "defend",
         "target": "ally_all",
-        "baseBarrier": 4,
-        "stat": "SHL"
+        "baseBarrier": 5,
+        "stat": "SHL",
+        "upgrade": { "baseBarrier": 2 }
+      },
+      {
+        "name": "フォートレスコール",
+        "cost": 3,
+        "desc": "敵全体のターゲットを自機に変更。自機にフィールド12付与",
+        "type": "defend",
+        "target": "provoke_all",
+        "baseBarrier": 12,
+        "stat": "SHL",
+        "upgrade": { "baseBarrier": 2 }
       }
     ]
   },
@@ -276,120 +281,187 @@
       {
         "name": "リペアナノ",
         "cost": 1,
-        "desc": "味方1機HP6+CTRL回復",
+        "desc": "味方1機のHPを6回復",
         "type": "heal",
         "target": "ally_single",
         "baseHeal": 6,
-        "stat": "CTRL"
+        "stat": "CTRL",
+        "upgrade": { "baseHeal": 2 }
       },
       {
         "name": "リペアナノ",
         "cost": 1,
-        "desc": "味方1機HP6+CTRL回復",
+        "desc": "味方1機のHPを6回復",
         "type": "heal",
         "target": "ally_single",
         "baseHeal": 6,
-        "stat": "CTRL"
+        "stat": "CTRL",
+        "upgrade": { "baseHeal": 2 }
       },
       {
         "name": "エリアリペア",
         "cost": 2,
-        "desc": "全機HP3+CTRL回復",
+        "desc": "味方全機のHPを3回復",
         "type": "heal",
         "target": "ally_all",
         "baseHeal": 3,
-        "stat": "CTRL"
+        "stat": "CTRL",
+        "upgrade": { "baseHeal": 2 }
       },
       {
-        "name": "フィールドコート",
+        "name": "ドレインランス",
         "cost": 1,
-        "desc": "味方1機フィールド5+CTRL(持続)",
-        "type": "defend",
-        "target": "ally_single",
-        "baseBarrier": 5,
-        "stat": "CTRL",
-        "persistent": true
+        "desc": "敵1体に4ダメージ。自機HPを5回復",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 4,
+        "stat": "OUT",
+        "selfHeal": 5,
+        "upgrade": { "baseDmg": 2, "selfHeal": 2 }
       },
       {
         "name": "リブートコア",
         "cost": 3,
-        "desc": "大破味方1機をHP1で再起動",
+        "desc": "大破した味方1機をHP1で再起動",
         "type": "special",
         "target": "ally_dead",
-        "effect": "reboot"
+        "effect": "reboot",
+        "upgrade": {}
       }
     ]
   },
   "jammer": {
     "name": "ジャマー",
-    "role": "テクニカル/状態異常",
+    "role": "テクニカル/過熱+感電",
     "baseHP": 40,
     "baseStats": {
-      "OUT": 5,
+      "OUT": 1,
       "SHL": 1,
-      "CTRL": 1,
+      "CTRL": 5,
       "DRV": 3
     },
     "pack": "base",
     "cards": [
       {
-        "name": "フリーズショット",
+        "name": "ヒートウイルス",
         "cost": 1,
-        "desc": "敵1体に3+OUT冷却。30%凍結",
+        "desc": "敵1体に過熱(3)付与",
+        "type": "debuff",
+        "target": "enemy_single",
+        "applyStatus": { "type": "overheat", "stacks": 3 },
+        "upgrade": { "stacks": 1 }
+      },
+      {
+        "name": "ヒートウイルス",
+        "cost": 1,
+        "desc": "敵1体に過熱(3)付与",
+        "type": "debuff",
+        "target": "enemy_single",
+        "applyStatus": { "type": "overheat", "stacks": 3 },
+        "upgrade": { "stacks": 1 }
+      },
+      {
+        "name": "ショックコード",
+        "cost": 0,
+        "desc": "敵1体に感電(2T)付与",
+        "type": "debuff",
+        "target": "enemy_single",
+        "applyStatus": { "type": "shock", "turns": 2 },
+        "upgrade": { "turns": 1 }
+      },
+      {
+        "name": "EMPバースト",
+        "cost": 2,
+        "desc": "敵全体に感電(1T)付与",
+        "type": "debuff",
+        "target": "enemy_all",
+        "applyStatus": { "type": "shock", "turns": 1 },
+        "upgrade": { "turns": 1 }
+      },
+      {
+        "name": "オーバーヒート",
+        "cost": 2,
+        "desc": "敵1体に過熱(6)付与",
+        "type": "debuff",
+        "target": "enemy_single",
+        "applyStatus": { "type": "overheat", "stacks": 6 },
+        "upgrade": { "stacks": 1 }
+      }
+    ]
+  },
+  "cracker": {
+    "name": "クラッカー",
+    "role": "テクニカル/構造解析・脆弱+減速",
+    "baseHP": 40,
+    "baseStats": {
+      "OUT": 3,
+      "SHL": 1,
+      "CTRL": 4,
+      "DRV": 2
+    },
+    "pack": "base",
+    "cards": [
+      {
+        "name": "ストラクチャスキャン",
+        "cost": 1,
+        "desc": "敵1体に2ダメージ。脆弱(5)付与",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 2,
+        "stat": "OUT",
+        "applyStatus": { "type": "vulnerability", "stacks": 5 },
+        "upgrade": { "baseDmg": 2, "stacks": 1 }
+      },
+      {
+        "name": "ストラクチャスキャン",
+        "cost": 1,
+        "desc": "敵1体に2ダメージ。脆弱(5)付与",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 2,
+        "stat": "OUT",
+        "applyStatus": { "type": "vulnerability", "stacks": 5 },
+        "upgrade": { "baseDmg": 2, "stacks": 1 }
+      },
+      {
+        "name": "スローフィールド",
+        "cost": 1,
+        "desc": "敵全体に減速(2T)付与",
+        "type": "debuff",
+        "target": "enemy_all",
+        "applyStatus": { "type": "slow", "turns": 2 },
+        "upgrade": { "turns": 1 }
+      },
+      {
+        "name": "クラックショット",
+        "cost": 1,
+        "desc": "敵1体に5ダメージ。脆弱状態の敵には+3",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 5,
+        "stat": "OUT",
+        "vulnerabilityBonus": 3,
+        "upgrade": { "baseDmg": 2, "vulnerabilityBonus": 2 }
+      },
+      {
+        "name": "フルブレイク",
+        "cost": 2,
+        "desc": "敵1体に3ダメージ。脆弱(4)+減速(2T)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 3,
         "stat": "OUT",
-        "dmgType": "cold",
-        "applyStatus": {
-          "type": "frozen",
-          "chance": 30
-        }
-      },
-      {
-        "name": "ショックウェーブ",
-        "cost": 1,
-        "desc": "敵全体AGI/DEX-5(1T)",
-        "type": "debuff",
-        "target": "enemy_all",
-        "effect": "slowAll",
-        "amount": 5
-      },
-      {
-        "name": "ウイルスコード",
-        "cost": 1,
-        "desc": "敵1体に汚染(3)。攻撃力-1",
-        "type": "debuff",
-        "target": "enemy_single",
-        "applyStatus": {
-          "type": "poison",
-          "stacks": 3
-        },
-        "debuffATK": 1
-      },
-      {
-        "name": "EMPパルス",
-        "cost": 2,
-        "desc": "敵全体感電。感電中なら8ダメ",
-        "type": "debuff",
-        "target": "enemy_all",
-        "effect": "emp",
-        "empDmg": 8
-      },
-      {
-        "name": "システムクラッシュ",
-        "cost": 2,
-        "desc": "状態異常+2T。1種につき4ダメ",
-        "type": "attack",
-        "target": "enemy_single",
-        "effect": "systemcrash",
-        "crashDmg": 4
+        "applyStatus": [
+          { "type": "vulnerability", "stacks": 4 },
+          { "type": "slow", "turns": 2 }
+        ],
+        "upgrade": { "baseDmg": 2, "stacks": 1, "turns": 1 }
       }
     ]
   },
   "booster": {
     "name": "ブースター",
-    "role": "サポート/バフ+EN供給",
+    "role": "サポート/EN供給",
     "baseHP": 40,
     "baseStats": {
       "OUT": 0,
@@ -400,13 +472,14 @@
     "pack": "base",
     "cards": [
       {
-        "name": "パワーリンク",
-        "cost": 1,
-        "desc": "味方1機の次攻撃+4",
-        "type": "buff",
-        "target": "ally_single",
-        "effect": "powerlink",
-        "amount": 4
+        "name": "ENチャージ",
+        "cost": 0,
+        "desc": "EN+1",
+        "type": "special",
+        "target": "none",
+        "effect": "encharge",
+        "amount": 1,
+        "upgrade": {}
       },
       {
         "name": "ENチャージ",
@@ -415,40 +488,43 @@
         "type": "special",
         "target": "none",
         "effect": "encharge",
-        "amount": 1
+        "amount": 1,
+        "upgrade": {}
       },
       {
-        "name": "ENチャージ",
-        "cost": 0,
-        "desc": "EN+1",
-        "type": "special",
-        "target": "none",
-        "effect": "encharge",
-        "amount": 1
-      },
-      {
-        "name": "アクセルブースト",
+        "name": "ブーストショット",
         "cost": 1,
-        "desc": "味方1機AGI+15(1T)",
-        "type": "buff",
-        "target": "ally_single",
-        "effect": "accel",
-        "amount": 15
+        "desc": "敵1体に5ダメージ",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 5,
+        "stat": "OUT",
+        "upgrade": { "baseDmg": 2 }
       },
       {
-        "name": "フルブースト",
-        "cost": 2,
-        "desc": "全機OUT+2(1T)。EN+1",
-        "type": "buff",
+        "name": "フィールドブースト",
+        "cost": 1,
+        "desc": "味方全機にフィールド3付与",
+        "type": "defend",
         "target": "ally_all",
-        "effect": "fullboost",
-        "amount": 2
+        "baseBarrier": 3,
+        "stat": "SHL",
+        "upgrade": { "baseBarrier": 2 }
+      },
+      {
+        "name": "フルドライブ",
+        "cost": 0,
+        "desc": "このターン、次に使うカードのEN消費を-1(最低0)",
+        "type": "special",
+        "target": "none",
+        "effect": "full_drive",
+        "upgrade": {}
       }
     ]
   },
   "phantom": {
     "name": "ファントム",
-    "role": "テクニカル/高AGI一撃離脱",
+    "role": "テクニカル/減速+高DRV",
     "baseHP": 40,
     "baseStats": {
       "OUT": 3,
@@ -461,55 +537,124 @@
       {
         "name": "ファントムスラッシュ",
         "cost": 1,
-        "desc": "敵1体5+OUT。自機AGI+10(1T)",
-        "type": "attack",
-        "target": "enemy_single",
-        "baseDmg": 5,
-        "stat": "OUT",
-        "dmgType": "physical",
-        "selfBuffAGI": 10
-      },
-      {
-        "name": "バックスタブ",
-        "cost": 2,
-        "desc": "敵1体6+OUT。他を狙ってる敵に2倍",
+        "desc": "敵1体に6ダメージ。減速(1T)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 6,
         "stat": "OUT",
-        "dmgType": "physical",
-        "backstab": true
+        "applyStatus": { "type": "slow", "turns": 1 },
+        "upgrade": { "baseDmg": 2, "turns": 1 }
+      },
+      {
+        "name": "ファントムスラッシュ",
+        "cost": 1,
+        "desc": "敵1体に6ダメージ。減速(1T)付与",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 6,
+        "stat": "OUT",
+        "applyStatus": { "type": "slow", "turns": 1 },
+        "upgrade": { "baseDmg": 2, "turns": 1 }
       },
       {
         "name": "スモークボム",
         "cost": 1,
-        "desc": "全機AGI+10(1T)",
-        "type": "buff",
-        "target": "ally_all",
-        "effect": "smoke",
-        "amount": 10
+        "desc": "敵全体に減速(1T)付与",
+        "type": "debuff",
+        "target": "enemy_all",
+        "applyStatus": { "type": "slow", "turns": 1 },
+        "upgrade": { "turns": 1 }
       },
       {
-        "name": "マークターゲット",
-        "cost": 0,
-        "desc": "敵1体をマーク。次攻撃+5",
-        "type": "debuff",
+        "name": "バックスタブ",
+        "cost": 2,
+        "desc": "敵1体に8ダメージ。対象が他の味方をターゲットしている場合+5",
+        "type": "attack",
         "target": "enemy_single",
-        "effect": "mark",
-        "amount": 5
+        "baseDmg": 8,
+        "stat": "OUT",
+        "backstabBonus": 5,
+        "upgrade": { "baseDmg": 2, "backstabBonus": 2 }
       },
       {
         "name": "ファントムレイド",
         "cost": 3,
-        "desc": "敵1体7+OUTを3回。回避不可。フィールド0に",
+        "desc": "敵1体に15ダメージ。回避不可",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 15,
+        "stat": "OUT",
+        "unavoidable": true,
+        "upgrade": { "baseDmg": 2 }
+      }
+    ]
+  },
+  "overload": {
+    "name": "オーバーロード",
+    "role": "テクニカル/感電+自傷大火力",
+    "baseHP": 45,
+    "baseStats": {
+      "OUT": 6,
+      "SHL": 1,
+      "CTRL": 1,
+      "DRV": 2
+    },
+    "pack": "base",
+    "cards": [
+      {
+        "name": "ショートサーキット",
+        "cost": 1,
+        "desc": "敵1体に7ダメージ。感電(1T)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 7,
         "stat": "OUT",
-        "dmgType": "physical",
-        "hits": 3,
-        "unavoidable": true,
-        "selfRemoveBarrier": true
+        "applyStatus": { "type": "shock", "turns": 1 },
+        "upgrade": { "baseDmg": 2, "turns": 1 }
+      },
+      {
+        "name": "ショートサーキット",
+        "cost": 1,
+        "desc": "敵1体に7ダメージ。感電(1T)付与",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 7,
+        "stat": "OUT",
+        "applyStatus": { "type": "shock", "turns": 1 },
+        "upgrade": { "baseDmg": 2, "turns": 1 }
+      },
+      {
+        "name": "プラズマバースト",
+        "cost": 2,
+        "desc": "敵全体に6ダメージ。自機HP-3",
+        "type": "attack",
+        "target": "enemy_all",
+        "baseDmg": 6,
+        "stat": "OUT",
+        "selfDmg": 3,
+        "upgrade": { "baseDmg": 2, "selfDmg": -2 }
+      },
+      {
+        "name": "ドレインショット",
+        "cost": 1,
+        "desc": "敵1体に5ダメージ。自機HPを3回復",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 5,
+        "stat": "OUT",
+        "selfHeal": 3,
+        "upgrade": { "baseDmg": 2, "selfHeal": 2 }
+      },
+      {
+        "name": "メルトダウン",
+        "cost": 3,
+        "desc": "敵全体に12ダメージ。自機HP-8",
+        "type": "attack",
+        "target": "enemy_all",
+        "baseDmg": 12,
+        "stat": "OUT",
+        "selfDmg": 8,
+        "upgrade": { "baseDmg": 2, "selfDmg": -2 }
       }
     ]
   },
@@ -523,17 +668,16 @@
       "CTRL": 0,
       "DRV": 2
     },
-    "pack": "base",
+    "pack": "expansion",
     "cards": [
       {
         "name": "ヘビーストライク",
         "cost": 2,
-        "desc": "敵1体に12+OUT",
+        "desc": "敵1体に12+OUTダメージ",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 12,
-        "stat": "OUT",
-        "dmgType": "physical"
+        "stat": "OUT"
       },
       {
         "name": "アイアンウォール",
@@ -574,78 +718,6 @@
         "baseBarrier": 6,
         "stat": "SHL",
         "siegeBuff": 10
-      }
-    ]
-  },
-  "overload": {
-    "name": "オーバーロード",
-    "role": "テクニカル/ハイリスク大火力",
-    "baseHP": 45,
-    "baseStats": {
-      "OUT": 6,
-      "SHL": 1,
-      "CTRL": 1,
-      "DRV": 2
-    },
-    "pack": "base",
-    "cards": [
-      {
-        "name": "オーバーヒート",
-        "cost": 1,
-        "desc": "自機過熱(2)。敵1体12+OUT熱量",
-        "type": "attack",
-        "target": "enemy_single",
-        "baseDmg": 12,
-        "stat": "OUT",
-        "dmgType": "heat",
-        "selfStatus": {
-          "type": "overheat",
-          "stacks": 2
-        }
-      },
-      {
-        "name": "リミッター解除",
-        "cost": 0,
-        "desc": "自機HP-5。今ターン攻撃+6",
-        "type": "buff",
-        "target": "self",
-        "effect": "limiter",
-        "selfDmg": 5,
-        "amount": 6
-      },
-      {
-        "name": "プラズマバースト",
-        "cost": 2,
-        "desc": "敵全体8+OUT電磁。自機フィールド0",
-        "type": "attack",
-        "target": "enemy_all",
-        "baseDmg": 8,
-        "stat": "OUT",
-        "dmgType": "electromagnetic",
-        "selfRemoveBarrier": true
-      },
-      {
-        "name": "ドレインショット",
-        "cost": 1,
-        "desc": "敵1体6+OUT電磁。50%HP吸収",
-        "type": "attack",
-        "target": "enemy_single",
-        "baseDmg": 6,
-        "stat": "OUT",
-        "dmgType": "electromagnetic",
-        "drain": 0.5
-      },
-      {
-        "name": "メルトダウン",
-        "cost": 3,
-        "desc": "自機HP-10。敵全体15+OUT熱量。過熱敵2倍",
-        "type": "attack",
-        "target": "enemy_all",
-        "baseDmg": 15,
-        "stat": "OUT",
-        "dmgType": "heat",
-        "selfDmg": 10,
-        "doubleOnOverheat": true
       }
     ]
   },
@@ -698,7 +770,6 @@
         "target": "enemy_single",
         "effect": "reverse_charge",
         "stat": "OUT",
-        "dmgType": "electromagnetic",
         "baseDmg": 2,
         "accumMultiplier": 5
       },
@@ -710,7 +781,6 @@
         "target": "enemy_all",
         "effect": "fusion_burst",
         "stat": "OUT",
-        "dmgType": "electromagnetic",
         "baseDmg": 0,
         "accumMultiplier": 3,
         "accumThreshold": 3
@@ -864,11 +934,7 @@
         "target": "enemy_single",
         "baseDmg": 5,
         "stat": "OUT",
-        "dmgType": "physical",
-        "onKill": {
-          "type": "en_recover",
-          "amount": 2
-        }
+        "onKill": { "type": "en_recover", "amount": 2 }
       },
       {
         "name": "パーツ回収",
@@ -888,11 +954,7 @@
         "target": "enemy_single",
         "baseDmg": 4,
         "stat": "OUT",
-        "dmgType": "physical",
-        "onKill": {
-          "type": "draw",
-          "amount": 1
-        }
+        "onKill": { "type": "draw", "amount": 1 }
       },
       {
         "name": "ジャンクシールド",
@@ -913,11 +975,7 @@
         "target": "enemy_single",
         "baseDmg": 8,
         "stat": "OUT",
-        "dmgType": "physical",
-        "onKill": {
-          "type": "permanent_buff",
-          "amount": 1
-        }
+        "onKill": { "type": "permanent_buff", "amount": 1 }
       }
     ]
   },
@@ -1034,12 +1092,11 @@
       {
         "name": "エクスプロイト",
         "cost": 2,
-        "desc": "スキャン敵1体に5+OUT電磁。状態異常1種+5追加",
+        "desc": "スキャン敵1体に5+OUT。状態異常1種+5追加",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 5,
         "stat": "OUT",
-        "dmgType": "electromagnetic",
         "effect": "exploit",
         "perStatusBonus": 5,
         "requiresScan": true
@@ -1096,7 +1153,6 @@
         "type": "attack",
         "target": "enemy_single",
         "stat": "OUT",
-        "dmgType": "physical",
         "effect": "rail_cannon",
         "loadMultiplier": 5,
         "baseDmg": 0,
@@ -1109,7 +1165,6 @@
         "type": "attack",
         "target": "enemy_all",
         "stat": "OUT",
-        "dmgType": "physical",
         "effect": "satellite_cannon",
         "loadMultiplier": 3,
         "baseDmg": 0,
@@ -1145,7 +1200,6 @@
         "type": "attack",
         "target": "enemy_single",
         "stat": "OUT",
-        "dmgType": "physical",
         "effect": "counter_blow",
         "counterMultiplier": 2,
         "baseDmg": 0
@@ -1300,7 +1354,6 @@
         "type": "special",
         "target": "none",
         "effect": "full_restock",
-        "discardPick": true,
         "pickCount": 3
       }
     ]
