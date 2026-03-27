@@ -7,7 +7,7 @@
 // ============================================================
 let FRAMES = {};
 
-const STAT_NAMES = { OUT: '出力', SHL: '外殻', CTRL: '制御', DRV: '駆動' };
+const STAT_NAMES = { OUT: '出力', SHL: '外殻', CTRL: '制御' };
 
 // ============================================================
 // ENEMY POOLS PER ACT
@@ -16,101 +16,101 @@ const ENEMY_POOLS = {
   1: {
     normal: [
       [
-        { name: 'ドローン-A', hp: 20, atk: 4, drv: 0, patterns: ['attack','attack','barrier'] },
-        { name: 'ドローン-B', hp: 20, atk: 5, drv: 0, patterns: ['attack','attack','barrier'] },
+        { name: 'ドローン-A', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+        { name: 'ドローン-B', hp: 20, atk: 5, speed: 0, patterns: ['attack','attack','barrier'] },
       ],
       [
-        { name: 'ドローン-A', hp: 20, atk: 4, drv: 0, patterns: ['attack','attack','barrier'] },
-        { name: 'ドローン-B', hp: 22, atk: 5, drv: 0, patterns: ['attack','attack_all','attack'] },
-        { name: 'ドローン-C', hp: 18, atk: 4, drv: 0, patterns: ['attack','barrier','attack'] },
+        { name: 'ドローン-A', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+        { name: 'ドローン-B', hp: 22, atk: 5, speed: 0, patterns: ['attack','attack_all','attack'] },
+        { name: 'ドローン-C', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
       ],
       [
-        { name: 'スカウト', hp: 18, atk: 5, drv: 15, patterns: ['attack','attack','attack'] },
-        { name: 'ガード', hp: 22, atk: 4, drv: 0, patterns: ['barrier','attack','attack'] },
+        { name: 'スカウト', hp: 18, atk: 5, speed: 0, patterns: ['attack','attack','attack'] },
+        { name: 'ガード', hp: 22, atk: 4, speed: 0, patterns: ['barrier','attack','attack'] },
       ],
       [
-        { name: 'ガード-A', hp: 20, atk: 5, drv: 0, patterns: ['attack','barrier','attack'] },
-        { name: 'ガード-B', hp: 20, atk: 5, drv: 0, patterns: ['attack','attack','barrier'] },
+        { name: 'ガード-A', hp: 20, atk: 5, speed: 0, patterns: ['attack','barrier','attack'] },
+        { name: 'ガード-B', hp: 20, atk: 5, speed: 0, patterns: ['attack','attack','barrier'] },
       ],
     ],
     elite: [
       [
-        { name: 'ヘビーガード', hp: 60, atk: 9, drv: 5, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
+        { name: 'ヘビーガード', hp: 60, atk: 9, speed: 0, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
       ],
       [
-        { name: 'エヴェイダー', hp: 55, atk: 8, drv: 25, patterns: ['attack','attack','buff_self','attack','attack_heavy'] },
-        { name: 'サポートビット', hp: 18, atk: 4, drv: 0, patterns: ['barrier','attack','barrier'] },
+        { name: 'エヴェイダー', hp: 55, atk: 8, speed: 0, patterns: ['attack','attack','buff_self','attack','attack_heavy'] },
+        { name: 'サポートビット', hp: 18, atk: 4, speed: 0, patterns: ['barrier','attack','barrier'] },
       ],
     ],
     boss: [
-      { name: 'コマンダー Mk-I', hp: 100, atk: 10, drv: 6, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
-      { name: 'ビット-L', hp: 18, atk: 4, drv: 6, patterns: ['attack','attack','barrier'] },
-      { name: 'ビット-R', hp: 18, atk: 4, drv: 6, patterns: ['attack','barrier','attack'] },
+      { name: 'コマンダー Mk-I', hp: 100, atk: 10, speed: 0, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
+      { name: 'ビット-L', hp: 18, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+      { name: 'ビット-R', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
     ],
   },
   2: {
     normal: [
       [
-        { name: '重装ドローン-A', hp: 28, atk: 6, drv: 0, patterns: ['attack','attack','barrier','attack_all'] },
-        { name: '重装ドローン-B', hp: 28, atk: 7, drv: 0, patterns: ['attack','barrier','attack','attack'] },
+        { name: '重装ドローン-A', hp: 28, atk: 6, speed: 0, patterns: ['attack','attack','barrier','attack_all'] },
+        { name: '重装ドローン-B', hp: 28, atk: 7, speed: 0, patterns: ['attack','barrier','attack','attack'] },
       ],
       [
-        { name: 'アサルト-A', hp: 25, atk: 7, drv: 5, patterns: ['attack','attack','attack_heavy'] },
-        { name: 'アサルト-B', hp: 25, atk: 7, drv: 5, patterns: ['attack','attack_heavy','attack'] },
-        { name: 'リペアビット', hp: 18, atk: 3, drv: 0, patterns: ['barrier','barrier','attack'] },
+        { name: 'アサルト-A', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack','attack_heavy'] },
+        { name: 'アサルト-B', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack_heavy','attack'] },
+        { name: 'リペアビット', hp: 18, atk: 3, speed: 0, patterns: ['barrier','barrier','attack'] },
       ],
       [
-        { name: 'スナイパー', hp: 25, atk: 7, drv: 20, patterns: ['attack','attack','attack_heavy'] },
-        { name: 'シールダー', hp: 30, atk: 6, drv: 0, patterns: ['barrier','barrier','attack','attack_all'] },
+        { name: 'スナイパー', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack','attack_heavy'] },
+        { name: 'シールダー', hp: 30, atk: 6, speed: 0, patterns: ['barrier','barrier','attack','attack_all'] },
       ],
       [
-        { name: 'ストーム', hp: 28, atk: 6, drv: 0, patterns: ['attack_all','attack_all','barrier'] },
-        { name: 'ガード', hp: 30, atk: 6, drv: 0, patterns: ['attack','barrier','attack'] },
-        { name: 'ガード', hp: 30, atk: 6, drv: 0, patterns: ['barrier','attack','attack'] },
+        { name: 'ストーム', hp: 28, atk: 6, speed: 0, patterns: ['attack_all','attack_all','barrier'] },
+        { name: 'ガード', hp: 30, atk: 6, speed: 0, patterns: ['attack','barrier','attack'] },
+        { name: 'ガード', hp: 30, atk: 6, speed: 0, patterns: ['barrier','attack','attack'] },
       ],
     ],
     elite: [
       [
-        { name: 'ジャガーノート', hp: 75, atk: 11, drv: 5, patterns: ['attack_heavy','attack','barrier','attack_all','buff_self','attack_heavy'] },
+        { name: 'ジャガーノート', hp: 75, atk: 11, speed: 0, patterns: ['attack_heavy','attack','barrier','attack_all','buff_self','attack_heavy'] },
       ],
       [
-        { name: 'デュアルブレード', hp: 70, atk: 10, drv: 20, patterns: ['attack','attack','attack_heavy','attack','attack_heavy'] },
-        { name: 'サポートコア', hp: 25, atk: 5, drv: 0, patterns: ['barrier','buff_self','attack'] },
+        { name: 'デュアルブレード', hp: 70, atk: 10, speed: 0, patterns: ['attack','attack','attack_heavy','attack','attack_heavy'] },
+        { name: 'サポートコア', hp: 25, atk: 5, speed: 0, patterns: ['barrier','buff_self','attack'] },
       ],
     ],
     boss: [
-      { name: 'コア・ユニット Mk-II', hp: 130, atk: 12, drv: 8, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
-      { name: 'ガードビット-L', hp: 25, atk: 6, drv: 8, patterns: ['attack','barrier','attack'] },
-      { name: 'ガードビット-R', hp: 25, atk: 6, drv: 8, patterns: ['barrier','attack','attack'] },
+      { name: 'コア・ユニット Mk-II', hp: 130, atk: 12, speed: 0, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
+      { name: 'ガードビット-L', hp: 25, atk: 6, speed: 0, patterns: ['attack','barrier','attack'] },
+      { name: 'ガードビット-R', hp: 25, atk: 6, speed: 0, patterns: ['barrier','attack','attack'] },
     ],
   },
   3: {
     normal: [
       [
-        { name: 'エリート兵-A', hp: 32, atk: 8, drv: 8, patterns: ['attack','attack_heavy','barrier','attack_all'] },
-        { name: 'エリート兵-B', hp: 32, atk: 9, drv: 8, patterns: ['attack','barrier','attack_heavy','attack'] },
+        { name: 'エリート兵-A', hp: 32, atk: 8, speed: 0, patterns: ['attack','attack_heavy','barrier','attack_all'] },
+        { name: 'エリート兵-B', hp: 32, atk: 9, speed: 0, patterns: ['attack','barrier','attack_heavy','attack'] },
       ],
       [
-        { name: 'ハンター', hp: 30, atk: 9, drv: 25, patterns: ['attack','attack','attack_heavy','attack'] },
-        { name: 'メディック', hp: 30, atk: 6, drv: 5, patterns: ['barrier','barrier','attack','attack_all'] },
-        { name: 'アサルト', hp: 35, atk: 8, drv: 5, patterns: ['attack','attack','attack_heavy'] },
+        { name: 'ハンター', hp: 30, atk: 9, speed: 0, patterns: ['attack','attack','attack_heavy','attack'] },
+        { name: 'メディック', hp: 30, atk: 6, speed: 0, patterns: ['barrier','barrier','attack','attack_all'] },
+        { name: 'アサルト', hp: 35, atk: 8, speed: 0, patterns: ['attack','attack','attack_heavy'] },
       ],
       [
-        { name: 'バーサーカー', hp: 35, atk: 9, drv: 10, patterns: ['attack_heavy','attack','buff_self','attack_heavy'] },
-        { name: 'バーサーカー', hp: 35, atk: 9, drv: 10, patterns: ['attack','attack_heavy','attack','buff_self'] },
+        { name: 'バーサーカー', hp: 35, atk: 9, speed: 0, patterns: ['attack_heavy','attack','buff_self','attack_heavy'] },
+        { name: 'バーサーカー', hp: 35, atk: 9, speed: 0, patterns: ['attack','attack_heavy','attack','buff_self'] },
       ],
     ],
     elite: [
       [
-        { name: 'デストロイヤー', hp: 90, atk: 12, drv: 10, patterns: ['attack_heavy','attack_all','buff_self','attack_heavy','barrier','attack_all','attack_heavy'] },
+        { name: 'デストロイヤー', hp: 90, atk: 12, speed: 0, patterns: ['attack_heavy','attack_all','buff_self','attack_heavy','barrier','attack_all','attack_heavy'] },
       ],
       [
-        { name: 'ツインファング-A', hp: 85, atk: 12, drv: 18, patterns: ['attack','attack_heavy','attack','attack'] },
-        { name: 'ツインファング-B', hp: 85, atk: 12, drv: 18, patterns: ['attack','attack','attack_heavy','attack'] },
+        { name: 'ツインファング-A', hp: 85, atk: 12, speed: 0, patterns: ['attack','attack_heavy','attack','attack'] },
+        { name: 'ツインファング-B', hp: 85, atk: 12, speed: 0, patterns: ['attack','attack','attack_heavy','attack'] },
       ],
     ],
     boss: [
-      { name: 'アーキテクト', hp: 150, atk: 14, drv: 12, patterns: ['barrier','attack_heavy','attack_all','buff_self','attack','attack_heavy','attack_all','buff_self','attack_heavy'] },
+      { name: 'アーキテクト', hp: 150, atk: 14, speed: 0, patterns: ['barrier','attack_heavy','attack_all','buff_self','attack','attack_heavy','attack_all','buff_self','attack_heavy'] },
     ],
   }
 };
@@ -298,9 +298,9 @@ function startRun() {
     const frame = FRAMES[fk];
     const slotKey = `slot${i}`;
     const allocatedPts = { ...state.statPoints[slotKey] };
-    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0 };
     const stats = {};
-    for (const s of ['OUT','SHL','CTRL','DRV']) {
+    for (const s of ['OUT','SHL','CTRL']) {
       stats[s] = (base[s] || 0) + (allocatedPts[s] || 0);
     }
     const maxHP = Math.round(frame.baseHP * (1 + stats.SHL * 0.03));
@@ -309,7 +309,7 @@ function startRun() {
     const displayName = totalDupes > 1 ? `${frame.name} #${dupeCount}` : frame.name;
     return {
       id: i, frameKey: fk, name: displayName, stats,
-      hp: maxHP, maxHP, barrier: 0, dead: false,
+      hp: maxHP, maxHP, barrier: 0, dead: false, speed: 0,
       cards: frame.cards.map((c, ci) => ({ ...c, id: `${fk}_${i}_${ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false })),
       buffs: {}, persistentBarrier: 0, attackLocked: false, counterDmg: 0, reactive: false, siegeBuff: 0, spikeReflect: 0,
       fullDriveActive: false,  // booster: next card costs -1 EN
@@ -426,31 +426,16 @@ function initSetup() {
   const grid = document.getElementById('frame-grid');
   grid.innerHTML = '';
 
-  // Group frames by pack
-  const packs = [
-    { key: 'base', label: 'BASE' },
-    { key: 'protocol_ex', label: 'PROTOCOL:EX' },
-    { key: 'protocol_hv', label: 'PROTOCOL:HV' },
-  ];
+  // Only show base pack frames in selection UI
+  const baseFrames = Object.entries(FRAMES).filter(([k, f]) => f.pack === 'base');
 
-  for (const pack of packs) {
-    const packFrames = Object.entries(FRAMES).filter(([k, f]) => f.pack === pack.key);
-    if (packFrames.length === 0) continue;
-
-    const header = document.createElement('div');
-    header.className = 'pack-header';
-    header.textContent = pack.label;
-    header.style.cssText = 'grid-column: 1 / -1; color: #8af; font-size: 13px; font-weight: bold; margin: 8px 0 2px; border-bottom: 1px solid #333; padding-bottom: 2px;';
-    grid.appendChild(header);
-
-    for (const [key, frame] of packFrames) {
-      const btn = document.createElement('button');
-      btn.className = 'frame-btn';
-      btn.innerHTML = `<span class="fname">${frame.name}</span><span class="frole">${frame.role}</span>`;
-      btn.dataset.key = key;
-      btn.onclick = () => pickFrameForSlot(key);
-      grid.appendChild(btn);
-    }
+  for (const [key, frame] of baseFrames) {
+    const btn = document.createElement('button');
+    btn.className = 'frame-btn';
+    btn.innerHTML = `<span class="fname">${frame.name}</span><span class="frole">${frame.role}</span>`;
+    btn.dataset.key = key;
+    btn.onclick = () => pickFrameForSlot(key);
+    grid.appendChild(btn);
   }
 
   renderSlotIndicator();
@@ -483,7 +468,7 @@ function removeSlot(slotIdx) {
   state.selectedFrames.forEach((fk, i) => {
     if (fk !== null) {
       // Try to preserve old points if same frame at same or nearby slot
-      newPoints[`slot${i}`] = state.statPoints[`slot${i}`] || { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+      newPoints[`slot${i}`] = state.statPoints[`slot${i}`] || { OUT: 0, SHL: 0, CTRL: 0 };
     }
   });
   state.statPoints = newPoints;
@@ -517,30 +502,30 @@ function renderSlotIndicator() {
 
 // Recommended stat presets per frame (weights that sum to 1.0, used to distribute points)
 const FRAME_PRESETS = {
-  striker:    { OUT: 0.5, SHL: 0.2, CTRL: 0, DRV: 0.3 },
-  gunner:     { OUT: 0.4, SHL: 0.1, CTRL: 0, DRV: 0.5 },
-  blaster:    { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
-  shielder:   { OUT: 0, SHL: 0.6, CTRL: 0.2, DRV: 0.2 },
-  medic:      { OUT: 0, SHL: 0.2, CTRL: 0.6, DRV: 0.2 },
-  jammer:     { OUT: 0, SHL: 0.1, CTRL: 0.6, DRV: 0.3 },
-  cracker:    { OUT: 0.3, SHL: 0.1, CTRL: 0.4, DRV: 0.2 },
-  booster:    { OUT: 0, SHL: 0.2, CTRL: 0.2, DRV: 0.6 },
-  phantom:    { OUT: 0.3, SHL: 0, CTRL: 0, DRV: 0.7 },
-  overload:   { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
+  striker:    { OUT: 0.7, SHL: 0.2, CTRL: 0.1 },
+  gunner:     { OUT: 0.6, SHL: 0.1, CTRL: 0.3 },
+  blaster:    { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
+  shielder:   { OUT: 0, SHL: 0.7, CTRL: 0.3 },
+  medic:      { OUT: 0, SHL: 0.2, CTRL: 0.8 },
+  jammer:     { OUT: 0, SHL: 0.2, CTRL: 0.8 },
+  cracker:    { OUT: 0.3, SHL: 0.1, CTRL: 0.6 },
+  booster:    { OUT: 0.2, SHL: 0.4, CTRL: 0.4 },
+  phantom:    { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
+  overload:   { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
   // Expansion (not in base selection)
-  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
+  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0.2 },
   // PROTOCOL:EX
-  converter:  { OUT: 0.5, SHL: 0.2, CTRL: 0.1, DRV: 0.2 },
-  linker:     { OUT: 0, SHL: 0.3, CTRL: 0.3, DRV: 0.4 },
-  decoy:      { OUT: 0, SHL: 0.2, CTRL: 0, DRV: 0.8 },
-  scavenger:  { OUT: 0.4, SHL: 0.2, CTRL: 0, DRV: 0.4 },
-  oracle:     { OUT: 0.3, SHL: 0.2, CTRL: 0.2, DRV: 0.3 },
+  converter:  { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
+  linker:     { OUT: 0, SHL: 0.4, CTRL: 0.6 },
+  decoy:      { OUT: 0, SHL: 0.8, CTRL: 0.2 },
+  scavenger:  { OUT: 0.5, SHL: 0.3, CTRL: 0.2 },
+  oracle:     { OUT: 0.4, SHL: 0.2, CTRL: 0.4 },
   // PROTOCOL:HV
-  seeker:     { OUT: 0.5, SHL: 0.1, CTRL: 0.1, DRV: 0.3 },
-  launcher:   { OUT: 0.5, SHL: 0.2, CTRL: 0, DRV: 0.3 },
-  bulk:       { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
-  drone:      { OUT: 0.5, SHL: 0.2, CTRL: 0.1, DRV: 0.2 },
-  carrier:    { OUT: 0, SHL: 0.3, CTRL: 0.3, DRV: 0.4 },
+  seeker:     { OUT: 0.6, SHL: 0.1, CTRL: 0.3 },
+  launcher:   { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
+  bulk:       { OUT: 0.3, SHL: 0.5, CTRL: 0.2 },
+  drone:      { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
+  carrier:    { OUT: 0, SHL: 0.4, CTRL: 0.6 },
 };
 
 function applyPreset(slotIdx) {
@@ -554,10 +539,10 @@ function applyPreset(slotIdx) {
   const perSlot = Math.floor(state.totalSP / 4);
   const points = Math.min(perSlot, state.remainingSP);
   const weights = FRAME_PRESETS[fk];
-  const newStats = { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+  const newStats = { OUT: 0, SHL: 0, CTRL: 0 };
   let assigned = 0;
   for (const stat of Object.keys(newStats)) {
-    newStats[stat] = Math.floor(points * weights[stat]);
+    newStats[stat] = Math.floor(points * (weights[stat] || 0));
     assigned += newStats[stat];
   }
   // Distribute remainder to highest weight stat
@@ -574,7 +559,7 @@ function autoAllocAll() {
   // Reset all points
   state.selectedFrames.forEach((fk, i) => {
     if (fk === null) return;
-    state.statPoints[`slot${i}`] = { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+    state.statPoints[`slot${i}`] = { OUT: 0, SHL: 0, CTRL: 0 };
   });
   state.remainingSP = state.totalSP;
   // Apply presets sequentially
@@ -588,7 +573,7 @@ function autoAllocAll() {
 function resetAllStats() {
   state.selectedFrames.forEach((fk, i) => {
     if (fk === null) return;
-    state.statPoints[`slot${i}`] = { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+    state.statPoints[`slot${i}`] = { OUT: 0, SHL: 0, CTRL: 0 };
   });
   state.remainingSP = state.totalSP;
   document.getElementById('sp-remaining').textContent = state.remainingSP;
@@ -603,7 +588,7 @@ function updateStatAlloc() {
   state.selectedFrames.forEach((fk, i) => {
     if (fk === null) return;
     const slotKey = `slot${i}`;
-    newPoints[slotKey] = state.statPoints[slotKey] || { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+    newPoints[slotKey] = state.statPoints[slotKey] || { OUT: 0, SHL: 0, CTRL: 0 };
   });
   state.statPoints = newPoints;
   recalcSP();
@@ -624,7 +609,7 @@ function updateStatAlloc() {
     presetBtn.onclick = () => applyPreset(i);
     div.appendChild(presetBtn);
 
-    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0 };
     for (const stat of Object.keys(STAT_NAMES)) {
       const alloc = state.statPoints[slotKey][stat];
       const baseVal = base[stat] || 0;
@@ -720,11 +705,10 @@ function startBattle(encounterType) {
     id: i, name: e.name,
     hp: Math.floor(e.hp * depthScale), maxHP: Math.floor(e.hp * depthScale),
     barrier: 0, dead: false,
-    atk: Math.floor(e.atk * depthScale), drv: e.drv || 0,
+    atk: Math.floor(e.atk * depthScale), speed: 0,
     patterns: e.patterns, patternIdx: 0,
     intent: null, targetIdx: 0,
-    // New status system: overheat(N stacks), vulnerability(N stacks), shock(T turns), slow(T turns)
-    statuses: { overheat: 0, vulnerability: 0, shock: 0, slow: 0 },
+    statuses: { overheat: 0, vulnerability: 0, shock: 0 },
     debuffs: {},
     marked: false, markBonus: 0,
     scanned: false, weakPointBonus: 0,
@@ -733,6 +717,7 @@ function startBattle(encounterType) {
   // Prepare allies for battle (preserve HP, dead status carries over)
   state.allies.forEach(a => {
     a.barrier = 0;
+    a.speed = 0;
     a.buffs = {};
     a.persistentBarrier = 0;
     a.attackLocked = false;
@@ -819,6 +804,8 @@ function nextTurn() {
       a.junkShieldBonus = 0;
       a.droneFocusTarget = -1;
       a.droneFocusMultiplier = 1;
+      // Reset speed at turn start
+      a.speed = 0;
     }
     a.buffs = a.buffs.dmgBonus ? { dmgBonus: a.buffs.dmgBonus } : {};
   });
@@ -826,10 +813,11 @@ function nextTurn() {
   // Reset full drive at turn start (it only lasts within a turn)
   state.allies.forEach(a => { a.fullDriveActive = false; });
 
-  // Reset enemy barrier, process statuses (new 4-status system)
+  // Reset enemy barrier, speed, and process statuses
   state.enemies.forEach(e => {
     if (e.dead) return;
     e.barrier = 0;
+    e.speed = 0; // Reset speed at turn start
     // Overheat: deal N damage, then N decreases by 1
     if (e.statuses.overheat > 0) {
       const dmg = e.statuses.overheat;
@@ -842,10 +830,6 @@ function nextTurn() {
     // Shock: decrement turns
     if (e.statuses.shock > 0) {
       e.statuses.shock--;
-    }
-    // Slow: decrement turns
-    if (e.statuses.slow > 0) {
-      e.statuses.slow--;
     }
     // Legacy debuffs for expansion frames
     if (e.debuffs.agiReduction) {
@@ -1016,10 +1000,15 @@ function endTurn() {
 }
 
 function dealDmgToAlly(enemy, ally, dmg) {
-  const effectiveDRV = ally.stats.DRV + (ally.buffs.agiBonus || 0);
-  const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - (enemy.drv || 0) * 1.0));
-  if (Math.random() * 100 < evadeChance) {
-    addLog(`${enemy.name} → ${ally.name}: 回避!`, 'info');
+  // Speed-based miss/dodge checks
+  // Attacker (enemy) negative speed: MISS
+  if (enemy.speed < 0 && Math.random() * 100 < Math.abs(enemy.speed)) {
+    addLog(`${enemy.name} → ${ally.name}: MISS! (減速${enemy.speed}%)`, 'info');
+    return;
+  }
+  // Defender (ally) positive speed: DODGE
+  if (ally.speed > 0 && Math.random() * 100 < ally.speed) {
+    addLog(`${enemy.name} → ${ally.name}: DODGE! (加速+${ally.speed}%)`, 'info');
     return;
   }
 
@@ -1245,7 +1234,7 @@ function executeCard(targetId) {
           if (stacks >= card.accumThreshold && !enemy.dead) {
             enemy.statuses.overheat = (enemy.statuses.overheat || 0) + 2;
             enemy.statuses.shock = (enemy.statuses.shock || 0) + 1;
-            enemy.statuses.slow = (enemy.statuses.slow || 0) + 1;
+            enemy.speed -= 10; // deceleration from fusion burst
           }
         });
         addLog(`${ally.name}: フュージョンバースト ${baseDmg}全体ダメ (蓄積${stacks}消費)`, 'dmg');
@@ -1353,7 +1342,7 @@ function executeCard(targetId) {
         if (ally.hp <= 0) killAlly(ally);
       }
       if (card.selfRemoveBarrier) ally.barrier = 0;
-      if (card.selfBuffAGI) ally.buffs.agiBonus = (ally.buffs.agiBonus || 0) + card.selfBuffAGI;
+      if (card.selfBuffAGI) ally.speed += card.selfBuffAGI;
 
       if (ally.buffs.warcryBonus) delete ally.buffs.warcryBonus;
       break;
@@ -1459,8 +1448,8 @@ function executeCard(targetId) {
         addLog(`${target.name}: パワーリンク +${card.amount}`, 'status');
       } else if (card.effect === 'accel') {
         const target = state.allies[targetId];
-        target.buffs.agiBonus = (target.buffs.agiBonus || 0) + card.amount;
-        addLog(`${target.name}: DRV +${card.amount}`, 'status');
+        target.speed += card.amount;
+        addLog(`${target.name}: 加速(+${card.amount}%)`, 'status');
       } else if (card.effect === 'fullboost') {
         state.allies.filter(a => !a.dead).forEach(a => {
           a.buffs.outBonus = (a.buffs.outBonus || 0) + card.amount;
@@ -1470,9 +1459,9 @@ function executeCard(targetId) {
         addLog(`全機: OUT +${card.amount}, EN +1`, 'status');
       } else if (card.effect === 'smoke') {
         state.allies.filter(a => !a.dead).forEach(a => {
-          a.buffs.agiBonus = (a.buffs.agiBonus || 0) + card.amount;
+          a.speed += card.amount;
         });
-        addLog(`全機: DRV +${card.amount}`, 'status');
+        addLog(`全機: 加速(+${card.amount}%)`, 'status');
       // --- Expansion buff effects ---
       } else if (card.effect === 'element_coat_heat') {
         const target = state.allies[targetId];
@@ -1518,15 +1507,35 @@ function executeCard(targetId) {
         ally.barrier += card.selfBarrier || 3;
         addLog(`全機: 次攻撃+${bonus}, ${ally.name}フィールド+${card.selfBarrier || 3}`, 'status');
       }
+      // Apply ally speed (e.g. Booster's アクセルフィールド)
+      if (card.applyAllySpeed) {
+        if (card.target === 'ally_all') {
+          state.allies.filter(a => !a.dead).forEach(a => {
+            a.speed += card.applyAllySpeed;
+          });
+          addLog(`全機: 加速(+${card.applyAllySpeed}%)`, 'status');
+        } else if (card.target === 'ally_single') {
+          const target = state.allies[targetId];
+          if (target) {
+            target.speed += card.applyAllySpeed;
+            addLog(`${target.name}: 加速(+${card.applyAllySpeed}%)`, 'status');
+          }
+        }
+      }
       break;
     }
     case 'debuff': {
       if (card.target === 'enemy_single') {
         const enemy = state.enemies[targetId];
         if (!enemy || enemy.dead) break;
-        // Apply status effects (new 4-status system)
+        // Apply status effects
         if (card.applyStatus) {
           applyCardStatuses(ally, enemy, card);
+        }
+        // Apply speed to target enemy
+        if (card.applySpeed) {
+          enemy.speed += card.applySpeed;
+          addLog(`${enemy.name}: 減速(${card.applySpeed}%) → 速度${enemy.speed}%`, 'status');
         }
         // Expansion: mark
         if (card.effect === 'mark') {
@@ -1549,11 +1558,18 @@ function executeCard(targetId) {
           addLog(`${enemy.name}: 攻撃力 -${card.debuffATK}`, 'status');
         }
       } else if (card.target === 'enemy_all') {
-        // Apply status to all enemies (new system)
+        // Apply status to all enemies
         if (card.applyStatus) {
           state.enemies.filter(e => !e.dead).forEach(e => {
             applyCardStatuses(ally, e, card);
           });
+        }
+        // Apply speed to all enemies
+        if (card.applySpeed) {
+          state.enemies.filter(e => !e.dead).forEach(e => {
+            e.speed += card.applySpeed;
+          });
+          addLog(`敵全体: 減速(${card.applySpeed}%)`, 'status');
         }
         // Expansion: analyze field (scan all)
         if (card.effect === 'analyze_field') {
@@ -1764,15 +1780,16 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
     dmg = Math.floor(dmg * 1.2);
   }
 
-  // Evasion check (slow reduces enemy DRV by 5)
+  // Speed-based hit/dodge checks
   if (!card.unavoidable) {
-    let effectiveDRV = enemy.drv || 0;
-    if (enemy.statuses.slow > 0) effectiveDRV -= 5;
-    if (enemy.debuffs.agiReduction) effectiveDRV -= enemy.debuffs.agiReduction.val;
-    const attackerDRV = ally.stats.DRV + (card.bonusDEX || 0);
-    const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - attackerDRV * 1.0));
-    if (Math.random() * 100 < evadeChance) {
-      addLog(`${ally.name} → ${enemy.name}: 回避された!`, 'info');
+    // Attacker (ally) negative speed: MISS
+    if (ally.speed < 0 && Math.random() * 100 < Math.abs(ally.speed)) {
+      addLog(`${ally.name} → ${enemy.name}: MISS! (減速${ally.speed}%)`, 'info');
+      return;
+    }
+    // Defender (enemy) positive speed: DODGE
+    if (enemy.speed > 0 && Math.random() * 100 < enemy.speed) {
+      addLog(`${ally.name} → ${enemy.name}: DODGE! (加速+${enemy.speed}%)`, 'info');
       return;
     }
   }
@@ -1823,10 +1840,19 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
   // Apply statuses from attack card (AFTER damage - vulnerability from this card doesn't benefit this attack)
   applyCardStatuses(ally, enemy, card);
 
+  // Apply speed effects from card
+  if (card.applySpeed) {
+    enemy.speed += card.applySpeed;
+    addLog(`${enemy.name}: 減速(${card.applySpeed}%) → 速度${enemy.speed}%`, 'status');
+  }
+  if (card.applySelfSpeed) {
+    ally.speed += card.applySelfSpeed;
+    addLog(`${ally.name}: 加速(+${card.applySelfSpeed}%) → 速度+${ally.speed}%`, 'status');
+  }
+
   // Legacy debuffs for expansion frames
   if (card.debuffAGI) {
     enemy.debuffs.agiReduction = { val: card.debuffAGI, dur: card.debuffDur || 1 };
-    addLog(`${enemy.name}: DRV -${card.debuffAGI}`, 'status');
   }
   if (card.debuffATK) {
     enemy.debuffs.atkReduction = (enemy.debuffs.atkReduction || 0) + card.debuffATK;
@@ -1864,7 +1890,7 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
 }
 
 // Apply status effects from a card to an enemy (used by both attack and debuff cards)
-// CTRL scaling: overheat/vulnerability scale with applier CTRL, shock/slow do NOT
+// CTRL scaling: overheat/vulnerability scale with applier CTRL, shock does NOT
 function applyCardStatuses(ally, enemy, card) {
   if (!card.applyStatus) return;
   const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
@@ -1886,10 +1912,6 @@ function applyCardStatuses(ally, enemy, card) {
       let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
       enemy.statuses.shock = (enemy.statuses.shock || 0) + turns;
       addLog(`${enemy.name}: 感電(${turns}T)`, 'status');
-    } else if (st.type === 'slow') {
-      let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
-      enemy.statuses.slow = (enemy.statuses.slow || 0) + turns;
-      addLog(`${enemy.name}: 減速(${turns}T)`, 'status');
     }
   }
 }
@@ -2682,8 +2704,9 @@ function getEnemyStatusText(e) {
   if (e.statuses.overheat > 0) parts.push(`過熱(${e.statuses.overheat})`);
   if (e.statuses.vulnerability > 0) parts.push(`脆弱(${e.statuses.vulnerability})`);
   if (e.statuses.shock > 0) parts.push(`感電(${e.statuses.shock}T)`);
-  if (e.statuses.slow > 0) parts.push(`減速(${e.statuses.slow}T)`);
-  if (e.debuffs.agiReduction) parts.push(`DRV-${e.debuffs.agiReduction.val}`);
+  if (e.speed > 0) parts.push(`加速+${e.speed}%`);
+  if (e.speed < 0) parts.push(`減速${e.speed}%`);
+  if (e.debuffs.agiReduction) parts.push(`AGI-${e.debuffs.agiReduction.val}`);
   if (e.debuffs.atkReduction) parts.push(`ATK-${e.debuffs.atkReduction}`);
   if (e.marked) parts.push('マーク');
   if (e.scanned) parts.push('スキャン');
@@ -2694,7 +2717,8 @@ function getEnemyStatusText(e) {
 function getAllyBuffText(a) {
   const parts = [];
   if (a.fullDriveActive) parts.push('FD');
-  if (a.buffs.agiBonus) parts.push(`DRV+${a.buffs.agiBonus}`);
+  if (a.speed > 0) parts.push(`加速+${a.speed}%`);
+  if (a.speed < 0) parts.push(`減速${a.speed}%`);
   if (a.buffs.dmgBonus) parts.push(`ATK+${a.buffs.dmgBonus}`);
   if (a.buffs.warcryBonus) parts.push(`WC+${a.buffs.warcryBonus}`);
   if (a.buffs.overheat) parts.push(`過熱(${a.buffs.overheat})`);

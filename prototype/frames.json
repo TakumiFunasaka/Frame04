@@ -4,10 +4,9 @@
     "role": "アタッカー/近接高火力",
     "baseHP": 50,
     "baseStats": {
-      "OUT": 5,
+      "OUT": 6,
       "SHL": 2,
-      "CTRL": 0,
-      "DRV": 3
+      "CTRL": 2
     },
     "pack": "base",
     "cards": [
@@ -70,10 +69,9 @@
     "role": "アタッカー/遠距離物理",
     "baseHP": 45,
     "baseStats": {
-      "OUT": 4,
-      "SHL": 1,
-      "CTRL": 0,
-      "DRV": 5
+      "OUT": 5,
+      "SHL": 2,
+      "CTRL": 3
     },
     "pack": "base",
     "cards": [
@@ -112,13 +110,13 @@
       {
         "name": "サプレッション",
         "cost": 1,
-        "desc": "敵1体に5ダメージ。減速(1T)付与",
+        "desc": "敵1体に5ダメージ。減速(-10)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 5,
         "stat": "OUT",
-        "applyStatus": { "type": "slow", "turns": 1 },
-        "upgrade": { "baseDmg": 2, "turns": 1 }
+        "applySpeed": -10,
+        "upgrade": { "baseDmg": 2 }
       },
       {
         "name": "デッドアイ",
@@ -140,8 +138,7 @@
     "baseStats": {
       "OUT": 6,
       "SHL": 1,
-      "CTRL": 1,
-      "DRV": 2
+      "CTRL": 3
     },
     "pack": "base",
     "cards": [
@@ -206,10 +203,9 @@
     "role": "ディフェンダー/挑発+フィールド",
     "baseHP": 55,
     "baseStats": {
-      "OUT": 0,
-      "SHL": 6,
-      "CTRL": 2,
-      "DRV": 2
+      "OUT": 1,
+      "SHL": 7,
+      "CTRL": 2
     },
     "pack": "base",
     "cards": [
@@ -271,10 +267,9 @@
     "role": "サポート/修復+回復",
     "baseHP": 45,
     "baseStats": {
-      "OUT": 0,
+      "OUT": 1,
       "SHL": 2,
-      "CTRL": 6,
-      "DRV": 2
+      "CTRL": 7
     },
     "pack": "base",
     "cards": [
@@ -336,9 +331,8 @@
     "baseHP": 40,
     "baseStats": {
       "OUT": 1,
-      "SHL": 1,
-      "CTRL": 5,
-      "DRV": 3
+      "SHL": 2,
+      "CTRL": 7
     },
     "pack": "base",
     "cards": [
@@ -396,8 +390,7 @@
     "baseStats": {
       "OUT": 3,
       "SHL": 1,
-      "CTRL": 4,
-      "DRV": 2
+      "CTRL": 6
     },
     "pack": "base",
     "cards": [
@@ -426,11 +419,11 @@
       {
         "name": "スローフィールド",
         "cost": 1,
-        "desc": "敵全体に減速(2T)付与",
+        "desc": "敵全体に減速(-15)付与",
         "type": "debuff",
         "target": "enemy_all",
-        "applyStatus": { "type": "slow", "turns": 2 },
-        "upgrade": { "turns": 1 }
+        "applySpeed": -15,
+        "upgrade": {}
       },
       {
         "name": "クラックショット",
@@ -446,16 +439,14 @@
       {
         "name": "フルブレイク",
         "cost": 2,
-        "desc": "敵1体に3ダメージ。脆弱(4)+減速(2T)付与",
+        "desc": "敵1体に3ダメージ。脆弱(4)+減速(-15)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 3,
         "stat": "OUT",
-        "applyStatus": [
-          { "type": "vulnerability", "stacks": 4 },
-          { "type": "slow", "turns": 2 }
-        ],
-        "upgrade": { "baseDmg": 2, "stacks": 1, "turns": 1 }
+        "applyStatus": { "type": "vulnerability", "stacks": 4 },
+        "applySpeed": -15,
+        "upgrade": { "baseDmg": 2, "stacks": 1 }
       }
     ]
   },
@@ -464,10 +455,9 @@
     "role": "サポート/EN供給",
     "baseHP": 40,
     "baseStats": {
-      "OUT": 0,
-      "SHL": 2,
-      "CTRL": 2,
-      "DRV": 6
+      "OUT": 2,
+      "SHL": 4,
+      "CTRL": 4
     },
     "pack": "base",
     "cards": [
@@ -502,14 +492,13 @@
         "upgrade": { "baseDmg": 2 }
       },
       {
-        "name": "フィールドブースト",
+        "name": "アクセルフィールド",
         "cost": 1,
-        "desc": "味方全機にフィールド3付与",
-        "type": "defend",
+        "desc": "味方全機に加速(+10)付与",
+        "type": "buff",
         "target": "ally_all",
-        "baseBarrier": 3,
-        "stat": "SHL",
-        "upgrade": { "baseBarrier": 2 }
+        "applyAllySpeed": 10,
+        "upgrade": {}
       },
       {
         "name": "フルドライブ",
@@ -524,46 +513,45 @@
   },
   "phantom": {
     "name": "ファントム",
-    "role": "テクニカル/減速+高DRV",
+    "role": "テクニカル/減速+加速",
     "baseHP": 40,
     "baseStats": {
-      "OUT": 3,
-      "SHL": 0,
-      "CTRL": 0,
-      "DRV": 7
+      "OUT": 6,
+      "SHL": 1,
+      "CTRL": 3
     },
     "pack": "base",
     "cards": [
       {
         "name": "ファントムスラッシュ",
         "cost": 1,
-        "desc": "敵1体に6ダメージ。減速(1T)付与",
+        "desc": "敵1体に6ダメージ。減速(-15)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 6,
         "stat": "OUT",
-        "applyStatus": { "type": "slow", "turns": 1 },
-        "upgrade": { "baseDmg": 2, "turns": 1 }
+        "applySpeed": -15,
+        "upgrade": { "baseDmg": 2 }
       },
       {
         "name": "ファントムスラッシュ",
         "cost": 1,
-        "desc": "敵1体に6ダメージ。減速(1T)付与",
+        "desc": "敵1体に6ダメージ。減速(-15)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 6,
         "stat": "OUT",
-        "applyStatus": { "type": "slow", "turns": 1 },
-        "upgrade": { "baseDmg": 2, "turns": 1 }
+        "applySpeed": -15,
+        "upgrade": { "baseDmg": 2 }
       },
       {
         "name": "スモークボム",
         "cost": 1,
-        "desc": "敵全体に減速(1T)付与",
+        "desc": "敵全体に減速(-10)付与",
         "type": "debuff",
         "target": "enemy_all",
-        "applyStatus": { "type": "slow", "turns": 1 },
-        "upgrade": { "turns": 1 }
+        "applySpeed": -10,
+        "upgrade": {}
       },
       {
         "name": "バックスタブ",
@@ -579,12 +567,12 @@
       {
         "name": "ファントムレイド",
         "cost": 3,
-        "desc": "敵1体に15ダメージ。回避不可",
+        "desc": "敵1体に15ダメージ。自機に加速(+30)付与",
         "type": "attack",
         "target": "enemy_single",
         "baseDmg": 15,
         "stat": "OUT",
-        "unavoidable": true,
+        "applySelfSpeed": 30,
         "upgrade": { "baseDmg": 2 }
       }
     ]
@@ -594,10 +582,9 @@
     "role": "テクニカル/感電+自傷大火力",
     "baseHP": 45,
     "baseStats": {
-      "OUT": 6,
+      "OUT": 7,
       "SHL": 1,
-      "CTRL": 1,
-      "DRV": 2
+      "CTRL": 2
     },
     "pack": "base",
     "cards": [
@@ -665,8 +652,7 @@
     "baseStats": {
       "OUT": 3,
       "SHL": 5,
-      "CTRL": 0,
-      "DRV": 2
+      "CTRL": 2
     },
     "pack": "expansion",
     "cards": [
@@ -728,8 +714,7 @@
     "baseStats": {
       "OUT": 5,
       "SHL": 2,
-      "CTRL": 1,
-      "DRV": 2
+      "CTRL": 3
     },
     "pack": "protocol_ex",
     "cards": [
@@ -793,9 +778,8 @@
     "baseHP": 40,
     "baseStats": {
       "OUT": 0,
-      "SHL": 3,
-      "CTRL": 3,
-      "DRV": 4
+      "SHL": 4,
+      "CTRL": 6
     },
     "pack": "protocol_ex",
     "cards": [
@@ -857,9 +841,8 @@
     "baseHP": 25,
     "baseStats": {
       "OUT": 0,
-      "SHL": 2,
-      "CTRL": 0,
-      "DRV": 8
+      "SHL": 8,
+      "CTRL": 2
     },
     "pack": "protocol_ex",
     "cards": [
@@ -919,10 +902,9 @@
     "role": "テクニカル/資源回収",
     "baseHP": 45,
     "baseStats": {
-      "OUT": 4,
-      "SHL": 2,
-      "CTRL": 0,
-      "DRV": 4
+      "OUT": 5,
+      "SHL": 3,
+      "CTRL": 2
     },
     "pack": "protocol_ex",
     "cards": [
@@ -985,9 +967,8 @@
     "baseHP": 40,
     "baseStats": {
       "OUT": 3,
-      "SHL": 2,
-      "CTRL": 2,
-      "DRV": 3
+      "SHL": 3,
+      "CTRL": 4
     },
     "pack": "protocol_ex",
     "cards": [
@@ -1044,9 +1025,8 @@
     "baseHP": 40,
     "baseStats": {
       "OUT": 5,
-      "SHL": 1,
-      "CTRL": 1,
-      "DRV": 3
+      "SHL": 2,
+      "CTRL": 3
     },
     "pack": "protocol_hv",
     "cards": [
@@ -1109,9 +1089,8 @@
     "baseHP": 45,
     "baseStats": {
       "OUT": 5,
-      "SHL": 2,
-      "CTRL": 0,
-      "DRV": 3
+      "SHL": 3,
+      "CTRL": 2
     },
     "pack": "protocol_hv",
     "cards": [
@@ -1179,8 +1158,7 @@
     "baseStats": {
       "OUT": 3,
       "SHL": 5,
-      "CTRL": 0,
-      "DRV": 2
+      "CTRL": 2
     },
     "pack": "protocol_hv",
     "cards": [
@@ -1242,9 +1220,8 @@
     "baseHP": 40,
     "baseStats": {
       "OUT": 5,
-      "SHL": 2,
-      "CTRL": 1,
-      "DRV": 2
+      "SHL": 3,
+      "CTRL": 2
     },
     "pack": "protocol_hv",
     "cards": [
@@ -1305,9 +1282,8 @@
     "baseHP": 40,
     "baseStats": {
       "OUT": 0,
-      "SHL": 3,
-      "CTRL": 3,
-      "DRV": 4
+      "SHL": 4,
+      "CTRL": 6
     },
     "pack": "protocol_hv",
     "cards": [

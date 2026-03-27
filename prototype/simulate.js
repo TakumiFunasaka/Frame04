@@ -18,30 +18,30 @@ const path = require('path');
 const FRAMES = JSON.parse(fs.readFileSync(path.join(__dirname, 'frames.json'), 'utf8'));
 
 const FRAME_PRESETS = {
-  striker:    { OUT: 0.5, SHL: 0.2, CTRL: 0, DRV: 0.3 },
-  gunner:     { OUT: 0.4, SHL: 0.1, CTRL: 0, DRV: 0.5 },
-  blaster:    { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
-  shielder:   { OUT: 0, SHL: 0.6, CTRL: 0.2, DRV: 0.2 },
-  medic:      { OUT: 0, SHL: 0.2, CTRL: 0.6, DRV: 0.2 },
-  jammer:     { OUT: 0, SHL: 0.1, CTRL: 0.6, DRV: 0.3 },
-  cracker:    { OUT: 0.3, SHL: 0.1, CTRL: 0.4, DRV: 0.2 },
-  booster:    { OUT: 0, SHL: 0.2, CTRL: 0.2, DRV: 0.6 },
-  phantom:    { OUT: 0.3, SHL: 0, CTRL: 0, DRV: 0.7 },
-  overload:   { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
+  striker:    { OUT: 0.7, SHL: 0.2, CTRL: 0.1 },
+  gunner:     { OUT: 0.6, SHL: 0.1, CTRL: 0.3 },
+  blaster:    { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
+  shielder:   { OUT: 0, SHL: 0.7, CTRL: 0.3 },
+  medic:      { OUT: 0, SHL: 0.2, CTRL: 0.8 },
+  jammer:     { OUT: 0, SHL: 0.2, CTRL: 0.8 },
+  cracker:    { OUT: 0.3, SHL: 0.1, CTRL: 0.6 },
+  booster:    { OUT: 0.2, SHL: 0.4, CTRL: 0.4 },
+  phantom:    { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
+  overload:   { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
   // Expansion
-  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
+  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0.2 },
   // PROTOCOL:EX
-  converter:  { OUT: 0.5, SHL: 0.2, CTRL: 0.1, DRV: 0.2 },
-  linker:     { OUT: 0, SHL: 0.3, CTRL: 0.3, DRV: 0.4 },
-  decoy:      { OUT: 0, SHL: 0.2, CTRL: 0, DRV: 0.8 },
-  scavenger:  { OUT: 0.4, SHL: 0.2, CTRL: 0, DRV: 0.4 },
-  oracle:     { OUT: 0.3, SHL: 0.2, CTRL: 0.2, DRV: 0.3 },
+  converter:  { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
+  linker:     { OUT: 0, SHL: 0.4, CTRL: 0.6 },
+  decoy:      { OUT: 0, SHL: 0.8, CTRL: 0.2 },
+  scavenger:  { OUT: 0.5, SHL: 0.3, CTRL: 0.2 },
+  oracle:     { OUT: 0.4, SHL: 0.2, CTRL: 0.4 },
   // PROTOCOL:HV
-  seeker:     { OUT: 0.5, SHL: 0.1, CTRL: 0.1, DRV: 0.3 },
-  launcher:   { OUT: 0.5, SHL: 0.2, CTRL: 0, DRV: 0.3 },
-  bulk:       { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
-  drone:      { OUT: 0.5, SHL: 0.2, CTRL: 0.1, DRV: 0.2 },
-  carrier:    { OUT: 0, SHL: 0.3, CTRL: 0.3, DRV: 0.4 },
+  seeker:     { OUT: 0.6, SHL: 0.1, CTRL: 0.3 },
+  launcher:   { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
+  bulk:       { OUT: 0.3, SHL: 0.5, CTRL: 0.2 },
+  drone:      { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
+  carrier:    { OUT: 0, SHL: 0.4, CTRL: 0.6 },
 };
 
 // ============================================================
@@ -51,44 +51,44 @@ const ENEMY_PRESETS = {
   '3_weak': {
     label: '3 Weak (Act1 Drones)',
     enemies: [
-      { name: 'ドローン-A', hp: 20, atk: 4, drv: 0, patterns: ['attack','attack','barrier'] },
-      { name: 'ドローン-B', hp: 20, atk: 4, drv: 0, patterns: ['attack','attack','barrier'] },
-      { name: 'ドローン-C', hp: 18, atk: 4, drv: 0, patterns: ['attack','barrier','attack'] },
+      { name: 'ドローン-A', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+      { name: 'ドローン-B', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+      { name: 'ドローン-C', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
     ]
   },
   '1_elite': {
     label: '1 Elite (Heavy Guard)',
     enemies: [
-      { name: 'ヘビーガード', hp: 65, atk: 8, drv: 5, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
+      { name: 'ヘビーガード', hp: 65, atk: 8, speed: 0, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
     ]
   },
   'elite_pair': {
     label: 'Elite + Support',
     enemies: [
-      { name: 'エヴェイダー', hp: 45, atk: 8, drv: 25, patterns: ['attack','attack','buff_self','attack','attack_heavy'] },
-      { name: 'サポートビット', hp: 18, atk: 4, drv: 0, patterns: ['barrier','attack','barrier'] },
+      { name: 'エヴェイダー', hp: 45, atk: 8, speed: 0, patterns: ['attack','attack','buff_self','attack','attack_heavy'] },
+      { name: 'サポートビット', hp: 18, atk: 4, speed: 0, patterns: ['barrier','attack','barrier'] },
     ]
   },
   '1_boss': {
     label: '1 Boss (Mk-I)',
     enemies: [
-      { name: 'コマンダー Mk-I', hp: 100, atk: 10, drv: 6, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
+      { name: 'コマンダー Mk-I', hp: 100, atk: 10, speed: 0, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
     ]
   },
   'boss_adds': {
     label: 'Boss + Adds (Mk-I)',
     enemies: [
-      { name: 'コマンダー Mk-I', hp: 100, atk: 10, drv: 6, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
-      { name: 'ビット-L', hp: 18, atk: 4, drv: 6, patterns: ['attack','attack','barrier'] },
-      { name: 'ビット-R', hp: 18, atk: 4, drv: 6, patterns: ['attack','barrier','attack'] },
+      { name: 'コマンダー Mk-I', hp: 100, atk: 10, speed: 0, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
+      { name: 'ビット-L', hp: 18, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+      { name: 'ビット-R', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
     ]
   },
   'act2_boss': {
     label: 'Act2 Boss (Mk-II + Guards)',
     enemies: [
-      { name: 'コア・ユニット Mk-II', hp: 140, atk: 12, drv: 8, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
-      { name: 'ガードビット-L', hp: 25, atk: 6, drv: 8, patterns: ['attack','barrier','attack'] },
-      { name: 'ガードビット-R', hp: 25, atk: 6, drv: 8, patterns: ['barrier','attack','attack'] },
+      { name: 'コア・ユニット Mk-II', hp: 140, atk: 12, speed: 0, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
+      { name: 'ガードビット-L', hp: 25, atk: 6, speed: 0, patterns: ['attack','barrier','attack'] },
+      { name: 'ガードビット-R', hp: 25, atk: 6, speed: 0, patterns: ['barrier','attack','attack'] },
     ]
   },
 };
@@ -119,7 +119,7 @@ function allocateStats(frameKeys) {
   for (const fk of frameKeys) {
     const weights = FRAME_PRESETS[fk];
     const points = Math.min(perSlot, spRemaining);
-    const stats = { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+    const stats = { OUT: 0, SHL: 0, CTRL: 0 };
     let assigned = 0;
     for (const s of Object.keys(stats)) {
       stats[s] = Math.floor(points * weights[s]);
@@ -143,15 +143,15 @@ function createBattleState(frameKeys, enemyDefs) {
   const allies = frameKeys.map((fk, i) => {
     const frame = FRAMES[fk];
     const allocatedPts = statsArr[i];
-    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
+    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0 };
     const stats = {};
-    for (const s of ['OUT','SHL','CTRL','DRV']) {
+    for (const s of ['OUT','SHL','CTRL']) {
       stats[s] = (base[s] || 0) + (allocatedPts[s] || 0);
     }
     const maxHP = Math.round(frame.baseHP * (1 + stats.SHL * 0.03));
     return {
       id: i, frameKey: fk, name: frame.name + (i > 0 ? `#${i}` : ''),
-      stats, hp: maxHP, maxHP, barrier: 0, dead: false,
+      stats, hp: maxHP, maxHP, barrier: 0, dead: false, speed: 0,
       cards: frame.cards.map((c, ci) => ({
         ...c, id: `${fk}_${i}_${ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false
       })),
@@ -174,10 +174,10 @@ function createBattleState(frameKeys, enemyDefs) {
     id: i, name: e.name,
     hp: e.hp, maxHP: e.hp,
     barrier: 0, dead: false,
-    atk: e.atk, drv: e.drv || 0,
+    atk: e.atk, speed: 0,
     patterns: [...e.patterns], patternIdx: 0,
     intent: null, targetIdx: 0,
-    statuses: { overheat: 0, vulnerability: 0, shock: 0, slow: 0 },
+    statuses: { overheat: 0, vulnerability: 0, shock: 0 },
     debuffs: {},
     marked: false, markBonus: 0,
     scanned: false, weakPointBonus: 0,
@@ -206,15 +206,15 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
   // Seeker scan bonus (expansion)
   if (enemy.scanned) dmg = Math.floor(dmg * 1.2);
 
-  // Evasion check (slow reduces enemy DRV by 5)
+  // Speed-based hit/dodge checks
   if (!card.unavoidable) {
-    let effectiveDRV = enemy.drv || 0;
-    if (enemy.statuses.slow > 0) effectiveDRV -= 5;
-    if (enemy.debuffs.agiReduction) effectiveDRV -= enemy.debuffs.agiReduction.val;
-    const attackerDRV = ally.stats.DRV + (card.bonusDEX || 0);
-    const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - attackerDRV * 1.0));
-    if (Math.random() * 100 < evadeChance) {
-      return; // evaded
+    // Attacker (ally) negative speed: MISS
+    if (ally.speed < 0 && Math.random() * 100 < Math.abs(ally.speed)) {
+      return; // miss
+    }
+    // Defender (enemy) positive speed: DODGE
+    if (enemy.speed > 0 && Math.random() * 100 < enemy.speed) {
+      return; // dodged
     }
   }
 
@@ -256,6 +256,14 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
 
   // Apply statuses from attack card (AFTER damage)
   simApplyCardStatuses(ally, enemy, card);
+
+  // Apply speed effects from card
+  if (card.applySpeed) {
+    enemy.speed += card.applySpeed;
+  }
+  if (card.applySelfSpeed) {
+    ally.speed += card.applySelfSpeed;
+  }
 
   // Legacy debuffs (expansion)
   if (card.debuffAGI) {
@@ -310,9 +318,6 @@ function simApplyCardStatuses(ally, enemy, card) {
     } else if (st.type === 'shock') {
       let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
       enemy.statuses.shock = (enemy.statuses.shock || 0) + turns;
-    } else if (st.type === 'slow') {
-      let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
-      enemy.statuses.slow = (enemy.statuses.slow || 0) + turns;
     }
   }
 }
@@ -331,11 +336,12 @@ function handleOnKill(state, ally, onKill) {
 }
 
 function dealDmgToAlly(enemy, ally) {
-  // Evasion
-  const effectiveDRV = ally.stats.DRV + (ally.buffs.agiBonus || 0);
-  const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - (enemy.drv || 0) * 1.0));
-  if (Math.random() * 100 < evadeChance) {
-    return; // evaded
+  // Speed-based miss/dodge checks
+  if (enemy.speed < 0 && Math.random() * 100 < Math.abs(enemy.speed)) {
+    return; // miss
+  }
+  if (ally.speed > 0 && Math.random() * 100 < ally.speed) {
+    return; // dodged
   }
 
   let atkPower = enemy._currentAtk;
@@ -358,10 +364,12 @@ function dealDmgToAlly(enemy, ally) {
 }
 
 function dealDmgToAllyFromEnemy(state, enemy, ally, dmg) {
-  const effectiveDRV = ally.stats.DRV + (ally.buffs.agiBonus || 0);
-  const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - (enemy.drv || 0) * 1.0));
-  if (Math.random() * 100 < evadeChance) {
-    return;
+  // Speed-based miss/dodge checks
+  if (enemy.speed < 0 && Math.random() * 100 < Math.abs(enemy.speed)) {
+    return; // miss
+  }
+  if (ally.speed > 0 && Math.random() * 100 < ally.speed) {
+    return; // dodged
   }
 
   // Linker damage share
@@ -490,7 +498,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
           if (stacks >= card.accumThreshold && !enemy.dead) {
             enemy.statuses.overheat = (enemy.statuses.overheat || 0) + 2;
             enemy.statuses.shock = (enemy.statuses.shock || 0) + 1;
-            enemy.statuses.slow = (enemy.statuses.slow || 0) + 1;
+            enemy.speed -= 10; // deceleration from fusion burst
           }
         });
       } else if (card.effect === 'rail_cannon') {
@@ -581,7 +589,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         if (ally.hp <= 0) killAlly(ally, state);
       }
       if (card.selfRemoveBarrier) ally.barrier = 0;
-      if (card.selfBuffAGI) ally.buffs.agiBonus = (ally.buffs.agiBonus || 0) + card.selfBuffAGI;
+      if (card.selfBuffAGI) ally.speed += card.selfBuffAGI;
 
       if (ally.buffs.warcryBonus) delete ally.buffs.warcryBonus;
       break;
@@ -648,10 +656,10 @@ function executeCardHeadless(state, card, handIdx, targetId) {
     case 'buff': {
       if (card.effect === 'accel') {
         const target = state.allies[targetId];
-        if (target) target.buffs.agiBonus = (target.buffs.agiBonus || 0) + card.amount;
+        if (target) target.speed += card.amount;
       } else if (card.effect === 'smoke') {
         state.allies.filter(a => !a.dead).forEach(a => {
-          a.buffs.agiBonus = (a.buffs.agiBonus || 0) + card.amount;
+          a.speed += card.amount;
         });
       // Expansion buffs
       } else if (card.effect === 'element_coat_heat') {
@@ -687,15 +695,28 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         });
         ally.barrier += card.selfBarrier || 3;
       }
+      // Apply ally speed (e.g. Booster's アクセルフィールド)
+      if (card.applyAllySpeed) {
+        if (card.target === 'ally_all') {
+          state.allies.filter(a => !a.dead).forEach(a => {
+            a.speed += card.applyAllySpeed;
+          });
+        } else if (card.target === 'ally_single') {
+          const target = state.allies[targetId];
+          if (target) target.speed += card.applyAllySpeed;
+        }
+      }
       break;
     }
     case 'debuff': {
       if (card.target === 'enemy_single') {
         const enemy = state.enemies[targetId];
         if (!enemy || enemy.dead) break;
-        // Apply status effects (new 4-status system)
         if (card.applyStatus) {
           simApplyCardStatuses(ally, enemy, card);
+        }
+        if (card.applySpeed) {
+          enemy.speed += card.applySpeed;
         }
         // Expansion effects
         if (card.effect === 'mark') { enemy.marked = true; enemy.markBonus = card.amount; }
@@ -708,10 +729,14 @@ function executeCardHeadless(state, card, handIdx, targetId) {
           enemy.debuffs.atkReduction = (enemy.debuffs.atkReduction || 0) + card.debuffATK;
         }
       } else if (card.target === 'enemy_all') {
-        // Apply status to all enemies (new system)
         if (card.applyStatus) {
           state.enemies.filter(e => !e.dead).forEach(e => {
             simApplyCardStatuses(ally, e, card);
+          });
+        }
+        if (card.applySpeed) {
+          state.enemies.filter(e => !e.dead).forEach(e => {
+            e.speed += card.applySpeed;
           });
         }
         // Expansion effects
@@ -884,6 +909,8 @@ function startTurn(state) {
       a.junkShieldBonus = 0;
       a.droneFocusTarget = -1;
       a.droneFocusMultiplier = 1;
+      // Reset speed at turn start
+      a.speed = 0;
     }
     a.buffs = a.buffs.dmgBonus ? { dmgBonus: a.buffs.dmgBonus } : {};
   });
@@ -891,10 +918,11 @@ function startTurn(state) {
   // Reset full drive at turn start
   state.allies.forEach(a => { a.fullDriveActive = false; });
 
-  // Reset enemy barrier, process statuses (new 4-status system)
+  // Reset enemy barrier, speed, and process statuses
   state.enemies.forEach(e => {
     if (e.dead) return;
     e.barrier = 0;
+    e.speed = 0; // Reset speed at turn start
     // Overheat: deal N damage, N decreases by 1
     if (e.statuses.overheat > 0) {
       const dmg = e.statuses.overheat;
@@ -905,8 +933,6 @@ function startTurn(state) {
     // Vulnerability persists (consumed on hit)
     // Shock: decrement turns
     if (e.statuses.shock > 0) { e.statuses.shock--; }
-    // Slow: decrement turns
-    if (e.statuses.slow > 0) { e.statuses.slow--; }
     // Legacy debuffs for expansion frames
     if (e.debuffs.agiReduction) {
       e.debuffs.agiReduction.dur--;
@@ -1207,11 +1233,12 @@ function estimateCardValue(state, card) {
           if (st.type === 'overheat') value += st.stacks * 3;
           if (st.type === 'vulnerability') value += st.stacks * 2;
           if (st.type === 'shock') value += st.turns * 4;
-          if (st.type === 'slow') value += st.turns * 3;
         }
       }
       if (card.removeBarrier) value += 5;
       if (card.unavoidable) value += 3;
+      if (card.applySpeed) value += Math.abs(card.applySpeed) * 0.3;
+      if (card.applySelfSpeed) value += card.applySelfSpeed * 0.2;
       // Expansion attacks
       if (card.effect === 'reverse_charge') {
         const rawDmg = ally.elementStacks > 0 ? ally.elementStacks * card.accumMultiplier + card.baseDmg : card.baseDmg;
@@ -1315,10 +1342,14 @@ function estimateCardValue(state, card) {
       } else if (card.effect === 'warcry') {
         value = (card.warcryBonus || 3) * aliveAllies.length + (card.selfBarrier || 3);
       }
+      // Ally speed buffs
+      if (card.applyAllySpeed) {
+        const targets = card.target === 'ally_all' ? aliveAllies.length : 1;
+        value += card.applyAllySpeed * 0.3 * targets;
+      }
       break;
     }
     case 'debuff': {
-      // New 4-status system debuffs
       if (card.applyStatus) {
         const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
         const targetCount = card.target === 'enemy_all' ? aliveEnemies.length : 1;
@@ -1326,8 +1357,12 @@ function estimateCardValue(state, card) {
           if (st.type === 'overheat') value += st.stacks * 3 * targetCount;
           if (st.type === 'vulnerability') value += st.stacks * 2 * targetCount;
           if (st.type === 'shock') value += st.turns * 4 * targetCount;
-          if (st.type === 'slow') value += st.turns * 3 * targetCount;
         }
+      }
+      // Speed debuffs
+      if (card.applySpeed) {
+        const targetCount = card.target === 'enemy_all' ? aliveEnemies.length : 1;
+        value += Math.abs(card.applySpeed) * 0.3 * targetCount;
       }
       // Expansion debuffs
       if (card.effect === 'mark') value = card.amount + 3;
@@ -1529,11 +1564,12 @@ function estimateCardValueSmart(state, card) {
           if (st.type === 'overheat') value += st.stacks * 3;
           if (st.type === 'vulnerability') value += st.stacks * 2;
           if (st.type === 'shock') value += st.turns * 4;
-          if (st.type === 'slow') value += st.turns * 3;
         }
       }
       if (card.removeBarrier) value += 5;
       if (card.unavoidable) value += 3;
+      if (card.applySpeed) value += Math.abs(card.applySpeed) * 0.3;
+      if (card.applySelfSpeed) value += card.applySelfSpeed * 0.2;
 
       // Expansion attacks (same as basic AI)
       if (card.effect === 'reverse_charge') {
@@ -1659,10 +1695,13 @@ function estimateCardValueSmart(state, card) {
         // Smart: value = bonus * alive allies + selfBarrier
         value = (card.warcryBonus || 3) * aliveAllies.length + (card.selfBarrier || 3);
       }
+      if (card.applyAllySpeed) {
+        const targets = card.target === 'ally_all' ? aliveAllies.length : 1;
+        value += card.applyAllySpeed * 0.3 * targets;
+      }
       break;
     }
     case 'debuff': {
-      // New 4-status system debuffs
       if (card.applyStatus) {
         const statuses = Array.isArray(card.applyStatus) ? card.applyStatus : [card.applyStatus];
         const targetCount = card.target === 'enemy_all' ? aliveEnemies.length : 1;
@@ -1670,8 +1709,11 @@ function estimateCardValueSmart(state, card) {
           if (st.type === 'overheat') value += st.stacks * 3 * targetCount;
           if (st.type === 'vulnerability') value += st.stacks * 2.5 * targetCount;
           if (st.type === 'shock') value += st.turns * 5 * targetCount;
-          if (st.type === 'slow') value += st.turns * 3 * targetCount;
         }
+      }
+      if (card.applySpeed) {
+        const targetCount = card.target === 'enemy_all' ? aliveEnemies.length : 1;
+        value += Math.abs(card.applySpeed) * 0.3 * targetCount;
       }
       if (card.effect === 'mark') value = card.amount + 3;
       if (card.debuffATK) value += card.debuffATK * 2;
@@ -2015,7 +2057,8 @@ function main() {
     runCompare();
     return;
   }
-  const frameKeys = Object.keys(FRAMES);
+  // Only simulate base frame combinations
+  const frameKeys = Object.keys(FRAMES).filter(k => FRAMES[k].pack === 'base');
   const combos = getAllCombinations(frameKeys, 4);
 
   // Add duplicate frame combos: 4x of each frame
@@ -2259,6 +2302,7 @@ function main() {
 
   for (const s of comboSummaries) {
     s.frames.forEach(f => {
+      if (!frameWinRates[f]) return;
       frameWinRates[f].totalWR += s.avgWinRate;
       frameWinRates[f].count++;
     });
