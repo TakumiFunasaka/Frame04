@@ -91,6 +91,27 @@ const ENEMY_PRESETS = {
       { name: 'ガードビット-R', hp: 25, atk: 6, speed: 0, patterns: ['barrier','attack','attack'] },
     ]
   },
+  'act3_elite': {
+    label: 'Act3 Elite (Twin Heavies)',
+    enemies: [
+      { name: 'ヘビーガード-A', hp: 90, atk: 14, speed: 0, patterns: ['attack','attack_heavy','barrier','attack_all','attack_heavy'] },
+      { name: 'ヘビーガード-B', hp: 90, atk: 14, speed: 0, patterns: ['barrier','attack','attack_heavy','attack','attack_all'] },
+    ]
+  },
+  'act3_boss': {
+    label: 'Act3 Boss (Final)',
+    enemies: [
+      { name: 'アーキタイプ', hp: 250, atk: 18, speed: 0, patterns: ['barrier','attack_heavy','attack_all','attack','buff_self','attack_heavy','attack_all','attack_heavy'] },
+    ]
+  },
+  'act3_boss_adds': {
+    label: 'Act3 Boss + Elites',
+    enemies: [
+      { name: 'アーキタイプ', hp: 200, atk: 16, speed: 0, patterns: ['barrier','attack_heavy','attack_all','buff_self','attack_heavy','attack_all'] },
+      { name: 'ガーディアン-L', hp: 50, atk: 10, speed: 0, patterns: ['attack','barrier','attack_heavy','attack'] },
+      { name: 'ガーディアン-R', hp: 50, atk: 10, speed: 0, patterns: ['barrier','attack','attack','attack_heavy'] },
+    ]
+  },
 };
 
 // ============================================================
