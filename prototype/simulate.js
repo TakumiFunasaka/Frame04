@@ -188,7 +188,7 @@ function createBattleState(frameKeys, enemyDefs) {
 
   return {
     allies, enemies, deck, discard: [], hand: [],
-    en: 3, maxEN: 3, turn: 0, battleOver: false,
+    en: 3, maxEN: 3, enCap: 5, turn: 0, battleOver: false,
   };
 }
 
@@ -272,7 +272,7 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
     // Parts salvage check
     state.allies.forEach(a => {
       if (!a.dead && a.partsSalvageActive) {
-        state.en += 1;
+        state.en = Math.min(state.en + 1, state.enCap);
         ally.hp = Math.min(ally.maxHP, ally.hp + 3);
       }
       if (!a.dead && a.junkShieldActive) {
@@ -297,7 +297,7 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
 // Scavenger on-kill effects
 function handleOnKill(state, ally, onKill) {
   switch (onKill.type) {
-    case 'en_recover': state.en += onKill.amount; break;
+    case 'en_recover': state.en = Math.min(state.en + onKill.amount; break, state.enCap);
     case 'draw': for (let i = 0; i < onKill.amount; i++) drawCard(state); break;
     case 'permanent_buff':
       state.allies.filter(a => !a.dead).forEach(a => {
@@ -609,8 +609,9 @@ function executeCardHeadless(state, card, handIdx, targetId) {
     }
     case 'buff': {
       if (card.effect === 'overdrive') {
-        ally.buffs.overdrive = true;
-        ally.buffs.strBonus = (ally.buffs.strBonus || 0) + 3;
+        state.allies.filter(a => !a.dead).forEach(a => {
+          a.buffs.overdrive = true;
+        });
       } else if (card.effect === 'chargeshot') {
         ally.buffs.chargeshot = card.chargeAmount;
       } else if (card.effect === 'limiter') {
@@ -628,7 +629,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
           a.buffs.strBonus = (a.buffs.strBonus || 0) + card.amount;
           a.buffs.intBonus = (a.buffs.intBonus || 0) + card.amount;
         });
-        state.en += 1;
+        state.en = Math.min(state.en + 1, state.enCap);
       } else if (card.effect === 'smoke') {
         state.allies.filter(a => !a.dead).forEach(a => {
           a.buffs.agiBonus = (a.buffs.agiBonus || 0) + card.amount;
@@ -723,7 +724,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
     }
     case 'special': {
       if (card.effect === 'encharge') {
-        state.en += card.amount;
+        state.en = Math.min(state.en + card.amount, state.enCap);
       } else if (card.effect === 'reboot') {
         const target = state.allies[targetId];
         if (target) {
@@ -784,7 +785,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         }
       } else if (card.effect === 'accelerate' || card.effect === 'supply_drop') {
         for (let i = 0; i < (card.drawAmount || 2); i++) drawCard(state);
-        if (card.enGain) state.en += card.enGain;
+        if (card.enGain) state.en = Math.min(state.en + card.enGain, state.enCap);
       } else if (card.effect === 'karma_reset') {
         const others = state.hand.filter((c, i) => i !== handIdx);
         if (others.length > 0) {
@@ -792,7 +793,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
           const wIdx = state.hand.indexOf(worst);
           if (wIdx >= 0) { state.hand.splice(wIdx, 1); state.deck.unshift(worst); }
         }
-        state.en += card.enGain || 1;
+        state.en = Math.min(state.en + card.enGain || 1, state.enCap);
       } else if (card.effect === 'time_leap') {
         state.deck = [...state.deck, ...state.discard];
         state.discard = [];
@@ -855,7 +856,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
 
 function startTurn(state) {
   state.turn++;
-  state.en = state.maxEN;
+  state.en = Math.min(state.en + state.maxEN, state.enCap);
 
   // Reset per-turn ally states
   state.allies.forEach(a => {

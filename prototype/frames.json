@@ -10,7 +10,7 @@
       { "name": "ラッシュブレード", "cost": 1, "desc": "敵1体に4+STRの物理ダメージ", "type": "attack", "target": "enemy_single", "baseDmg": 4, "stat": "STR", "dmgType": "physical" },
       { "name": "ラッシュブレード", "cost": 1, "desc": "敵1体に4+STRの物理ダメージ", "type": "attack", "target": "enemy_single", "baseDmg": 4, "stat": "STR", "dmgType": "physical" },
       { "name": "アーマーブレイク", "cost": 1, "desc": "敵1体に3+STRダメージ。バリア全除去", "type": "attack", "target": "enemy_single", "baseDmg": 3, "stat": "STR", "dmgType": "physical", "removeBarrier": true },
-      { "name": "オーバードライブ", "cost": 2, "desc": "自機STR+3。今ターン攻撃が2回ヒット", "type": "buff", "target": "self", "effect": "overdrive" }
+      { "name": "オーバードライブ", "cost": 2, "desc": "全機の攻撃が今ターン2回ヒット", "type": "buff", "target": "ally_all", "effect": "overdrive" }
     ]
   },
   "gunner": {

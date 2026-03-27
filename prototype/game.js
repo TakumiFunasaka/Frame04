@@ -184,6 +184,7 @@ let state = {
   hand: [],
   en: 3,
   maxEN: 3,
+  enCap: 5,
   turn: 0,
   turnBuffs: {},
   logs: [],
@@ -785,7 +786,7 @@ function startBattle(encounterType) {
 // ============================================================
 function nextTurn() {
   state.turn++;
-  state.en = state.maxEN;
+  state.en = Math.min(state.en + state.maxEN, state.enCap);
 
   // Reset per-turn states
   state.allies.forEach(a => {
@@ -1415,9 +1416,10 @@ function executeCard(targetId) {
     }
     case 'buff': {
       if (card.effect === 'overdrive') {
-        ally.buffs.overdrive = true;
-        ally.buffs.strBonus = (ally.buffs.strBonus || 0) + 3;
-        addLog(`${ally.name}: オーバードライブ! STR+3, 2回ヒット`, 'status');
+        state.allies.filter(a => !a.dead).forEach(a => {
+          a.buffs.overdrive = true;
+        });
+        addLog(`全機: オーバードライブ! 今ターン攻撃2回ヒット`, 'status');
       } else if (card.effect === 'chargeshot') {
         ally.buffs.chargeshot = card.chargeAmount;
         addLog(`${ally.name}: チャージ +${card.chargeAmount}`, 'status');
@@ -1439,7 +1441,7 @@ function executeCard(targetId) {
           a.buffs.strBonus = (a.buffs.strBonus || 0) + card.amount;
           a.buffs.intBonus = (a.buffs.intBonus || 0) + card.amount;
         });
-        state.en += 1;
+        state.en = Math.min(state.en + 1, state.enCap);
         addLog(`全機: STR/INT +${card.amount}, EN +1`, 'status');
       } else if (card.effect === 'smoke') {
         state.allies.filter(a => !a.dead).forEach(a => {
@@ -1566,7 +1568,7 @@ function executeCard(targetId) {
     }
     case 'special': {
       if (card.effect === 'encharge') {
-        state.en += card.amount;
+        state.en = Math.min(state.en + card.amount, state.enCap);
         addLog(`EN +${card.amount}`, 'info');
       } else if (card.effect === 'reboot') {
         const target = state.allies[targetId];
@@ -1655,7 +1657,7 @@ function executeCard(targetId) {
             addLog(`${worst.name} → 山札の底`, 'info');
           }
         }
-        state.en += card.enGain;
+        state.en = Math.min(state.en + card.enGain, state.enCap);
         addLog(`EN +${card.enGain}`, 'info');
       } else if (card.effect === 'time_leap') {
         // Shuffle all discard back into deck, then draw
@@ -1735,7 +1737,7 @@ function executeCard(targetId) {
         } else { addLog(`Dead Drawカードなし`, 'info'); }
       } else if (card.effect === 'supply_drop') {
         for (let i = 0; i < card.drawAmount; i++) drawCard();
-        state.en += card.enGain;
+        state.en = Math.min(state.en + card.enGain, state.enCap);
         addLog(`${card.drawAmount}枚追加ドロー, EN+${card.enGain}`, 'info');
       }
       break;
@@ -1834,7 +1836,7 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
     // Parts salvage: on any kill, check if any ally has parts_salvage active
     state.allies.forEach(a => {
       if (!a.dead && a.partsSalvageActive) {
-        state.en += 1;
+        state.en = Math.min(state.en + 1, state.enCap);
         ally.hp = Math.min(ally.maxHP, ally.hp + 3);
         addLog(`パーツ回収: EN+1, ${ally.name} HP+3`, 'info');
       }
@@ -1864,7 +1866,7 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
 function handleOnKill(ally, onKill) {
   switch (onKill.type) {
     case 'en_recover':
-      state.en += onKill.amount;
+      state.en = Math.min(state.en + onKill.amount, state.enCap);
       addLog(`${ally.name}: 撃破ボーナス EN+${onKill.amount}`, 'info');
       break;
     case 'draw':
@@ -1924,7 +1926,7 @@ function applyItem(slotIdx, targetId) {
       break;
     }
     case 'en_cell': {
-      state.en += 2;
+      state.en = Math.min(state.en + 2, state.enCap);
       addLog('ENセル: EN +2', 'info');
       break;
     }
@@ -2660,7 +2662,7 @@ function renderBattle() {
   renderItemsBar();
 
   // EN & Turn
-  document.getElementById('en-display').textContent = state.en;
+  document.getElementById('en-display').textContent = `${state.en}/${state.enCap}`;
   document.getElementById('turn-info').textContent = `TURN ${state.turn}`;
   document.getElementById('deck-info').textContent = `(山: ${state.deck.length} / 捨: ${state.discard.length})`;
 
