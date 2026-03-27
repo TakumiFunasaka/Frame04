@@ -3,282 +3,1306 @@
     "name": "ストライカー",
     "role": "アタッカー/近接高火力",
     "baseHP": 50,
-    "baseStats": { "STR": 5, "VIT": 2, "INT": 0, "MND": 0, "AGI": 1, "DEX": 2 },
+    "baseStats": {
+      "OUT": 5,
+      "SHL": 2,
+      "CTRL": 0,
+      "DRV": 3
+    },
     "pack": "base",
     "cards": [
-      { "name": "パイルバンカー", "cost": 2, "desc": "敵1体に8+STRの物理ダメージ", "type": "attack", "target": "enemy_single", "baseDmg": 8, "stat": "STR", "dmgType": "physical" },
-      { "name": "ラッシュブレード", "cost": 1, "desc": "敵1体に4+STRの物理ダメージ", "type": "attack", "target": "enemy_single", "baseDmg": 4, "stat": "STR", "dmgType": "physical" },
-      { "name": "ラッシュブレード", "cost": 1, "desc": "敵1体に4+STRの物理ダメージ", "type": "attack", "target": "enemy_single", "baseDmg": 4, "stat": "STR", "dmgType": "physical" },
-      { "name": "アーマーブレイク", "cost": 1, "desc": "敵1体に3+STRダメージ。バリア全除去", "type": "attack", "target": "enemy_single", "baseDmg": 3, "stat": "STR", "dmgType": "physical", "removeBarrier": true },
-      { "name": "オーバードライブ", "cost": 2, "desc": "全機の攻撃が今ターン2回ヒット", "type": "buff", "target": "ally_all", "effect": "overdrive" }
+      {
+        "name": "パイルバンカー",
+        "cost": 2,
+        "desc": "敵1体に8+OUTの物理ダメージ",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 8,
+        "stat": "OUT",
+        "dmgType": "physical"
+      },
+      {
+        "name": "ラッシュブレード",
+        "cost": 1,
+        "desc": "敵1体に4+OUTの物理ダメージ",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 4,
+        "stat": "OUT",
+        "dmgType": "physical"
+      },
+      {
+        "name": "ラッシュブレード",
+        "cost": 1,
+        "desc": "敵1体に4+OUTの物理ダメージ",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 4,
+        "stat": "OUT",
+        "dmgType": "physical"
+      },
+      {
+        "name": "アーマーブレイク",
+        "cost": 1,
+        "desc": "敵1体に3+OUTダメージ。フィールド全除去",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 3,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "removeBarrier": true
+      },
+      {
+        "name": "オーバードライブ",
+        "cost": 2,
+        "desc": "全機の攻撃が今ターン2回ヒット",
+        "type": "buff",
+        "target": "ally_all",
+        "effect": "overdrive"
+      }
     ]
   },
   "gunner": {
     "name": "ガンナー",
     "role": "アタッカー/遠距離物理",
     "baseHP": 45,
-    "baseStats": { "STR": 4, "VIT": 1, "INT": 0, "MND": 0, "AGI": 1, "DEX": 4 },
+    "baseStats": {
+      "OUT": 4,
+      "SHL": 1,
+      "CTRL": 0,
+      "DRV": 5
+    },
     "pack": "base",
     "cards": [
-      { "name": "スナイプショット", "cost": 2, "desc": "敵1体に7+STR。DEX+5", "type": "attack", "target": "enemy_single", "baseDmg": 7, "stat": "STR", "dmgType": "physical", "bonusDEX": 5 },
-      { "name": "バーストファイア", "cost": 1, "desc": "敵1体に3+STRを2回", "type": "attack", "target": "enemy_single", "baseDmg": 3, "stat": "STR", "dmgType": "physical", "hits": 2 },
-      { "name": "トレーサー弾", "cost": 0, "desc": "敵1体に2+STR。AGI-10(2T)", "type": "attack", "target": "enemy_single", "baseDmg": 2, "stat": "STR", "dmgType": "physical", "debuffAGI": 10, "debuffDur": 2 },
-      { "name": "サプレッション", "cost": 1, "desc": "敵1体に4+STR。攻撃力-2", "type": "attack", "target": "enemy_single", "baseDmg": 4, "stat": "STR", "dmgType": "physical", "debuffATK": 2 },
-      { "name": "デッドアイ", "cost": 2, "desc": "敵1体に12+STR。回避不可", "type": "attack", "target": "enemy_single", "baseDmg": 12, "stat": "STR", "dmgType": "physical", "unavoidable": true }
+      {
+        "name": "スナイプショット",
+        "cost": 2,
+        "desc": "敵1体に7+OUT。DEX+5",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 7,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "bonusDEX": 5
+      },
+      {
+        "name": "バーストファイア",
+        "cost": 1,
+        "desc": "敵1体に3+OUTを2回",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 3,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "hits": 2
+      },
+      {
+        "name": "トレーサー弾",
+        "cost": 0,
+        "desc": "敵1体に2+OUT。AGI-10(2T)",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 2,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "debuffAGI": 10,
+        "debuffDur": 2
+      },
+      {
+        "name": "サプレッション",
+        "cost": 1,
+        "desc": "敵1体に4+OUT。攻撃力-2",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 4,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "debuffATK": 2
+      },
+      {
+        "name": "デッドアイ",
+        "cost": 2,
+        "desc": "敵1体に12+OUT。回避不可",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 12,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "unavoidable": true
+      }
     ]
   },
   "blaster": {
     "name": "ブラスター",
     "role": "アタッカー/範囲砲撃",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 1, "INT": 6, "MND": 1, "AGI": 1, "DEX": 1 },
+    "baseStats": {
+      "OUT": 6,
+      "SHL": 1,
+      "CTRL": 1,
+      "DRV": 2
+    },
     "pack": "base",
     "cards": [
-      { "name": "プラズマキャノン", "cost": 2, "desc": "敵全体に4+INTの電磁ダメージ", "type": "attack", "target": "enemy_all", "baseDmg": 4, "stat": "INT", "dmgType": "electromagnetic" },
-      { "name": "ヒートバースト", "cost": 1, "desc": "敵1体に5+INT熱量。過熱(2)", "type": "attack", "target": "enemy_single", "baseDmg": 5, "stat": "INT", "dmgType": "heat", "applyStatus": { "type": "overheat", "stacks": 2 } },
-      { "name": "クラスターボム", "cost": 2, "desc": "ランダム敵に3+INTを3回", "type": "attack", "target": "enemy_random", "baseDmg": 3, "stat": "INT", "dmgType": "physical", "hits": 3 },
-      { "name": "チャージショット", "cost": 0, "desc": "次の自機攻撃+5", "type": "buff", "target": "self", "effect": "chargeshot", "chargeAmount": 5 },
-      { "name": "サーマルメルト", "cost": 3, "desc": "敵全体に6+INT熱量。過熱敵に2倍", "type": "attack", "target": "enemy_all", "baseDmg": 6, "stat": "INT", "dmgType": "heat", "doubleOnOverheat": true }
+      {
+        "name": "プラズマキャノン",
+        "cost": 2,
+        "desc": "敵全体に4+OUTの電磁ダメージ",
+        "type": "attack",
+        "target": "enemy_all",
+        "baseDmg": 4,
+        "stat": "OUT",
+        "dmgType": "electromagnetic"
+      },
+      {
+        "name": "ヒートバースト",
+        "cost": 1,
+        "desc": "敵1体に5+OUT熱量。過熱(2)",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 5,
+        "stat": "OUT",
+        "dmgType": "heat",
+        "applyStatus": {
+          "type": "overheat",
+          "stacks": 2
+        }
+      },
+      {
+        "name": "クラスターボム",
+        "cost": 2,
+        "desc": "ランダム敵に3+OUTを3回",
+        "type": "attack",
+        "target": "enemy_random",
+        "baseDmg": 3,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "hits": 3
+      },
+      {
+        "name": "チャージショット",
+        "cost": 0,
+        "desc": "次の自機攻撃+5",
+        "type": "buff",
+        "target": "self",
+        "effect": "chargeshot",
+        "chargeAmount": 5
+      },
+      {
+        "name": "サーマルメルト",
+        "cost": 3,
+        "desc": "敵全体に6+OUT熱量。過熱敵に2倍",
+        "type": "attack",
+        "target": "enemy_all",
+        "baseDmg": 6,
+        "stat": "OUT",
+        "dmgType": "heat",
+        "doubleOnOverheat": true
+      }
     ]
   },
   "shielder": {
     "name": "シールダー",
-    "role": "ディフェンダー/挑発+バリア",
+    "role": "ディフェンダー/挑発+フィールド",
     "baseHP": 55,
-    "baseStats": { "STR": 0, "VIT": 6, "INT": 0, "MND": 2, "AGI": 0, "DEX": 2 },
+    "baseStats": {
+      "OUT": 0,
+      "SHL": 6,
+      "CTRL": 2,
+      "DRV": 2
+    },
     "pack": "base",
     "cards": [
-      { "name": "フォースバリア", "cost": 1, "desc": "自機にバリア8+VIT", "type": "defend", "target": "self", "baseBarrier": 8, "stat": "VIT" },
-      { "name": "プロヴォーク", "cost": 1, "desc": "挑発: ターゲット変更+バリア4+VIT", "type": "defend", "target": "provoke", "baseBarrier": 4, "stat": "VIT" },
-      { "name": "プロヴォーク", "cost": 1, "desc": "挑発: ターゲット変更+バリア4+VIT", "type": "defend", "target": "provoke", "baseBarrier": 4, "stat": "VIT" },
-      { "name": "カウンターガード", "cost": 1, "desc": "自機バリア5+VIT。削れたら反撃5", "type": "defend", "target": "self", "baseBarrier": 5, "stat": "VIT", "counterDmg": 5 },
-      { "name": "フルガード", "cost": 2, "desc": "全機にバリア4+VIT", "type": "defend", "target": "ally_all", "baseBarrier": 4, "stat": "VIT" }
+      {
+        "name": "フォースフィールド",
+        "cost": 1,
+        "desc": "自機にフィールド8+SHL",
+        "type": "defend",
+        "target": "self",
+        "baseBarrier": 8,
+        "stat": "SHL"
+      },
+      {
+        "name": "プロヴォーク",
+        "cost": 1,
+        "desc": "挑発: ターゲット変更+フィールド4+SHL",
+        "type": "defend",
+        "target": "provoke",
+        "baseBarrier": 4,
+        "stat": "SHL"
+      },
+      {
+        "name": "プロヴォーク",
+        "cost": 1,
+        "desc": "挑発: ターゲット変更+フィールド4+SHL",
+        "type": "defend",
+        "target": "provoke",
+        "baseBarrier": 4,
+        "stat": "SHL"
+      },
+      {
+        "name": "カウンターガード",
+        "cost": 1,
+        "desc": "自機フィールド5+SHL。削れたら反撃5",
+        "type": "defend",
+        "target": "self",
+        "baseBarrier": 5,
+        "stat": "SHL",
+        "counterDmg": 5
+      },
+      {
+        "name": "フルガード",
+        "cost": 2,
+        "desc": "全機にフィールド4+SHL",
+        "type": "defend",
+        "target": "ally_all",
+        "baseBarrier": 4,
+        "stat": "SHL"
+      }
     ]
   },
   "medic": {
     "name": "メディック",
     "role": "サポート/修復+回復",
     "baseHP": 45,
-    "baseStats": { "STR": 0, "VIT": 2, "INT": 0, "MND": 6, "AGI": 1, "DEX": 1 },
+    "baseStats": {
+      "OUT": 0,
+      "SHL": 2,
+      "CTRL": 6,
+      "DRV": 2
+    },
     "pack": "base",
     "cards": [
-      { "name": "リペアナノ", "cost": 1, "desc": "味方1機HP6+MND回復", "type": "heal", "target": "ally_single", "baseHeal": 6, "stat": "MND" },
-      { "name": "リペアナノ", "cost": 1, "desc": "味方1機HP6+MND回復", "type": "heal", "target": "ally_single", "baseHeal": 6, "stat": "MND" },
-      { "name": "エリアリペア", "cost": 2, "desc": "全機HP3+MND回復", "type": "heal", "target": "ally_all", "baseHeal": 3, "stat": "MND" },
-      { "name": "バリアコート", "cost": 1, "desc": "味方1機バリア5+MND(持続)", "type": "defend", "target": "ally_single", "baseBarrier": 5, "stat": "MND", "persistent": true },
-      { "name": "リブートコア", "cost": 3, "desc": "大破味方1機をHP1で再起動", "type": "special", "target": "ally_dead", "effect": "reboot" }
+      {
+        "name": "リペアナノ",
+        "cost": 1,
+        "desc": "味方1機HP6+CTRL回復",
+        "type": "heal",
+        "target": "ally_single",
+        "baseHeal": 6,
+        "stat": "CTRL"
+      },
+      {
+        "name": "リペアナノ",
+        "cost": 1,
+        "desc": "味方1機HP6+CTRL回復",
+        "type": "heal",
+        "target": "ally_single",
+        "baseHeal": 6,
+        "stat": "CTRL"
+      },
+      {
+        "name": "エリアリペア",
+        "cost": 2,
+        "desc": "全機HP3+CTRL回復",
+        "type": "heal",
+        "target": "ally_all",
+        "baseHeal": 3,
+        "stat": "CTRL"
+      },
+      {
+        "name": "フィールドコート",
+        "cost": 1,
+        "desc": "味方1機フィールド5+CTRL(持続)",
+        "type": "defend",
+        "target": "ally_single",
+        "baseBarrier": 5,
+        "stat": "CTRL",
+        "persistent": true
+      },
+      {
+        "name": "リブートコア",
+        "cost": 3,
+        "desc": "大破味方1機をHP1で再起動",
+        "type": "special",
+        "target": "ally_dead",
+        "effect": "reboot"
+      }
     ]
   },
   "jammer": {
     "name": "ジャマー",
     "role": "テクニカル/状態異常",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 1, "INT": 5, "MND": 1, "AGI": 2, "DEX": 1 },
+    "baseStats": {
+      "OUT": 5,
+      "SHL": 1,
+      "CTRL": 1,
+      "DRV": 3
+    },
     "pack": "base",
     "cards": [
-      { "name": "フリーズショット", "cost": 1, "desc": "敵1体に3+INT冷却。30%凍結", "type": "attack", "target": "enemy_single", "baseDmg": 3, "stat": "INT", "dmgType": "cold", "applyStatus": { "type": "frozen", "chance": 30 } },
-      { "name": "ショックウェーブ", "cost": 1, "desc": "敵全体AGI/DEX-5(1T)", "type": "debuff", "target": "enemy_all", "effect": "slowAll", "amount": 5 },
-      { "name": "ウイルスコード", "cost": 1, "desc": "敵1体に汚染(3)。攻撃力-1", "type": "debuff", "target": "enemy_single", "applyStatus": { "type": "poison", "stacks": 3 }, "debuffATK": 1 },
-      { "name": "EMPパルス", "cost": 2, "desc": "敵全体感電。感電中なら8ダメ", "type": "debuff", "target": "enemy_all", "effect": "emp", "empDmg": 8 },
-      { "name": "システムクラッシュ", "cost": 2, "desc": "状態異常+2T。1種につき4ダメ", "type": "attack", "target": "enemy_single", "effect": "systemcrash", "crashDmg": 4 }
+      {
+        "name": "フリーズショット",
+        "cost": 1,
+        "desc": "敵1体に3+OUT冷却。30%凍結",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 3,
+        "stat": "OUT",
+        "dmgType": "cold",
+        "applyStatus": {
+          "type": "frozen",
+          "chance": 30
+        }
+      },
+      {
+        "name": "ショックウェーブ",
+        "cost": 1,
+        "desc": "敵全体AGI/DEX-5(1T)",
+        "type": "debuff",
+        "target": "enemy_all",
+        "effect": "slowAll",
+        "amount": 5
+      },
+      {
+        "name": "ウイルスコード",
+        "cost": 1,
+        "desc": "敵1体に汚染(3)。攻撃力-1",
+        "type": "debuff",
+        "target": "enemy_single",
+        "applyStatus": {
+          "type": "poison",
+          "stacks": 3
+        },
+        "debuffATK": 1
+      },
+      {
+        "name": "EMPパルス",
+        "cost": 2,
+        "desc": "敵全体感電。感電中なら8ダメ",
+        "type": "debuff",
+        "target": "enemy_all",
+        "effect": "emp",
+        "empDmg": 8
+      },
+      {
+        "name": "システムクラッシュ",
+        "cost": 2,
+        "desc": "状態異常+2T。1種につき4ダメ",
+        "type": "attack",
+        "target": "enemy_single",
+        "effect": "systemcrash",
+        "crashDmg": 4
+      }
     ]
   },
   "booster": {
     "name": "ブースター",
     "role": "サポート/バフ+EN供給",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 2, "INT": 0, "MND": 2, "AGI": 3, "DEX": 3 },
+    "baseStats": {
+      "OUT": 0,
+      "SHL": 2,
+      "CTRL": 2,
+      "DRV": 6
+    },
     "pack": "base",
     "cards": [
-      { "name": "パワーリンク", "cost": 1, "desc": "味方1機の次攻撃+4", "type": "buff", "target": "ally_single", "effect": "powerlink", "amount": 4 },
-      { "name": "ENチャージ", "cost": 0, "desc": "EN+1", "type": "special", "target": "none", "effect": "encharge", "amount": 1 },
-      { "name": "ENチャージ", "cost": 0, "desc": "EN+1", "type": "special", "target": "none", "effect": "encharge", "amount": 1 },
-      { "name": "アクセルブースト", "cost": 1, "desc": "味方1機AGI+15(1T)", "type": "buff", "target": "ally_single", "effect": "accel", "amount": 15 },
-      { "name": "フルブースト", "cost": 2, "desc": "全機STR/INT+2(1T)。EN+1", "type": "buff", "target": "ally_all", "effect": "fullboost", "amount": 2 }
+      {
+        "name": "パワーリンク",
+        "cost": 1,
+        "desc": "味方1機の次攻撃+4",
+        "type": "buff",
+        "target": "ally_single",
+        "effect": "powerlink",
+        "amount": 4
+      },
+      {
+        "name": "ENチャージ",
+        "cost": 0,
+        "desc": "EN+1",
+        "type": "special",
+        "target": "none",
+        "effect": "encharge",
+        "amount": 1
+      },
+      {
+        "name": "ENチャージ",
+        "cost": 0,
+        "desc": "EN+1",
+        "type": "special",
+        "target": "none",
+        "effect": "encharge",
+        "amount": 1
+      },
+      {
+        "name": "アクセルブースト",
+        "cost": 1,
+        "desc": "味方1機AGI+15(1T)",
+        "type": "buff",
+        "target": "ally_single",
+        "effect": "accel",
+        "amount": 15
+      },
+      {
+        "name": "フルブースト",
+        "cost": 2,
+        "desc": "全機OUT+2(1T)。EN+1",
+        "type": "buff",
+        "target": "ally_all",
+        "effect": "fullboost",
+        "amount": 2
+      }
     ]
   },
   "phantom": {
     "name": "ファントム",
     "role": "テクニカル/高AGI一撃離脱",
     "baseHP": 40,
-    "baseStats": { "STR": 3, "VIT": 0, "INT": 0, "MND": 0, "AGI": 5, "DEX": 2 },
+    "baseStats": {
+      "OUT": 3,
+      "SHL": 0,
+      "CTRL": 0,
+      "DRV": 7
+    },
     "pack": "base",
     "cards": [
-      { "name": "ファントムスラッシュ", "cost": 1, "desc": "敵1体5+STR。自機AGI+10(1T)", "type": "attack", "target": "enemy_single", "baseDmg": 5, "stat": "STR", "dmgType": "physical", "selfBuffAGI": 10 },
-      { "name": "バックスタブ", "cost": 2, "desc": "敵1体6+STR。他を狙ってる敵に2倍", "type": "attack", "target": "enemy_single", "baseDmg": 6, "stat": "STR", "dmgType": "physical", "backstab": true },
-      { "name": "スモークボム", "cost": 1, "desc": "全機AGI+10(1T)", "type": "buff", "target": "ally_all", "effect": "smoke", "amount": 10 },
-      { "name": "マークターゲット", "cost": 0, "desc": "敵1体をマーク。次攻撃+5", "type": "debuff", "target": "enemy_single", "effect": "mark", "amount": 5 },
-      { "name": "ファントムレイド", "cost": 3, "desc": "敵1体7+STRを3回。回避不可。バリア0に", "type": "attack", "target": "enemy_single", "baseDmg": 7, "stat": "STR", "dmgType": "physical", "hits": 3, "unavoidable": true, "selfRemoveBarrier": true }
+      {
+        "name": "ファントムスラッシュ",
+        "cost": 1,
+        "desc": "敵1体5+OUT。自機AGI+10(1T)",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 5,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "selfBuffAGI": 10
+      },
+      {
+        "name": "バックスタブ",
+        "cost": 2,
+        "desc": "敵1体6+OUT。他を狙ってる敵に2倍",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 6,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "backstab": true
+      },
+      {
+        "name": "スモークボム",
+        "cost": 1,
+        "desc": "全機AGI+10(1T)",
+        "type": "buff",
+        "target": "ally_all",
+        "effect": "smoke",
+        "amount": 10
+      },
+      {
+        "name": "マークターゲット",
+        "cost": 0,
+        "desc": "敵1体をマーク。次攻撃+5",
+        "type": "debuff",
+        "target": "enemy_single",
+        "effect": "mark",
+        "amount": 5
+      },
+      {
+        "name": "ファントムレイド",
+        "cost": 3,
+        "desc": "敵1体7+OUTを3回。回避不可。フィールド0に",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 7,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "hits": 3,
+        "unavoidable": true,
+        "selfRemoveBarrier": true
+      }
     ]
   },
   "fortress": {
     "name": "フォートレス",
     "role": "ディフェンダー/攻城重装",
     "baseHP": 55,
-    "baseStats": { "STR": 3, "VIT": 5, "INT": 0, "MND": 0, "AGI": 0, "DEX": 2 },
+    "baseStats": {
+      "OUT": 3,
+      "SHL": 5,
+      "CTRL": 0,
+      "DRV": 2
+    },
     "pack": "base",
     "cards": [
-      { "name": "ヘビーストライク", "cost": 2, "desc": "敵1体に12+STR", "type": "attack", "target": "enemy_single", "baseDmg": 12, "stat": "STR", "dmgType": "physical" },
-      { "name": "アイアンウォール", "cost": 1, "desc": "自機バリア10+VIT。今ターン攻撃不可", "type": "defend", "target": "self", "baseBarrier": 10, "stat": "VIT", "lockAttack": true },
-      { "name": "スパイクアーマー", "cost": 1, "desc": "自機バリア5+VIT。吸収ダメの50%を反撃", "type": "defend", "target": "self", "baseBarrier": 5, "stat": "VIT", "spikeReflect": 0.5 },
-      { "name": "ウォークライ", "cost": 0, "desc": "全味方の次攻撃+3。自機バリア+3", "type": "buff", "target": "ally_all", "effect": "warcry", "warcryBonus": 3, "selfBarrier": 3 },
-      { "name": "シージモード", "cost": 2, "desc": "自機バリア6+VIT。次ターン攻撃+10", "type": "defend", "target": "self", "baseBarrier": 6, "stat": "VIT", "siegeBuff": 10 }
+      {
+        "name": "ヘビーストライク",
+        "cost": 2,
+        "desc": "敵1体に12+OUT",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 12,
+        "stat": "OUT",
+        "dmgType": "physical"
+      },
+      {
+        "name": "アイアンウォール",
+        "cost": 1,
+        "desc": "自機フィールド10+SHL。今ターン攻撃不可",
+        "type": "defend",
+        "target": "self",
+        "baseBarrier": 10,
+        "stat": "SHL",
+        "lockAttack": true
+      },
+      {
+        "name": "スパイクアーマー",
+        "cost": 1,
+        "desc": "自機フィールド5+SHL。吸収ダメの50%を反撃",
+        "type": "defend",
+        "target": "self",
+        "baseBarrier": 5,
+        "stat": "SHL",
+        "spikeReflect": 0.5
+      },
+      {
+        "name": "ウォークライ",
+        "cost": 0,
+        "desc": "全味方の次攻撃+3。自機フィールド+3",
+        "type": "buff",
+        "target": "ally_all",
+        "effect": "warcry",
+        "warcryBonus": 3,
+        "selfBarrier": 3
+      },
+      {
+        "name": "シージモード",
+        "cost": 2,
+        "desc": "自機フィールド6+SHL。次ターン攻撃+10",
+        "type": "defend",
+        "target": "self",
+        "baseBarrier": 6,
+        "stat": "SHL",
+        "siegeBuff": 10
+      }
     ]
   },
   "overload": {
     "name": "オーバーロード",
     "role": "テクニカル/ハイリスク大火力",
     "baseHP": 45,
-    "baseStats": { "STR": 0, "VIT": 1, "INT": 6, "MND": 1, "AGI": 1, "DEX": 1 },
+    "baseStats": {
+      "OUT": 6,
+      "SHL": 1,
+      "CTRL": 1,
+      "DRV": 2
+    },
     "pack": "base",
     "cards": [
-      { "name": "オーバーヒート", "cost": 1, "desc": "自機過熱(2)。敵1体12+INT熱量", "type": "attack", "target": "enemy_single", "baseDmg": 12, "stat": "INT", "dmgType": "heat", "selfStatus": { "type": "overheat", "stacks": 2 } },
-      { "name": "リミッター解除", "cost": 0, "desc": "自機HP-5。今ターン攻撃+6", "type": "buff", "target": "self", "effect": "limiter", "selfDmg": 5, "amount": 6 },
-      { "name": "プラズマバースト", "cost": 2, "desc": "敵全体8+INT電磁。自機バリア0", "type": "attack", "target": "enemy_all", "baseDmg": 8, "stat": "INT", "dmgType": "electromagnetic", "selfRemoveBarrier": true },
-      { "name": "ドレインショット", "cost": 1, "desc": "敵1体6+INT電磁。50%HP吸収", "type": "attack", "target": "enemy_single", "baseDmg": 6, "stat": "INT", "dmgType": "electromagnetic", "drain": 0.5 },
-      { "name": "メルトダウン", "cost": 3, "desc": "自機HP-10。敵全体15+INT熱量。過熱敵2倍", "type": "attack", "target": "enemy_all", "baseDmg": 15, "stat": "INT", "dmgType": "heat", "selfDmg": 10, "doubleOnOverheat": true }
+      {
+        "name": "オーバーヒート",
+        "cost": 1,
+        "desc": "自機過熱(2)。敵1体12+OUT熱量",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 12,
+        "stat": "OUT",
+        "dmgType": "heat",
+        "selfStatus": {
+          "type": "overheat",
+          "stacks": 2
+        }
+      },
+      {
+        "name": "リミッター解除",
+        "cost": 0,
+        "desc": "自機HP-5。今ターン攻撃+6",
+        "type": "buff",
+        "target": "self",
+        "effect": "limiter",
+        "selfDmg": 5,
+        "amount": 6
+      },
+      {
+        "name": "プラズマバースト",
+        "cost": 2,
+        "desc": "敵全体8+OUT電磁。自機フィールド0",
+        "type": "attack",
+        "target": "enemy_all",
+        "baseDmg": 8,
+        "stat": "OUT",
+        "dmgType": "electromagnetic",
+        "selfRemoveBarrier": true
+      },
+      {
+        "name": "ドレインショット",
+        "cost": 1,
+        "desc": "敵1体6+OUT電磁。50%HP吸収",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 6,
+        "stat": "OUT",
+        "dmgType": "electromagnetic",
+        "drain": 0.5
+      },
+      {
+        "name": "メルトダウン",
+        "cost": 3,
+        "desc": "自機HP-10。敵全体15+OUT熱量。過熱敵2倍",
+        "type": "attack",
+        "target": "enemy_all",
+        "baseDmg": 15,
+        "stat": "OUT",
+        "dmgType": "heat",
+        "selfDmg": 10,
+        "doubleOnOverheat": true
+      }
     ]
   },
-
   "converter": {
     "name": "コンバーター",
     "role": "テクニカル/属性変換",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 2, "INT": 5, "MND": 1, "AGI": 1, "DEX": 1 },
+    "baseStats": {
+      "OUT": 5,
+      "SHL": 2,
+      "CTRL": 1,
+      "DRV": 2
+    },
     "pack": "protocol_ex",
     "cards": [
-      { "name": "エレメントコート:熱", "cost": 0, "desc": "味方1機に熱量付与(持続)。物理攻撃に過熱(1)追加", "type": "buff", "target": "ally_single", "effect": "element_coat_heat", "persistentBuff": true },
-      { "name": "エレメントコート:雷", "cost": 0, "desc": "味方1機に電磁付与(持続)。物理攻撃に感電追加", "type": "buff", "target": "ally_single", "effect": "element_coat_shock", "persistentBuff": true },
-      { "name": "アブソーブフィールド", "cost": 1, "desc": "自機バリア5+INT。属性攻撃被弾時蓄積+1(持続)", "type": "defend", "target": "self", "baseBarrier": 5, "stat": "INT", "effect": "absorb_field", "persistentBuff": true },
-      { "name": "リバースチャージ", "cost": 1, "desc": "蓄積全消費。敵1体に蓄積×5+INTダメ。0でも2+INT", "type": "attack", "target": "enemy_single", "effect": "reverse_charge", "stat": "INT", "dmgType": "electromagnetic", "baseDmg": 2, "accumMultiplier": 5 },
-      { "name": "フュージョンバースト", "cost": 2, "desc": "蓄積全消費。敵全体に蓄積×3+INTダメ。3以上で過熱+感電+減速", "type": "attack", "target": "enemy_all", "effect": "fusion_burst", "stat": "INT", "dmgType": "electromagnetic", "baseDmg": 0, "accumMultiplier": 3, "accumThreshold": 3 }
+      {
+        "name": "エレメントコート:熱",
+        "cost": 0,
+        "desc": "味方1機に熱量付与(持続)。物理攻撃に過熱(1)追加",
+        "type": "buff",
+        "target": "ally_single",
+        "effect": "element_coat_heat",
+        "persistentBuff": true
+      },
+      {
+        "name": "エレメントコート:雷",
+        "cost": 0,
+        "desc": "味方1機に電磁付与(持続)。物理攻撃に感電追加",
+        "type": "buff",
+        "target": "ally_single",
+        "effect": "element_coat_shock",
+        "persistentBuff": true
+      },
+      {
+        "name": "アブソーブフィールド",
+        "cost": 1,
+        "desc": "自機フィールド5+OUT。属性攻撃被弾時蓄積+1(持続)",
+        "type": "defend",
+        "target": "self",
+        "baseBarrier": 5,
+        "stat": "OUT",
+        "effect": "absorb_field",
+        "persistentBuff": true
+      },
+      {
+        "name": "リバースチャージ",
+        "cost": 1,
+        "desc": "蓄積全消費。敵1体に蓄積×5+OUTダメ。0でも2+OUT",
+        "type": "attack",
+        "target": "enemy_single",
+        "effect": "reverse_charge",
+        "stat": "OUT",
+        "dmgType": "electromagnetic",
+        "baseDmg": 2,
+        "accumMultiplier": 5
+      },
+      {
+        "name": "フュージョンバースト",
+        "cost": 2,
+        "desc": "蓄積全消費。敵全体に蓄積×3+OUTダメ。3以上で過熱+感電+減速",
+        "type": "attack",
+        "target": "enemy_all",
+        "effect": "fusion_burst",
+        "stat": "OUT",
+        "dmgType": "electromagnetic",
+        "baseDmg": 0,
+        "accumMultiplier": 3,
+        "accumThreshold": 3
+      }
     ]
   },
   "linker": {
     "name": "リンカー",
     "role": "サポート/連携強化",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 3, "INT": 0, "MND": 3, "AGI": 2, "DEX": 2 },
+    "baseStats": {
+      "OUT": 0,
+      "SHL": 3,
+      "CTRL": 3,
+      "DRV": 4
+    },
     "pack": "protocol_ex",
     "cards": [
-      { "name": "ニューラルリンク", "cost": 1, "desc": "味方2機をリンク(持続)。バリア40%共有", "type": "special", "target": "ally_pair", "effect": "neural_link", "persistentBuff": true, "linkShareRate": 0.4 },
-      { "name": "シンクロアタック", "cost": 1, "desc": "リンクを攻撃連動に(持続)。攻撃時リンク先も30%追撃", "type": "special", "target": "none", "effect": "synchro_attack", "persistentBuff": true, "linkMode": "attack_sync", "syncRate": 0.3 },
-      { "name": "シェアードペイン", "cost": 1, "desc": "リンクを被弾分散に(持続)。被弾25%をリンク先が肩代わり", "type": "special", "target": "none", "effect": "shared_pain", "persistentBuff": true, "linkMode": "damage_share", "shareRate": 0.25 },
-      { "name": "リンクブースト", "cost": 0, "desc": "リンク中の味方2機のSTR/INT+3(今ターン)", "type": "buff", "target": "none", "effect": "link_boost", "amount": 3 },
-      { "name": "レゾナンス", "cost": 2, "desc": "リンク中の味方2機の次攻撃+10", "type": "buff", "target": "none", "effect": "resonance", "amount": 10 }
+      {
+        "name": "ニューラルリンク",
+        "cost": 1,
+        "desc": "味方2機をリンク(持続)。フィールド40%共有",
+        "type": "special",
+        "target": "ally_pair",
+        "effect": "neural_link",
+        "persistentBuff": true,
+        "linkShareRate": 0.4
+      },
+      {
+        "name": "シンクロアタック",
+        "cost": 1,
+        "desc": "リンクを攻撃連動に(持続)。攻撃時リンク先も30%追撃",
+        "type": "special",
+        "target": "none",
+        "effect": "synchro_attack",
+        "persistentBuff": true,
+        "linkMode": "attack_sync",
+        "syncRate": 0.3
+      },
+      {
+        "name": "シェアードペイン",
+        "cost": 1,
+        "desc": "リンクを被弾分散に(持続)。被弾25%をリンク先が肩代わり",
+        "type": "special",
+        "target": "none",
+        "effect": "shared_pain",
+        "persistentBuff": true,
+        "linkMode": "damage_share",
+        "shareRate": 0.25
+      },
+      {
+        "name": "リンクブースト",
+        "cost": 0,
+        "desc": "リンク中の味方2機のOUT+3(今ターン)",
+        "type": "buff",
+        "target": "none",
+        "effect": "link_boost",
+        "amount": 3
+      },
+      {
+        "name": "レゾナンス",
+        "cost": 2,
+        "desc": "リンク中の味方2機の次攻撃+10",
+        "type": "buff",
+        "target": "none",
+        "effect": "resonance",
+        "amount": 10
+      }
     ]
   },
   "decoy": {
     "name": "デコイ",
     "role": "テクニカル/囮+自爆",
     "baseHP": 25,
-    "baseStats": { "STR": 0, "VIT": 2, "INT": 0, "MND": 0, "AGI": 6, "DEX": 2 },
+    "baseStats": {
+      "OUT": 0,
+      "SHL": 2,
+      "CTRL": 0,
+      "DRV": 8
+    },
     "pack": "protocol_ex",
     "cards": [
-      { "name": "ディストラクト", "cost": 0, "desc": "敵全体の挑発+自機バリア3", "type": "defend", "target": "provoke_all", "baseBarrier": 3, "stat": null, "effect": "distract" },
-      { "name": "オーバーチャージ", "cost": 1, "desc": "自機に爆薬カウンター+4(持続)。大破時×3全体ダメ", "type": "special", "target": "self", "effect": "overcharge", "bombAmount": 4, "persistentBuff": true },
-      { "name": "オーバーチャージ", "cost": 1, "desc": "自機に爆薬カウンター+4(持続)。大破時×3全体ダメ", "type": "special", "target": "self", "effect": "overcharge", "bombAmount": 4, "persistentBuff": true },
-      { "name": "セルフデストラクト", "cost": 0, "desc": "自機大破→爆発発動。爆薬0でも敵全体5ダメ", "type": "special", "target": "self", "effect": "self_destruct", "baseBombDmg": 5, "bombMultiplier": 3 },
-      { "name": "フェニックスコア", "cost": 1, "desc": "自機に不死(1回)付与(持続)。大破時HP1復帰", "type": "special", "target": "self", "effect": "phoenix_core", "persistentBuff": true }
+      {
+        "name": "ディストラクト",
+        "cost": 0,
+        "desc": "敵全体の挑発+自機フィールド3",
+        "type": "defend",
+        "target": "provoke_all",
+        "baseBarrier": 3,
+        "stat": null,
+        "effect": "distract"
+      },
+      {
+        "name": "オーバーチャージ",
+        "cost": 1,
+        "desc": "自機に爆薬カウンター+4(持続)。大破時×3全体ダメ",
+        "type": "special",
+        "target": "self",
+        "effect": "overcharge",
+        "bombAmount": 4,
+        "persistentBuff": true
+      },
+      {
+        "name": "オーバーチャージ",
+        "cost": 1,
+        "desc": "自機に爆薬カウンター+4(持続)。大破時×3全体ダメ",
+        "type": "special",
+        "target": "self",
+        "effect": "overcharge",
+        "bombAmount": 4,
+        "persistentBuff": true
+      },
+      {
+        "name": "セルフデストラクト",
+        "cost": 0,
+        "desc": "自機大破→爆発発動。爆薬0でも敵全体5ダメ",
+        "type": "special",
+        "target": "self",
+        "effect": "self_destruct",
+        "baseBombDmg": 5,
+        "bombMultiplier": 3
+      },
+      {
+        "name": "フェニックスコア",
+        "cost": 1,
+        "desc": "自機に不死(1回)付与(持続)。大破時HP1復帰",
+        "type": "special",
+        "target": "self",
+        "effect": "phoenix_core",
+        "persistentBuff": true
+      }
     ]
   },
   "scavenger": {
     "name": "スカベンジャー",
     "role": "テクニカル/資源回収",
     "baseHP": 45,
-    "baseStats": { "STR": 4, "VIT": 2, "INT": 0, "MND": 0, "AGI": 1, "DEX": 3 },
+    "baseStats": {
+      "OUT": 4,
+      "SHL": 2,
+      "CTRL": 0,
+      "DRV": 4
+    },
     "pack": "protocol_ex",
     "cards": [
-      { "name": "サルベージクロー", "cost": 1, "desc": "敵1体に5+STR物理。撃破時EN+2", "type": "attack", "target": "enemy_single", "baseDmg": 5, "stat": "STR", "dmgType": "physical", "onKill": { "type": "en_recover", "amount": 2 } },
-      { "name": "パーツ回収", "cost": 0, "desc": "今ターン撃破ごとにEN+1、撃破者HP3回復", "type": "special", "target": "none", "effect": "parts_salvage", "salvageEN": 1, "salvageHeal": 3 },
-      { "name": "スクラップアーム", "cost": 1, "desc": "敵1体に4+STR物理。撃破時カード1枚ドロー", "type": "attack", "target": "enemy_single", "baseDmg": 4, "stat": "STR", "dmgType": "physical", "onKill": { "type": "draw", "amount": 1 } },
-      { "name": "ジャンクシールド", "cost": 1, "desc": "自機バリア6+VIT。今ターン撃破ごとにバリア+3", "type": "defend", "target": "self", "baseBarrier": 6, "stat": "VIT", "effect": "junk_shield", "killBarrierBonus": 3 },
-      { "name": "フィールドストリップ", "cost": 2, "desc": "敵1体に8+STR物理。撃破時全機STR/INT+1(持続)", "type": "attack", "target": "enemy_single", "baseDmg": 8, "stat": "STR", "dmgType": "physical", "onKill": { "type": "permanent_buff", "amount": 1 } }
+      {
+        "name": "サルベージクロー",
+        "cost": 1,
+        "desc": "敵1体に5+OUT物理。撃破時EN+2",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 5,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "onKill": {
+          "type": "en_recover",
+          "amount": 2
+        }
+      },
+      {
+        "name": "パーツ回収",
+        "cost": 0,
+        "desc": "今ターン撃破ごとにEN+1、撃破者HP3回復",
+        "type": "special",
+        "target": "none",
+        "effect": "parts_salvage",
+        "salvageEN": 1,
+        "salvageHeal": 3
+      },
+      {
+        "name": "スクラップアーム",
+        "cost": 1,
+        "desc": "敵1体に4+OUT物理。撃破時カード1枚ドロー",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 4,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "onKill": {
+          "type": "draw",
+          "amount": 1
+        }
+      },
+      {
+        "name": "ジャンクシールド",
+        "cost": 1,
+        "desc": "自機フィールド6+SHL。今ターン撃破ごとにフィールド+3",
+        "type": "defend",
+        "target": "self",
+        "baseBarrier": 6,
+        "stat": "SHL",
+        "effect": "junk_shield",
+        "killBarrierBonus": 3
+      },
+      {
+        "name": "フィールドストリップ",
+        "cost": 2,
+        "desc": "敵1体に8+OUT物理。撃破時全機OUT+1(持続)",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 8,
+        "stat": "OUT",
+        "dmgType": "physical",
+        "onKill": {
+          "type": "permanent_buff",
+          "amount": 1
+        }
+      }
     ]
   },
   "oracle": {
     "name": "オラクル",
     "role": "テクニカル/因果干渉",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 2, "INT": 3, "MND": 2, "AGI": 2, "DEX": 1 },
+    "baseStats": {
+      "OUT": 3,
+      "SHL": 2,
+      "CTRL": 2,
+      "DRV": 3
+    },
     "pack": "protocol_ex",
     "cards": [
-      { "name": "プレコグ", "cost": 0, "desc": "捨て札1枚→山札の上(次ターン確定ドロー)", "type": "special", "target": "none", "effect": "precog", "deckTopPick": true },
-      { "name": "リコール", "cost": 1, "desc": "捨て札1枚→手札(即プレイ可)", "type": "special", "target": "none", "effect": "recall", "discardPick": true },
-      { "name": "アクセラレート", "cost": 1, "desc": "カード2枚追加ドロー", "type": "special", "target": "none", "effect": "accelerate", "drawAmount": 2 },
-      { "name": "カルマリセット", "cost": 0, "desc": "手札1枚→山札の底。EN+1", "type": "special", "target": "none", "effect": "karma_reset", "enGain": 1 },
-      { "name": "タイムリープ", "cost": 2, "desc": "捨て札全部→山札シャッフル。3枚ドロー", "type": "special", "target": "none", "effect": "time_leap", "drawAmount": 3 }
+      {
+        "name": "プレコグ",
+        "cost": 0,
+        "desc": "捨て札1枚→山札の上(次ターン確定ドロー)",
+        "type": "special",
+        "target": "none",
+        "effect": "precog",
+        "deckTopPick": true
+      },
+      {
+        "name": "リコール",
+        "cost": 1,
+        "desc": "捨て札1枚→手札(即プレイ可)",
+        "type": "special",
+        "target": "none",
+        "effect": "recall",
+        "discardPick": true
+      },
+      {
+        "name": "アクセラレート",
+        "cost": 1,
+        "desc": "カード2枚追加ドロー",
+        "type": "special",
+        "target": "none",
+        "effect": "accelerate",
+        "drawAmount": 2
+      },
+      {
+        "name": "カルマリセット",
+        "cost": 0,
+        "desc": "手札1枚→山札の底。EN+1",
+        "type": "special",
+        "target": "none",
+        "effect": "karma_reset",
+        "enGain": 1
+      },
+      {
+        "name": "タイムリープ",
+        "cost": 2,
+        "desc": "捨て札全部→山札シャッフル。3枚ドロー",
+        "type": "special",
+        "target": "none",
+        "effect": "time_leap",
+        "drawAmount": 3
+      }
     ]
   },
-
   "seeker": {
     "name": "シーカー",
     "role": "サポート/弱点分析",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 1, "INT": 5, "MND": 1, "AGI": 1, "DEX": 2 },
+    "baseStats": {
+      "OUT": 5,
+      "SHL": 1,
+      "CTRL": 1,
+      "DRV": 3
+    },
     "pack": "protocol_hv",
     "cards": [
-      { "name": "ターゲットスキャン", "cost": 1, "desc": "敵1体をスキャン(持続)。被ダメ+20%", "type": "debuff", "target": "enemy_single", "effect": "scan", "persistentBuff": true, "scanDmgBonus": 0.2 },
-      { "name": "ウィークポイント", "cost": 0, "desc": "スキャン敵の次被弾+8。未スキャンでも+3", "type": "debuff", "target": "enemy_single", "effect": "weak_point", "scannedBonus": 8, "unscannedBonus": 3 },
-      { "name": "アナライズフィールド", "cost": 2, "desc": "敵全体をスキャン(持続)", "type": "debuff", "target": "enemy_all", "effect": "analyze_field", "persistentBuff": true },
-      { "name": "データリンク", "cost": 1, "desc": "味方全機STR/INT+2(今ターン)。スキャン数に応じ追加", "type": "buff", "target": "ally_all", "effect": "data_link", "baseAmount": 2, "perScanBonus": 1 },
-      { "name": "エクスプロイト", "cost": 2, "desc": "スキャン敵1体に5+INT電磁。状態異常1種+5追加", "type": "attack", "target": "enemy_single", "baseDmg": 5, "stat": "INT", "dmgType": "electromagnetic", "effect": "exploit", "perStatusBonus": 5, "requiresScan": true }
+      {
+        "name": "ターゲットスキャン",
+        "cost": 1,
+        "desc": "敵1体をスキャン(持続)。被ダメ+20%",
+        "type": "debuff",
+        "target": "enemy_single",
+        "effect": "scan",
+        "persistentBuff": true,
+        "scanDmgBonus": 0.2
+      },
+      {
+        "name": "ウィークポイント",
+        "cost": 0,
+        "desc": "スキャン敵の次被弾+8。未スキャンでも+3",
+        "type": "debuff",
+        "target": "enemy_single",
+        "effect": "weak_point",
+        "scannedBonus": 8,
+        "unscannedBonus": 3
+      },
+      {
+        "name": "アナライズフィールド",
+        "cost": 2,
+        "desc": "敵全体をスキャン(持続)",
+        "type": "debuff",
+        "target": "enemy_all",
+        "effect": "analyze_field",
+        "persistentBuff": true
+      },
+      {
+        "name": "データリンク",
+        "cost": 1,
+        "desc": "味方全機OUT+2(今ターン)。スキャン数に応じ追加",
+        "type": "buff",
+        "target": "ally_all",
+        "effect": "data_link",
+        "baseAmount": 2,
+        "perScanBonus": 1
+      },
+      {
+        "name": "エクスプロイト",
+        "cost": 2,
+        "desc": "スキャン敵1体に5+OUT電磁。状態異常1種+5追加",
+        "type": "attack",
+        "target": "enemy_single",
+        "baseDmg": 5,
+        "stat": "OUT",
+        "dmgType": "electromagnetic",
+        "effect": "exploit",
+        "perStatusBonus": 5,
+        "requiresScan": true
+      }
     ]
   },
   "launcher": {
     "name": "ランチャー",
     "role": "アタッカー/溜め砲撃",
     "baseHP": 45,
-    "baseStats": { "STR": 5, "VIT": 2, "INT": 0, "MND": 0, "AGI": 0, "DEX": 3 },
+    "baseStats": {
+      "OUT": 5,
+      "SHL": 2,
+      "CTRL": 0,
+      "DRV": 3
+    },
     "pack": "protocol_hv",
     "cards": [
-      { "name": "装填", "cost": 1, "desc": "装填カウンター+2(持続)", "type": "special", "target": "self", "effect": "load", "loadAmount": 2, "persistentBuff": true },
-      { "name": "装填", "cost": 1, "desc": "装填カウンター+2(持続)", "type": "special", "target": "self", "effect": "load", "loadAmount": 2, "persistentBuff": true },
-      { "name": "急速装填", "cost": 0, "desc": "装填カウンター+1。自機HP-3", "type": "special", "target": "self", "effect": "quick_load", "loadAmount": 1, "selfDmg": 3, "persistentBuff": true },
-      { "name": "レールキャノン", "cost": 2, "desc": "敵1体に装填×5+STR物理。装填リセット。回避不可", "type": "attack", "target": "enemy_single", "stat": "STR", "dmgType": "physical", "effect": "rail_cannon", "loadMultiplier": 5, "baseDmg": 0, "unavoidable": true },
-      { "name": "サテライトキャノン", "cost": 3, "desc": "敵全体に装填×3+STR物理。装填リセット。回避不可", "type": "attack", "target": "enemy_all", "stat": "STR", "dmgType": "physical", "effect": "satellite_cannon", "loadMultiplier": 3, "baseDmg": 0, "unavoidable": true }
+      {
+        "name": "装填",
+        "cost": 1,
+        "desc": "装填カウンター+2(持続)",
+        "type": "special",
+        "target": "self",
+        "effect": "load",
+        "loadAmount": 2,
+        "persistentBuff": true
+      },
+      {
+        "name": "装填",
+        "cost": 1,
+        "desc": "装填カウンター+2(持続)",
+        "type": "special",
+        "target": "self",
+        "effect": "load",
+        "loadAmount": 2,
+        "persistentBuff": true
+      },
+      {
+        "name": "急速装填",
+        "cost": 0,
+        "desc": "装填カウンター+1。自機HP-3",
+        "type": "special",
+        "target": "self",
+        "effect": "quick_load",
+        "loadAmount": 1,
+        "selfDmg": 3,
+        "persistentBuff": true
+      },
+      {
+        "name": "レールキャノン",
+        "cost": 2,
+        "desc": "敵1体に装填×5+OUT物理。装填リセット。回避不可",
+        "type": "attack",
+        "target": "enemy_single",
+        "stat": "OUT",
+        "dmgType": "physical",
+        "effect": "rail_cannon",
+        "loadMultiplier": 5,
+        "baseDmg": 0,
+        "unavoidable": true
+      },
+      {
+        "name": "サテライトキャノン",
+        "cost": 3,
+        "desc": "敵全体に装填×3+OUT物理。装填リセット。回避不可",
+        "type": "attack",
+        "target": "enemy_all",
+        "stat": "OUT",
+        "dmgType": "physical",
+        "effect": "satellite_cannon",
+        "loadMultiplier": 3,
+        "baseDmg": 0,
+        "unavoidable": true
+      }
     ]
   },
   "bulk": {
     "name": "バルク",
     "role": "ディフェンダー/被弾反撃",
     "baseHP": 80,
-    "baseStats": { "STR": 3, "VIT": 5, "INT": 0, "MND": 0, "AGI": 0, "DEX": 2 },
+    "baseStats": {
+      "OUT": 3,
+      "SHL": 5,
+      "CTRL": 0,
+      "DRV": 2
+    },
     "pack": "protocol_hv",
     "cards": [
-      { "name": "アイアンボディ", "cost": 0, "desc": "今ターン被弾50%を被弾カウンターに蓄積", "type": "special", "target": "self", "effect": "iron_body", "absorbRate": 0.5 },
-      { "name": "カウンターブロー", "cost": 1, "desc": "敵1体に被弾カウンター×2+STR物理。カウンターリセット", "type": "attack", "target": "enemy_single", "stat": "STR", "dmgType": "physical", "effect": "counter_blow", "counterMultiplier": 2, "baseDmg": 0 },
-      { "name": "エンデュランス", "cost": 1, "desc": "自機HP15%回復。被弾カウンター+2", "type": "special", "target": "self", "effect": "endurance", "healPct": 0.15, "counterAdd": 2 },
-      { "name": "バーサーカーモード", "cost": 0, "desc": "HP50%以下で攻撃+8。50%超でも+2", "type": "buff", "target": "self", "effect": "berserker", "lowBonus": 8, "highBonus": 2 },
-      { "name": "ラストスタンド", "cost": 2, "desc": "今ターン致死ダメをHP1で耐える(1回)。被弾カウンター+5", "type": "special", "target": "self", "effect": "last_stand", "counterAdd": 5, "persistentBuff": true }
+      {
+        "name": "アイアンボディ",
+        "cost": 0,
+        "desc": "今ターン被弾50%を被弾カウンターに蓄積",
+        "type": "special",
+        "target": "self",
+        "effect": "iron_body",
+        "absorbRate": 0.5
+      },
+      {
+        "name": "カウンターブロー",
+        "cost": 1,
+        "desc": "敵1体に被弾カウンター×2+OUT物理。カウンターリセット",
+        "type": "attack",
+        "target": "enemy_single",
+        "stat": "OUT",
+        "dmgType": "physical",
+        "effect": "counter_blow",
+        "counterMultiplier": 2,
+        "baseDmg": 0
+      },
+      {
+        "name": "エンデュランス",
+        "cost": 1,
+        "desc": "自機HP15%回復。被弾カウンター+2",
+        "type": "special",
+        "target": "self",
+        "effect": "endurance",
+        "healPct": 0.15,
+        "counterAdd": 2
+      },
+      {
+        "name": "バーサーカーモード",
+        "cost": 0,
+        "desc": "HP50%以下で攻撃+8。50%超でも+2",
+        "type": "buff",
+        "target": "self",
+        "effect": "berserker",
+        "lowBonus": 8,
+        "highBonus": 2
+      },
+      {
+        "name": "ラストスタンド",
+        "cost": 2,
+        "desc": "今ターン致死ダメをHP1で耐える(1回)。被弾カウンター+5",
+        "type": "special",
+        "target": "self",
+        "effect": "last_stand",
+        "counterAdd": 5,
+        "persistentBuff": true
+      }
     ]
   },
   "drone": {
     "name": "ドローン",
     "role": "テクニカル/分身展開",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 2, "INT": 5, "MND": 1, "AGI": 1, "DEX": 1 },
+    "baseStats": {
+      "OUT": 5,
+      "SHL": 2,
+      "CTRL": 1,
+      "DRV": 2
+    },
     "pack": "protocol_hv",
     "cards": [
-      { "name": "ドローン展開", "cost": 1, "desc": "ドローン1機展開(HP15,ATK4+INT)。毎ターン自動攻撃。最大2機", "type": "special", "target": "self", "effect": "drone_deploy", "droneHP": 15, "droneATK": 4, "maxDrones": 2 },
-      { "name": "ドローン展開", "cost": 1, "desc": "ドローン1機展開(HP15,ATK4+INT)。毎ターン自動攻撃。最大2機", "type": "special", "target": "self", "effect": "drone_deploy", "droneHP": 15, "droneATK": 4, "maxDrones": 2 },
-      { "name": "モードチェンジ", "cost": 0, "desc": "全ドローン攻撃↔バリア付与(味方に5+INT)トグル", "type": "special", "target": "none", "effect": "drone_mode_change", "guardBarrier": 5 },
-      { "name": "コマンド:集中砲火", "cost": 1, "desc": "今ターンのドローン攻撃を指定敵に集中。1.5倍ダメ", "type": "special", "target": "enemy_single", "effect": "command_focus", "focusMultiplier": 1.5 },
-      { "name": "自爆指令", "cost": 0, "desc": "ドローン1機破壊。敵全体にドローン残HP+5ダメ", "type": "special", "target": "none", "effect": "drone_self_destruct", "bonusDmg": 5 }
+      {
+        "name": "ドローン展開",
+        "cost": 1,
+        "desc": "ドローン1機展開(HP15,ATK4+OUT)。毎ターン自動攻撃。最大2機",
+        "type": "special",
+        "target": "self",
+        "effect": "drone_deploy",
+        "droneHP": 15,
+        "droneATK": 4,
+        "maxDrones": 2
+      },
+      {
+        "name": "ドローン展開",
+        "cost": 1,
+        "desc": "ドローン1機展開(HP15,ATK4+OUT)。毎ターン自動攻撃。最大2機",
+        "type": "special",
+        "target": "self",
+        "effect": "drone_deploy",
+        "droneHP": 15,
+        "droneATK": 4,
+        "maxDrones": 2
+      },
+      {
+        "name": "モードチェンジ",
+        "cost": 0,
+        "desc": "全ドローン攻撃↔フィールド付与(味方に5+OUT)トグル",
+        "type": "special",
+        "target": "none",
+        "effect": "drone_mode_change",
+        "guardBarrier": 5
+      },
+      {
+        "name": "コマンド:集中砲火",
+        "cost": 1,
+        "desc": "今ターンのドローン攻撃を指定敵に集中。1.5倍ダメ",
+        "type": "special",
+        "target": "enemy_single",
+        "effect": "command_focus",
+        "focusMultiplier": 1.5
+      },
+      {
+        "name": "自爆指令",
+        "cost": 0,
+        "desc": "ドローン1機破壊。敵全体にドローン残HP+5ダメ",
+        "type": "special",
+        "target": "none",
+        "effect": "drone_self_destruct",
+        "bonusDmg": 5
+      }
     ]
   },
   "carrier": {
     "name": "キャリア",
     "role": "サポート/補給母機",
     "baseHP": 40,
-    "baseStats": { "STR": 0, "VIT": 3, "INT": 0, "MND": 3, "AGI": 2, "DEX": 2 },
+    "baseStats": {
+      "OUT": 0,
+      "SHL": 3,
+      "CTRL": 3,
+      "DRV": 4
+    },
     "pack": "protocol_hv",
     "cards": [
-      { "name": "リサプライ", "cost": 1, "desc": "捨て札1枚→手札", "type": "special", "target": "none", "effect": "resupply", "discardPick": true },
-      { "name": "リサプライ", "cost": 1, "desc": "捨て札1枚→手札", "type": "special", "target": "none", "effect": "resupply", "discardPick": true },
-      { "name": "エマージェンシーリペア", "cost": 0, "desc": "Dead Draw1枚を今ターンのみ使用可能に", "type": "special", "target": "none", "effect": "emergency_repair" },
-      { "name": "サプライドロップ", "cost": 1, "desc": "カード2枚追加ドロー。EN+1(実質0EN)", "type": "special", "target": "none", "effect": "supply_drop", "drawAmount": 2, "enGain": 1 },
-      { "name": "フルリストック", "cost": 2, "desc": "捨て札から3枚→手札", "type": "special", "target": "none", "effect": "full_restock", "discardPick": true, "pickCount": 3 }
+      {
+        "name": "リサプライ",
+        "cost": 1,
+        "desc": "捨て札1枚→手札",
+        "type": "special",
+        "target": "none",
+        "effect": "resupply",
+        "discardPick": true
+      },
+      {
+        "name": "リサプライ",
+        "cost": 1,
+        "desc": "捨て札1枚→手札",
+        "type": "special",
+        "target": "none",
+        "effect": "resupply",
+        "discardPick": true
+      },
+      {
+        "name": "エマージェンシーリペア",
+        "cost": 0,
+        "desc": "Dead Draw1枚を今ターンのみ使用可能に",
+        "type": "special",
+        "target": "none",
+        "effect": "emergency_repair"
+      },
+      {
+        "name": "サプライドロップ",
+        "cost": 1,
+        "desc": "カード2枚追加ドロー。EN+1(実質0EN)",
+        "type": "special",
+        "target": "none",
+        "effect": "supply_drop",
+        "drawAmount": 2,
+        "enGain": 1
+      },
+      {
+        "name": "フルリストック",
+        "cost": 2,
+        "desc": "捨て札から3枚→手札",
+        "type": "special",
+        "target": "none",
+        "effect": "full_restock",
+        "discardPick": true,
+        "pickCount": 3
+      }
     ]
   }
 }

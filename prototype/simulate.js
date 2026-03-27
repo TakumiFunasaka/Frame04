@@ -18,28 +18,28 @@ const path = require('path');
 const FRAMES = JSON.parse(fs.readFileSync(path.join(__dirname, 'frames.json'), 'utf8'));
 
 const FRAME_PRESETS = {
-  striker:    { STR: 0.5, VIT: 0.2, INT: 0, MND: 0, AGI: 0.1, DEX: 0.2 },
-  gunner:     { STR: 0.4, VIT: 0.1, INT: 0, MND: 0, AGI: 0.1, DEX: 0.4 },
-  blaster:    { STR: 0, VIT: 0.1, INT: 0.6, MND: 0.1, AGI: 0.1, DEX: 0.1 },
-  shielder:   { STR: 0, VIT: 0.7, INT: 0, MND: 0.1, AGI: 0, DEX: 0.2 },
-  medic:      { STR: 0, VIT: 0.2, INT: 0, MND: 0.6, AGI: 0.1, DEX: 0.1 },
-  jammer:     { STR: 0, VIT: 0.1, INT: 0.5, MND: 0.1, AGI: 0.2, DEX: 0.1 },
-  booster:    { STR: 0, VIT: 0.3, INT: 0, MND: 0.2, AGI: 0.3, DEX: 0.2 },
-  phantom:    { STR: 0.3, VIT: 0.05, INT: 0, MND: 0, AGI: 0.4, DEX: 0.25 },
-  fortress:   { STR: 0.3, VIT: 0.5, INT: 0, MND: 0, AGI: 0, DEX: 0.2 },
-  overload:   { STR: 0, VIT: 0.2, INT: 0.6, MND: 0.1, AGI: 0.05, DEX: 0.05 },
+  striker:    { OUT: 0.5, SHL: 0.2, CTRL: 0, DRV: 0.3 },
+  gunner:     { OUT: 0.4, SHL: 0.1, CTRL: 0, DRV: 0.5 },
+  blaster:    { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
+  shielder:   { OUT: 0, SHL: 0.6, CTRL: 0.2, DRV: 0.2 },
+  medic:      { OUT: 0, SHL: 0.2, CTRL: 0.6, DRV: 0.2 },
+  jammer:     { OUT: 0.5, SHL: 0.1, CTRL: 0.1, DRV: 0.3 },
+  booster:    { OUT: 0, SHL: 0.2, CTRL: 0.2, DRV: 0.6 },
+  phantom:    { OUT: 0.3, SHL: 0, CTRL: 0, DRV: 0.7 },
+  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
+  overload:   { OUT: 0.6, SHL: 0.1, CTRL: 0.1, DRV: 0.2 },
   // PROTOCOL:EX
-  converter:  { STR: 0, VIT: 0.15, INT: 0.6, MND: 0.1, AGI: 0.1, DEX: 0.05 },
-  linker:     { STR: 0, VIT: 0.3, INT: 0.1, MND: 0.2, AGI: 0.2, DEX: 0.2 },
-  decoy:      { STR: 0, VIT: 0.5, INT: 0, MND: 0.1, AGI: 0.2, DEX: 0.2 },
-  scavenger:  { STR: 0.5, VIT: 0.2, INT: 0, MND: 0, AGI: 0.1, DEX: 0.2 },
-  oracle:     { STR: 0, VIT: 0.2, INT: 0.3, MND: 0.2, AGI: 0.15, DEX: 0.15 },
+  converter:  { OUT: 0.5, SHL: 0.2, CTRL: 0.1, DRV: 0.2 },
+  linker:     { OUT: 0, SHL: 0.3, CTRL: 0.3, DRV: 0.4 },
+  decoy:      { OUT: 0, SHL: 0.2, CTRL: 0, DRV: 0.8 },
+  scavenger:  { OUT: 0.4, SHL: 0.2, CTRL: 0, DRV: 0.4 },
+  oracle:     { OUT: 0.3, SHL: 0.2, CTRL: 0.2, DRV: 0.3 },
   // PROTOCOL:HV
-  seeker:     { STR: 0, VIT: 0.15, INT: 0.5, MND: 0.1, AGI: 0.15, DEX: 0.1 },
-  launcher:   { STR: 0.5, VIT: 0.2, INT: 0, MND: 0, AGI: 0.1, DEX: 0.2 },
-  bulk:       { STR: 0.3, VIT: 0.5, INT: 0, MND: 0, AGI: 0, DEX: 0.2 },
-  drone:      { STR: 0, VIT: 0.15, INT: 0.5, MND: 0.1, AGI: 0.15, DEX: 0.1 },
-  carrier:    { STR: 0, VIT: 0.3, INT: 0.1, MND: 0.2, AGI: 0.2, DEX: 0.2 },
+  seeker:     { OUT: 0.5, SHL: 0.1, CTRL: 0.1, DRV: 0.3 },
+  launcher:   { OUT: 0.5, SHL: 0.2, CTRL: 0, DRV: 0.3 },
+  bulk:       { OUT: 0.3, SHL: 0.5, CTRL: 0, DRV: 0.2 },
+  drone:      { OUT: 0.5, SHL: 0.2, CTRL: 0.1, DRV: 0.2 },
+  carrier:    { OUT: 0, SHL: 0.3, CTRL: 0.3, DRV: 0.4 },
 };
 
 // ============================================================
@@ -49,44 +49,44 @@ const ENEMY_PRESETS = {
   '3_weak': {
     label: '3 Weak (Act1 Drones)',
     enemies: [
-      { name: 'ドローン-A', hp: 20, atk: 4, agi: 0, dex: 0, patterns: ['attack','attack','barrier'] },
-      { name: 'ドローン-B', hp: 20, atk: 4, agi: 0, dex: 0, patterns: ['attack','attack','barrier'] },
-      { name: 'ドローン-C', hp: 18, atk: 4, agi: 0, dex: 0, patterns: ['attack','barrier','attack'] },
+      { name: 'ドローン-A', hp: 20, atk: 4, drv: 0, patterns: ['attack','attack','barrier'] },
+      { name: 'ドローン-B', hp: 20, atk: 4, drv: 0, patterns: ['attack','attack','barrier'] },
+      { name: 'ドローン-C', hp: 18, atk: 4, drv: 0, patterns: ['attack','barrier','attack'] },
     ]
   },
   '1_elite': {
     label: '1 Elite (Heavy Guard)',
     enemies: [
-      { name: 'ヘビーガード', hp: 65, atk: 8, agi: 5, dex: 5, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
+      { name: 'ヘビーガード', hp: 65, atk: 8, drv: 5, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
     ]
   },
   'elite_pair': {
     label: 'Elite + Support',
     enemies: [
-      { name: 'エヴェイダー', hp: 45, atk: 8, agi: 25, dex: 5, patterns: ['attack','attack','buff_self','attack','attack_heavy'] },
-      { name: 'サポートビット', hp: 18, atk: 4, agi: 0, dex: 0, patterns: ['barrier','attack','barrier'] },
+      { name: 'エヴェイダー', hp: 45, atk: 8, drv: 25, patterns: ['attack','attack','buff_self','attack','attack_heavy'] },
+      { name: 'サポートビット', hp: 18, atk: 4, drv: 0, patterns: ['barrier','attack','barrier'] },
     ]
   },
   '1_boss': {
     label: '1 Boss (Mk-I)',
     enemies: [
-      { name: 'コマンダー Mk-I', hp: 100, atk: 10, agi: 6, dex: 6, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
+      { name: 'コマンダー Mk-I', hp: 100, atk: 10, drv: 6, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
     ]
   },
   'boss_adds': {
     label: 'Boss + Adds (Mk-I)',
     enemies: [
-      { name: 'コマンダー Mk-I', hp: 100, atk: 10, agi: 6, dex: 6, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
-      { name: 'ビット-L', hp: 18, atk: 4, agi: 6, dex: 0, patterns: ['attack','attack','barrier'] },
-      { name: 'ビット-R', hp: 18, atk: 4, agi: 6, dex: 0, patterns: ['attack','barrier','attack'] },
+      { name: 'コマンダー Mk-I', hp: 100, atk: 10, drv: 6, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
+      { name: 'ビット-L', hp: 18, atk: 4, drv: 6, patterns: ['attack','attack','barrier'] },
+      { name: 'ビット-R', hp: 18, atk: 4, drv: 6, patterns: ['attack','barrier','attack'] },
     ]
   },
   'act2_boss': {
     label: 'Act2 Boss (Mk-II + Guards)',
     enemies: [
-      { name: 'コア・ユニット Mk-II', hp: 140, atk: 12, agi: 8, dex: 8, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
-      { name: 'ガードビット-L', hp: 25, atk: 6, agi: 8, dex: 3, patterns: ['attack','barrier','attack'] },
-      { name: 'ガードビット-R', hp: 25, atk: 6, agi: 8, dex: 3, patterns: ['barrier','attack','attack'] },
+      { name: 'コア・ユニット Mk-II', hp: 140, atk: 12, drv: 8, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
+      { name: 'ガードビット-L', hp: 25, atk: 6, drv: 8, patterns: ['attack','barrier','attack'] },
+      { name: 'ガードビット-R', hp: 25, atk: 6, drv: 8, patterns: ['barrier','attack','attack'] },
     ]
   },
 };
@@ -117,7 +117,7 @@ function allocateStats(frameKeys) {
   for (const fk of frameKeys) {
     const weights = FRAME_PRESETS[fk];
     const points = Math.min(perSlot, spRemaining);
-    const stats = { STR: 0, VIT: 0, INT: 0, MND: 0, AGI: 0, DEX: 0 };
+    const stats = { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
     let assigned = 0;
     for (const s of Object.keys(stats)) {
       stats[s] = Math.floor(points * weights[s]);
@@ -141,12 +141,12 @@ function createBattleState(frameKeys, enemyDefs) {
   const allies = frameKeys.map((fk, i) => {
     const frame = FRAMES[fk];
     const allocatedPts = statsArr[i];
-    const base = frame.baseStats || { STR: 0, VIT: 0, INT: 0, MND: 0, AGI: 0, DEX: 0 };
+    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0, DRV: 0 };
     const stats = {};
-    for (const s of ['STR','VIT','INT','MND','AGI','DEX']) {
+    for (const s of ['OUT','SHL','CTRL','DRV']) {
       stats[s] = (base[s] || 0) + (allocatedPts[s] || 0);
     }
-    const maxHP = Math.round(frame.baseHP * (1 + stats.VIT * 0.03));
+    const maxHP = Math.round(frame.baseHP * (1 + stats.SHL * 0.03));
     return {
       id: i, frameKey: fk, name: frame.name + (i > 0 ? `#${i}` : ''),
       stats, hp: maxHP, maxHP, barrier: 0, dead: false,
@@ -171,7 +171,7 @@ function createBattleState(frameKeys, enemyDefs) {
     id: i, name: e.name,
     hp: e.hp, maxHP: e.hp,
     barrier: 0, dead: false,
-    atk: e.atk, agi: e.agi, dex: e.dex,
+    atk: e.atk, drv: e.drv || 0,
     patterns: [...e.patterns], patternIdx: 0,
     intent: null, targetIdx: 0,
     statuses: {}, debuffs: {},
@@ -198,18 +198,18 @@ function createBattleState(frameKeys, enemyDefs) {
 
 function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
   let dmg = baseDmg;
-  if (ally.buffs.strBonus && card.stat === 'STR') dmg += ally.buffs.strBonus;
-  if (ally.buffs.intBonus && card.stat === 'INT') dmg += ally.buffs.intBonus;
+  if (ally.buffs.outBonus && card.stat === 'OUT') dmg += ally.buffs.outBonus;
+  if (ally.buffs.outBonus && card.stat === 'OUT') dmg += ally.buffs.outBonus;
 
   // Seeker scan bonus
   if (enemy.scanned) dmg = Math.floor(dmg * 1.2);
 
   // Evasion check
   if (!card.unavoidable) {
-    let effectiveAGI = enemy.agi;
-    if (enemy.debuffs.agiReduction) effectiveAGI -= enemy.debuffs.agiReduction.val;
-    const attackerDEX = ally.stats.DEX + (card.bonusDEX || 0);
-    const evadeChance = Math.min(40, Math.max(0, effectiveAGI * 1.2 - attackerDEX * 1.2));
+    let effectiveDRV = enemy.drv || 0;
+    if (enemy.debuffs.agiReduction) effectiveDRV -= enemy.debuffs.agiReduction.val;
+    const attackerDRV = ally.stats.DRV + (card.bonusDEX || 0);
+    const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - attackerDRV * 1.0));
     if (Math.random() * 100 < evadeChance) {
       return; // evaded
     }
@@ -297,12 +297,11 @@ function dealDmgToEnemy(state, ally, enemy, baseDmg, card) {
 // Scavenger on-kill effects
 function handleOnKill(state, ally, onKill) {
   switch (onKill.type) {
-    case 'en_recover': state.en = Math.min(state.en + onKill.amount; break, state.enCap);
+    case 'en_recover': state.en = Math.min(state.en + onKill.amount, state.enCap); break;
     case 'draw': for (let i = 0; i < onKill.amount; i++) drawCard(state); break;
     case 'permanent_buff':
       state.allies.filter(a => !a.dead).forEach(a => {
-        a.stats.STR += onKill.amount;
-        a.stats.INT += onKill.amount;
+        a.stats.OUT += onKill.amount;
       });
       break;
   }
@@ -310,8 +309,8 @@ function handleOnKill(state, ally, onKill) {
 
 function dealDmgToAlly(enemy, ally) {
   // Evasion
-  const effectiveAGI = ally.stats.AGI + (ally.buffs.agiBonus || 0);
-  const evadeChance = Math.min(40, Math.max(0, effectiveAGI * 1.2 - enemy.dex * 1.2));
+  const effectiveDRV = ally.stats.DRV + (ally.buffs.agiBonus || 0);
+  const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - (enemy.drv || 0) * 1.0));
   if (Math.random() * 100 < evadeChance) {
     return; // evaded
   }
@@ -336,8 +335,8 @@ function dealDmgToAlly(enemy, ally) {
 }
 
 function dealDmgToAllyFromEnemy(state, enemy, ally, dmg) {
-  const effectiveAGI = ally.stats.AGI + (ally.buffs.agiBonus || 0);
-  const evadeChance = Math.min(40, Math.max(0, effectiveAGI * 1.2 - enemy.dex * 1.2));
+  const effectiveDRV = ally.stats.DRV + (ally.buffs.agiBonus || 0);
+  const evadeChance = Math.min(40, Math.max(0, effectiveDRV * 1.5 - (enemy.drv || 0) * 1.0));
   if (Math.random() * 100 < evadeChance) {
     return;
   }
@@ -438,7 +437,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
 
   switch (card.type) {
     case 'attack': {
-      const statVal = card.stat === 'STR' ? ally.stats.STR : (card.stat === 'INT' ? ally.stats.INT : 0);
+      const statVal = card.stat === 'OUT' ? ally.stats.OUT : 0;
       let baseDmg = Math.round(card.baseDmg * (1 + statVal * 0.04)) + bonusDmg;
       const hits = card.hits || 1;
 
@@ -446,14 +445,14 @@ function executeCardHeadless(state, card, handIdx, targetId) {
       if (card.effect === 'reverse_charge') {
         const stacks = ally.elementStacks;
         const rawDmg = stacks > 0 ? stacks * card.accumMultiplier + card.baseDmg : card.baseDmg;
-        baseDmg = Math.round(rawDmg * (1 + ally.stats.INT * 0.04));
+        baseDmg = Math.round(rawDmg * (1 + ally.stats.OUT * 0.04));
         ally.elementStacks = 0;
         const enemy = state.enemies[targetId];
         if (enemy && !enemy.dead) dealDmgToEnemy(state, ally, enemy, baseDmg, card);
       } else if (card.effect === 'fusion_burst') {
         const stacks = ally.elementStacks;
         const rawDmg = stacks * card.accumMultiplier + card.baseDmg;
-        baseDmg = Math.round(rawDmg * (1 + ally.stats.INT * 0.04));
+        baseDmg = Math.round(rawDmg * (1 + ally.stats.OUT * 0.04));
         ally.elementStacks = 0;
         state.enemies.filter(e => !e.dead).forEach(enemy => {
           dealDmgToEnemy(state, ally, enemy, baseDmg, card);
@@ -464,18 +463,18 @@ function executeCardHeadless(state, card, handIdx, targetId) {
           }
         });
       } else if (card.effect === 'rail_cannon') {
-        baseDmg = Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) + bonusDmg;
+        baseDmg = Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) + bonusDmg;
         ally.loadCounter = 0;
         const enemy = state.enemies[targetId];
         if (enemy && !enemy.dead) dealDmgToEnemy(state, ally, enemy, baseDmg, card);
       } else if (card.effect === 'satellite_cannon') {
-        baseDmg = Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) + bonusDmg;
+        baseDmg = Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) + bonusDmg;
         ally.loadCounter = 0;
         state.enemies.filter(e => !e.dead).forEach(enemy => {
           dealDmgToEnemy(state, ally, enemy, baseDmg, card);
         });
       } else if (card.effect === 'counter_blow') {
-        baseDmg = Math.round((ally.damageCounter * card.counterMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) + bonusDmg;
+        baseDmg = Math.round((ally.damageCounter * card.counterMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) + bonusDmg;
         ally.damageCounter = 0;
         const enemy = state.enemies[targetId];
         if (enemy && !enemy.dead) dealDmgToEnemy(state, ally, enemy, baseDmg, card);
@@ -549,7 +548,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
       break;
     }
     case 'defend': {
-      const statVal = card.stat === 'VIT' ? ally.stats.VIT : (card.stat === 'INT' ? ally.stats.INT : (card.stat === 'MND' ? ally.stats.MND : 0));
+      const statVal = card.stat === 'SHL' ? ally.stats.SHL : (card.stat === 'CTRL' ? ally.stats.CTRL : (card.stat === 'OUT' ? ally.stats.OUT : 0));
       const barrierAmt = Math.round(card.baseBarrier * (1 + statVal * 0.04));
 
       if (card.target === 'self' || card.target === 'provoke' || card.target === 'provoke_all') {
@@ -592,7 +591,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
       break;
     }
     case 'heal': {
-      const statVal = card.stat === 'MND' ? ally.stats.MND : 0;
+      const statVal = card.stat === 'CTRL' ? ally.stats.CTRL : 0;
       const healAmt = Math.round(card.baseHeal * (1 + statVal * 0.04));
 
       if (card.target === 'self') {
@@ -626,8 +625,8 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         if (target) target.buffs.agiBonus = (target.buffs.agiBonus || 0) + card.amount;
       } else if (card.effect === 'fullboost') {
         state.allies.filter(a => !a.dead).forEach(a => {
-          a.buffs.strBonus = (a.buffs.strBonus || 0) + card.amount;
-          a.buffs.intBonus = (a.buffs.intBonus || 0) + card.amount;
+          a.buffs.outBonus = (a.buffs.outBonus || 0) + card.amount;
+          a.buffs.outBonus = (a.buffs.outBonus || 0) + card.amount;
         });
         state.en = Math.min(state.en + 1, state.enCap);
       } else if (card.effect === 'smoke') {
@@ -643,8 +642,8 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         if (target) target.elementCoat = 'shock';
       } else if (card.effect === 'link_boost') {
         state.allies.filter(a => !a.dead && a.linkedTo >= 0).forEach(a => {
-          a.buffs.strBonus = (a.buffs.strBonus || 0) + card.amount;
-          a.buffs.intBonus = (a.buffs.intBonus || 0) + card.amount;
+          a.buffs.outBonus = (a.buffs.outBonus || 0) + card.amount;
+          a.buffs.outBonus = (a.buffs.outBonus || 0) + card.amount;
         });
       } else if (card.effect === 'resonance') {
         state.allies.filter(a => !a.dead && a.linkedTo >= 0).forEach(a => {
@@ -658,8 +657,8 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         const scannedCount = state.enemies.filter(e => !e.dead && e.scanned).length;
         const totalBuff = card.baseAmount + scannedCount * card.perScanBonus;
         state.allies.filter(a => !a.dead).forEach(a => {
-          a.buffs.strBonus = (a.buffs.strBonus || 0) + totalBuff;
-          a.buffs.intBonus = (a.buffs.intBonus || 0) + totalBuff;
+          a.buffs.outBonus = (a.buffs.outBonus || 0) + totalBuff;
+          a.buffs.outBonus = (a.buffs.outBonus || 0) + totalBuff;
         });
       } else if (card.effect === 'warcry') {
         const bonus = card.warcryBonus || 3;
@@ -817,7 +816,7 @@ function executeCardHeadless(state, card, handIdx, targetId) {
         ally.damageCounter += card.counterAdd;
       } else if (card.effect === 'drone_deploy') {
         if (ally.drones.length < (card.maxDrones || 2)) {
-          ally.drones.push({ hp: card.droneHP, maxHP: card.droneHP, atk: Math.round(card.droneATK * (1 + ally.stats.INT * 0.04)), mode: 'attack' });
+          ally.drones.push({ hp: card.droneHP, maxHP: card.droneHP, atk: Math.round(card.droneATK * (1 + ally.stats.OUT * 0.04)), mode: 'attack' });
         }
       } else if (card.effect === 'drone_mode_change') {
         ally.droneGuardMode = !ally.droneGuardMode;
@@ -1028,7 +1027,7 @@ function endTurn(state) {
           const aliveAllies = state.allies.filter(al => !al.dead);
           if (aliveAllies.length > 0) {
             const target = aliveAllies[Math.floor(Math.random() * aliveAllies.length)];
-            target.barrier += Math.round(5 * (1 + a.stats.INT * 0.04));
+            target.barrier += Math.round(5 * (1 + a.stats.OUT * 0.04));
           }
         }
       });
@@ -1178,7 +1177,7 @@ function estimateCardValue(state, card) {
   if (aliveEnemies.length === 0) return -100;
 
   let value = 0;
-  const statVal = card.stat === 'STR' ? ally.stats.STR : (card.stat === 'INT' ? ally.stats.INT : 0);
+  const statVal = card.stat === 'OUT' ? ally.stats.OUT : 0;
 
   switch (card.type) {
     case 'attack': {
@@ -1205,33 +1204,33 @@ function estimateCardValue(state, card) {
       // Expansion attacks
       if (card.effect === 'reverse_charge') {
         const rawDmg = ally.elementStacks > 0 ? ally.elementStacks * card.accumMultiplier + card.baseDmg : card.baseDmg;
-        value = Math.round(rawDmg * (1 + ally.stats.INT * 0.04));
+        value = Math.round(rawDmg * (1 + ally.stats.OUT * 0.04));
       }
       if (card.effect === 'fusion_burst') {
         const rawDmg = ally.elementStacks * card.accumMultiplier + card.baseDmg;
-        value = Math.round(rawDmg * (1 + ally.stats.INT * 0.04)) * aliveEnemies.length * 0.8;
+        value = Math.round(rawDmg * (1 + ally.stats.OUT * 0.04)) * aliveEnemies.length * 0.8;
       }
       if (card.effect === 'rail_cannon') {
-        value = ally.loadCounter > 0 ? Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) : -5;
+        value = ally.loadCounter > 0 ? Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) : -5;
       }
       if (card.effect === 'satellite_cannon') {
-        value = ally.loadCounter > 0 ? Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) * aliveEnemies.length * 0.7 : -5;
+        value = ally.loadCounter > 0 ? Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) * aliveEnemies.length * 0.7 : -5;
       }
       if (card.effect === 'counter_blow') {
-        value = ally.damageCounter > 0 ? Math.round((ally.damageCounter * card.counterMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) : -5;
+        value = ally.damageCounter > 0 ? Math.round((ally.damageCounter * card.counterMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) : -5;
       }
       if (card.effect === 'exploit') {
         const bestTarget = aliveEnemies.reduce((best, e) => {
           const count = Object.values(e.statuses).filter(v => v).length;
           return count > best ? count : best;
         }, 0);
-        value = Math.round(card.baseDmg * (1 + ally.stats.INT * 0.04)) + bestTarget * (card.perStatusBonus || 5);
+        value = Math.round(card.baseDmg * (1 + ally.stats.OUT * 0.04)) + bestTarget * (card.perStatusBonus || 5);
       }
       if (card.onKill) value += 3; // bonus for having kill effects
       break;
     }
     case 'defend': {
-      const barrierVal = card.stat === 'VIT' ? ally.stats.VIT : (card.stat === 'MND' ? ally.stats.MND : 0);
+      const barrierVal = card.stat === 'SHL' ? ally.stats.SHL : (card.stat === 'CTRL' ? ally.stats.CTRL : 0);
       const barrierAmt = Math.round(card.baseBarrier * (1 + barrierVal * 0.04));
       value = barrierAmt * 0.8;
 
@@ -1250,7 +1249,7 @@ function estimateCardValue(state, card) {
       break;
     }
     case 'heal': {
-      const healVal = card.stat === 'MND' ? ally.stats.MND : 0;
+      const healVal = card.stat === 'CTRL' ? ally.stats.CTRL : 0;
       const healAmt = Math.round(card.baseHeal * (1 + healVal * 0.04));
 
       // Value depends on how hurt the team is
@@ -1422,7 +1421,7 @@ function estimateRemainingTurns(state) {
   aliveAllies.forEach(a => {
     a.cards.forEach(c => {
       if (c.type === 'attack' && c.playable) {
-        const statVal = c.stat === 'STR' ? a.stats.STR : (c.stat === 'INT' ? a.stats.INT : 0);
+        const statVal = c.stat === 'OUT' ? a.stats.OUT : 0;
         partyDPS += Math.round(c.baseDmg * (1 + statVal * 0.04)) * (c.hits || 1);
       }
     });
@@ -1438,7 +1437,7 @@ function estimatePartyDPS(state) {
   aliveAllies.forEach(a => {
     a.cards.forEach(c => {
       if (c.type === 'attack' && c.playable) {
-        const statVal = c.stat === 'STR' ? a.stats.STR : (c.stat === 'INT' ? a.stats.INT : 0);
+        const statVal = c.stat === 'OUT' ? a.stats.OUT : 0;
         partyDPS += Math.round(c.baseDmg * (1 + statVal * 0.04)) * (c.hits || 1);
       }
     });
@@ -1452,7 +1451,7 @@ function estimateAllyDPS(ally) {
   let dps = 0;
   ally.cards.forEach(c => {
     if (c.type === 'attack' && c.playable) {
-      const statVal = c.stat === 'STR' ? ally.stats.STR : (c.stat === 'INT' ? ally.stats.INT : 0);
+      const statVal = c.stat === 'OUT' ? ally.stats.OUT : 0;
       dps += Math.round(c.baseDmg * (1 + statVal * 0.04)) * (c.hits || 1);
     }
   });
@@ -1463,10 +1462,10 @@ function estimateCardValueInDiscard(state, c) {
   // Quick estimate for a card in discard pile
   const ally = state.allies[c.ownerIdx];
   if (!ally || ally.dead || !c.playable) return 0;
-  const statVal = c.stat === 'STR' ? ally.stats.STR : (c.stat === 'INT' ? ally.stats.INT : 0);
+  const statVal = c.stat === 'OUT' ? ally.stats.OUT : 0;
   if (c.type === 'attack') return Math.round(c.baseDmg * (1 + statVal * 0.04)) * (c.hits || 1);
-  if (c.type === 'defend') return Math.round((c.baseBarrier || 0) * (1 + (c.stat === 'VIT' ? ally.stats.VIT : (c.stat === 'MND' ? ally.stats.MND : 0)) * 0.04));
-  if (c.type === 'heal') return Math.round((c.baseHeal || 0) * (1 + (ally.stats.MND || 0) * 0.04));
+  if (c.type === 'defend') return Math.round((c.baseBarrier || 0) * (1 + (c.stat === 'SHL' ? ally.stats.SHL : (c.stat === 'CTRL' ? ally.stats.CTRL : 0)) * 0.04));
+  if (c.type === 'heal') return Math.round((c.baseHeal || 0) * (1 + (ally.stats.CTRL || 0) * 0.04));
   if (c.type === 'buff') return 8;
   return 5;
 }
@@ -1492,7 +1491,7 @@ function estimateCardValueSmart(state, card) {
   const isEarlyTurn = state.turn <= 2;
 
   let value = 0;
-  const statVal = card.stat === 'STR' ? ally.stats.STR : (card.stat === 'INT' ? ally.stats.INT : 0);
+  const statVal = card.stat === 'OUT' ? ally.stats.OUT : 0;
 
   switch (card.type) {
     case 'attack': {
@@ -1520,33 +1519,33 @@ function estimateCardValueSmart(state, card) {
       // Expansion attacks (same as basic AI)
       if (card.effect === 'reverse_charge') {
         const rawDmg = ally.elementStacks > 0 ? ally.elementStacks * card.accumMultiplier + card.baseDmg : card.baseDmg;
-        value = Math.round(rawDmg * (1 + ally.stats.INT * 0.04));
+        value = Math.round(rawDmg * (1 + ally.stats.OUT * 0.04));
       }
       if (card.effect === 'fusion_burst') {
         const rawDmg = ally.elementStacks * card.accumMultiplier + card.baseDmg;
-        value = Math.round(rawDmg * (1 + ally.stats.INT * 0.04)) * aliveEnemies.length * 0.8;
+        value = Math.round(rawDmg * (1 + ally.stats.OUT * 0.04)) * aliveEnemies.length * 0.8;
       }
       if (card.effect === 'rail_cannon') {
-        value = ally.loadCounter > 0 ? Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) : -5;
+        value = ally.loadCounter > 0 ? Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) : -5;
       }
       if (card.effect === 'satellite_cannon') {
-        value = ally.loadCounter > 0 ? Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) * aliveEnemies.length * 0.7 : -5;
+        value = ally.loadCounter > 0 ? Math.round((ally.loadCounter * card.loadMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) * aliveEnemies.length * 0.7 : -5;
       }
       if (card.effect === 'counter_blow') {
-        value = ally.damageCounter > 0 ? Math.round((ally.damageCounter * card.counterMultiplier + card.baseDmg) * (1 + ally.stats.STR * 0.04)) : -5;
+        value = ally.damageCounter > 0 ? Math.round((ally.damageCounter * card.counterMultiplier + card.baseDmg) * (1 + ally.stats.OUT * 0.04)) : -5;
       }
       if (card.effect === 'exploit') {
         const bestTarget = aliveEnemies.reduce((best, e) => {
           const count = Object.values(e.statuses).filter(v => v).length;
           return count > best ? count : best;
         }, 0);
-        value = Math.round(card.baseDmg * (1 + ally.stats.INT * 0.04)) + bestTarget * (card.perStatusBonus || 5);
+        value = Math.round(card.baseDmg * (1 + ally.stats.OUT * 0.04)) + bestTarget * (card.perStatusBonus || 5);
       }
       if (card.onKill) value += 3;
       break;
     }
     case 'defend': {
-      const barrierVal = card.stat === 'VIT' ? ally.stats.VIT : (card.stat === 'MND' ? ally.stats.MND : 0);
+      const barrierVal = card.stat === 'SHL' ? ally.stats.SHL : (card.stat === 'CTRL' ? ally.stats.CTRL : 0);
       const barrierAmt = Math.round(card.baseBarrier * (1 + barrierVal * 0.04));
       value = barrierAmt * 0.8;
 
@@ -1585,7 +1584,7 @@ function estimateCardValueSmart(state, card) {
       break;
     }
     case 'heal': {
-      const healVal = card.stat === 'MND' ? ally.stats.MND : 0;
+      const healVal = card.stat === 'CTRL' ? ally.stats.CTRL : 0;
       const healAmt = Math.round(card.baseHeal * (1 + healVal * 0.04));
 
       const mostHurt = aliveAllies.reduce((min, a) => Math.min(min, a.hp / a.maxHP), 1);
