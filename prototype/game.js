@@ -572,7 +572,7 @@ function startBattleFromSequence(enemyDefs, encounterType) {
   shuffle(state.deck);
   state.discard = [];
   state.hand = [];
-  state.en = state.maxEN;
+  state.en = 0; // nextTurn() will add +3, so turn 1 starts at EN3
   state.enCap = 5 + (hasRelic('en_converter') ? 1 : 0);
   state.turn = 0;
   state.logs = [];
