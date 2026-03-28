@@ -649,10 +649,9 @@ function nextTurn() {
   // Reset full drive at turn start (it only lasts within a turn)
   state.allies.forEach(a => { a.fullDriveActive = false; });
 
-  // Reset enemy barrier, speed, and process statuses
+  // Process enemy statuses (barrier is NOT reset here - it resets at END TURN)
   state.enemies.forEach(e => {
     if (e.dead) return;
-    e.barrier = 0;
     tickSpeedEffects(e); // Tick speed effects (decrement turns, remove expired)
     // Overheat: deal N damage, then N decreases by 1
     if (e.statuses.overheat > 0) {
@@ -756,6 +755,9 @@ function endTurn() {
       a._reactiveBarrierRemaining = a.barrier;
     }
   });
+
+  // Reset enemy barriers before enemy actions (symmetrical with ally barrier reset at turn start)
+  state.enemies.forEach(e => { if (!e.dead) e.barrier = 0; });
 
   // Enemy actions
   state.enemies.forEach(e => {
