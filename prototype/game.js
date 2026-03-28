@@ -998,7 +998,7 @@ function playCard(handIdx) {
   // Check cost with full drive discount
   let effectiveCost = card.cost;
   if (state.allies.some(a => a.fullDriveActive) && card.effect !== 'full_drive') {
-    effectiveCost = Math.max(0, effectiveCost - 1);
+    effectiveCost = Math.max(0, effectiveCost - (state._fullDriveAmount || 1));
   }
   if (effectiveCost > state.en) return;
 
@@ -1047,9 +1047,10 @@ function executeCard(targetId) {
   // Full Drive: reduce cost by 1 if active
   let actualCost = card.cost;
   if (state.allies.some(a => a.fullDriveActive) && card.effect !== 'full_drive') {
-    actualCost = Math.max(0, actualCost - 1);
+    const fdAmt = state._fullDriveAmount || 1;
+    actualCost = Math.max(0, actualCost - fdAmt);
     state.allies.forEach(a => { a.fullDriveActive = false; });
-    if (actualCost < card.cost) addLog(`フルドライブ! EN消費-1`, 'status');
+    if (actualCost < card.cost) addLog(`フルドライブ! EN消費-${fdAmt}`, 'status');
   }
   state.en -= actualCost;
 
@@ -1436,9 +1437,10 @@ function executeCard(targetId) {
         state.en = Math.min(state.en + card.amount, state.enCap);
         addLog(`EN +${card.amount}`, 'info');
       } else if (card.effect === 'full_drive') {
-        // Next card this turn costs -1 EN (min 0)
+        const fdAmount = card.upgraded && card.upgrade && card.upgrade.amount ? 1 + card.upgrade.amount : 1;
+        state._fullDriveAmount = fdAmount;
         state.allies.forEach(a => { a.fullDriveActive = true; });
-        addLog(`フルドライブ! 次のカードEN-1`, 'status');
+        addLog(`フルドライブ! 次のカードEN-${fdAmount}`, 'status');
       } else if (card.effect === 'reboot') {
         const target = state.allies[targetId];
         target.dead = false;
@@ -1807,6 +1809,8 @@ function getUpgradedCard(card) {
   // New upgrade system: use the upgrade field from card data
   if (card.upgrade) {
     const up = card.upgrade;
+    if (up.costReduction) u.cost = Math.max(0, (card.cost || 0) - up.costReduction);
+    if (up.amount) u.amount = (card.amount || 0) + up.amount;
     if (up.baseDmg) u.baseDmg = (card.baseDmg || 0) + up.baseDmg;
     if (up.baseBarrier) u.baseBarrier = (card.baseBarrier || 0) + up.baseBarrier;
     if (up.baseHeal) u.baseHeal = (card.baseHeal || 0) + up.baseHeal;
@@ -1816,6 +1820,9 @@ function getUpgradedCard(card) {
     if (up.backstabBonus) u.backstabBonus = (card.backstabBonus || 0) + up.backstabBonus;
     if (up.overheatBonus) u.overheatBonus = (card.overheatBonus || 0) + up.overheatBonus;
     if (up.vulnerabilityBonus) u.vulnerabilityBonus = (card.vulnerabilityBonus || 0) + up.vulnerabilityBonus;
+    if (up.applyAllySpeed) u.applyAllySpeed = (card.applyAllySpeed || 0) + up.applyAllySpeed;
+    if (up.applySelfSpeed) u.applySelfSpeed = (card.applySelfSpeed || 0) + up.applySelfSpeed;
+    if (up.applySpeed) u.applySpeed = (card.applySpeed || 0) + up.applySpeed;
     // Status stacks/turns are handled at apply time via card.upgraded check
   }
 
@@ -2336,7 +2343,7 @@ function renderBattle() {
   const handDiv = document.getElementById('hand-cards');
   handDiv.innerHTML = '';
   state.hand.forEach((c, i) => {
-    const fullDriveDiscount = state.allies.some(a => a.fullDriveActive) && c.effect !== 'full_drive' ? 1 : 0;
+    const fullDriveDiscount = state.allies.some(a => a.fullDriveActive) && c.effect !== 'full_drive' ? (state._fullDriveAmount || 1) : 0;
     const effectiveCost = Math.max(0, c.cost - fullDriveDiscount);
     const canPlay = c.playable && effectiveCost <= state.en && !state.battleOver;
     const owner = state.allies[c.ownerIdx];

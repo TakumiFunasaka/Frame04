@@ -81,7 +81,7 @@
       { "name": "リペアナノ", "cost": 1, "desc": "味方1機のHPを6回復", "type": "heal", "target": "ally_single", "baseHeal": 6, "stat": "CTRL", "upgrade": { "baseHeal": 2 } },
       { "name": "エリアリペア", "cost": 2, "desc": "味方全機のHPを3回復", "type": "heal", "target": "ally_all", "baseHeal": 3, "stat": "CTRL", "upgrade": { "baseHeal": 2 } },
       { "name": "ドレインランス", "cost": 1, "desc": "敵1体に4ダメージ。自機HP5回復", "type": "attack", "target": "enemy_single", "baseDmg": 4, "stat": "OUT", "selfHeal": 5, "upgrade": { "baseDmg": 2, "selfHeal": 2 } },
-      { "name": "リブートコア", "cost": 3, "desc": "大破した味方1機をHP1で再起動", "type": "special", "target": "ally_dead", "effect": "reboot", "upgrade": {} },
+      { "name": "リブートコア", "cost": 3, "desc": "大破した味方1機をHP1で再起動", "type": "special", "target": "ally_dead", "effect": "reboot", "upgrade": { "costReduction": 1 } },
       { "name": "応急処置", "cost": 0, "desc": "味方1機のHPを4回復", "type": "heal", "target": "ally_single", "baseHeal": 4, "stat": "CTRL", "upgrade": { "baseHeal": 2 } },
       { "name": "バイオシールド", "cost": 2, "desc": "味方1機のHPを4回復+フィールド6", "type": "heal", "target": "ally_single", "baseHeal": 4, "stat": "CTRL", "grantBarrier": 6, "upgrade": { "baseHeal": 2, "grantBarrier": 2 } },
       { "name": "サクリファイス", "cost": 1, "desc": "自機HP-5。味方1機のHPを10回復", "type": "heal", "target": "ally_single", "baseHeal": 10, "stat": "CTRL", "selfDmg": 5, "upgrade": { "baseHeal": 2 } },
@@ -115,11 +115,11 @@
     "pack": "base",
     "cards": [
       { "name": "ストラクチャスキャン", "cost": 1, "desc": "敵1体に2ダメージ。脆弱(5)付与", "type": "attack", "target": "enemy_single", "baseDmg": 2, "stat": "OUT", "applyStatus": { "type": "vulnerability", "stacks": 5 }, "upgrade": { "baseDmg": 2, "stacks": 1 } },
-      { "name": "スローフィールド", "cost": 1, "desc": "敵全体に減速(-15)付与", "type": "debuff", "target": "enemy_all", "applySpeed": -15, "upgrade": {} },
+      { "name": "スローフィールド", "cost": 1, "desc": "敵全体に減速(-15)付与", "type": "debuff", "target": "enemy_all", "applySpeed": -15, "upgrade": { "applySpeed": -5 } },
       { "name": "クラックショット", "cost": 1, "desc": "敵1体に5ダメージ。脆弱状態の敵には+3", "type": "attack", "target": "enemy_single", "baseDmg": 5, "stat": "OUT", "vulnerabilityBonus": 3, "upgrade": { "baseDmg": 2, "vulnerabilityBonus": 2 } },
       { "name": "フルブレイク", "cost": 2, "desc": "敵1体に3ダメージ。脆弱(4)+減速(-15)付与", "type": "attack", "target": "enemy_single", "baseDmg": 3, "stat": "OUT", "applyStatus": { "type": "vulnerability", "stacks": 4 }, "applySpeed": -15, "upgrade": { "baseDmg": 2, "stacks": 1 } },
       { "name": "アナリシスパルス", "cost": 0, "desc": "敵全体に脆弱(2)付与", "type": "debuff", "target": "enemy_all", "applyStatus": { "type": "vulnerability", "stacks": 2 }, "upgrade": { "stacks": 1 } },
-      { "name": "グラビティウェル", "cost": 2, "desc": "敵1体に減速(-25)付与", "type": "debuff", "target": "enemy_single", "applySpeed": -25, "upgrade": {} },
+      { "name": "グラビティウェル", "cost": 2, "desc": "敵1体に減速(-25)付与", "type": "debuff", "target": "enemy_single", "applySpeed": -25, "upgrade": { "costReduction": 1 } },
       { "name": "エクスプロイト", "cost": 2, "desc": "敵1体に8ダメージ。脆弱状態の敵には+5", "type": "attack", "target": "enemy_single", "baseDmg": 8, "stat": "OUT", "vulnerabilityBonus": 5, "upgrade": { "baseDmg": 2, "vulnerabilityBonus": 2 } },
       { "name": "ディスラプター", "cost": 1, "desc": "敵1体に3ダメージ。脆弱(3)+減速(-10)付与", "type": "attack", "target": "enemy_single", "baseDmg": 3, "stat": "OUT", "applyStatus": { "type": "vulnerability", "stacks": 3 }, "applySpeed": -10, "upgrade": { "baseDmg": 2, "stacks": 1 } },
       { "name": "デモリッション", "cost": 4, "desc": "敵1体に10ダメージ。脆弱(8)+減速(-25)付与", "type": "attack", "target": "enemy_single", "baseDmg": 10, "stat": "OUT", "applyStatus": { "type": "vulnerability", "stacks": 8 }, "applySpeed": -25, "upgrade": { "baseDmg": 2, "stacks": 2 } }
@@ -132,15 +132,15 @@
     "baseStats": { "OUT": 2, "SHL": 4, "CTRL": 4 },
     "pack": "base",
     "cards": [
-      { "name": "ENチャージ", "cost": 0, "desc": "EN+1", "type": "special", "target": "none", "effect": "encharge", "amount": 1, "upgrade": {} },
+      { "name": "ENチャージ", "cost": 0, "desc": "EN+1", "type": "special", "target": "none", "effect": "encharge", "amount": 1, "upgrade": { "amount": 1 } },
       { "name": "ブーストショット", "cost": 1, "desc": "敵1体に5ダメージ", "type": "attack", "target": "enemy_single", "baseDmg": 5, "stat": "OUT", "upgrade": { "baseDmg": 2 } },
-      { "name": "アクセルフィールド", "cost": 1, "desc": "味方全機に加速(+10)付与", "type": "buff", "target": "ally_all", "applyAllySpeed": 10, "upgrade": {} },
-      { "name": "フルドライブ", "cost": 0, "desc": "このターン次のカードEN-1(最低0)", "type": "special", "target": "none", "effect": "full_drive", "upgrade": {} },
-      { "name": "ENバースト", "cost": 0, "desc": "EN+2。自機HP-3", "type": "special", "target": "none", "effect": "encharge", "amount": 2, "selfDmg": 3, "upgrade": {} },
+      { "name": "アクセルフィールド", "cost": 1, "desc": "味方全機に加速(+10)付与", "type": "buff", "target": "ally_all", "applyAllySpeed": 10, "upgrade": { "costReduction": 1 } },
+      { "name": "フルドライブ", "cost": 0, "desc": "このターン次のカードEN-1(最低0)", "type": "special", "target": "none", "effect": "full_drive", "upgrade": { "amount": 1 } },
+      { "name": "ENバースト", "cost": 0, "desc": "EN+2。自機HP-3", "type": "special", "target": "none", "effect": "encharge", "amount": 2, "selfDmg": 3, "upgrade": { "selfDmg": -2 } },
       { "name": "シールドチャージ", "cost": 1, "desc": "味方全機にフィールド3", "type": "defend", "target": "ally_all", "baseBarrier": 3, "stat": "SHL", "upgrade": { "baseBarrier": 2 } },
-      { "name": "オーバークロック", "cost": 1, "desc": "味方1機に加速(+20)付与", "type": "buff", "target": "ally_single", "applyAllySpeed": 20, "upgrade": {} },
-      { "name": "エナジーリンク", "cost": 2, "desc": "EN+2。味方全機にフィールド2", "type": "special", "target": "none", "effect": "encharge", "amount": 2, "upgrade": {} },
-      { "name": "マキシマムドライブ", "cost": 4, "desc": "EN+4。味方全機に加速(+20)+フィールド5", "type": "special", "target": "none", "effect": "encharge", "amount": 4, "upgrade": {} }
+      { "name": "オーバークロック", "cost": 1, "desc": "味方1機に加速(+20)付与", "type": "buff", "target": "ally_single", "applyAllySpeed": 20, "upgrade": { "costReduction": 1 } },
+      { "name": "エナジーリンク", "cost": 2, "desc": "EN+2。味方全機にフィールド2", "type": "special", "target": "none", "effect": "encharge", "amount": 2, "upgrade": { "costReduction": 1 } },
+      { "name": "マキシマムドライブ", "cost": 4, "desc": "EN+4。味方全機に加速(+20)+フィールド5", "type": "special", "target": "none", "effect": "encharge", "amount": 4, "upgrade": { "costReduction": 1 } }
     ]
   },
   "phantom": {
@@ -151,12 +151,12 @@
     "pack": "base",
     "cards": [
       { "name": "ファントムスラッシュ", "cost": 1, "desc": "敵1体に6ダメージ。減速(-15)付与", "type": "attack", "target": "enemy_single", "baseDmg": 6, "stat": "OUT", "applySpeed": -15, "upgrade": { "baseDmg": 2 } },
-      { "name": "スモークボム", "cost": 1, "desc": "敵全体に減速(-10)付与", "type": "debuff", "target": "enemy_all", "applySpeed": -10, "upgrade": {} },
+      { "name": "スモークボム", "cost": 1, "desc": "敵全体に減速(-10)付与", "type": "debuff", "target": "enemy_all", "applySpeed": -10, "upgrade": { "costReduction": 1 } },
       { "name": "バックスタブ", "cost": 2, "desc": "敵1体に8ダメージ。背面攻撃+5", "type": "attack", "target": "enemy_single", "baseDmg": 8, "stat": "OUT", "backstabBonus": 5, "upgrade": { "baseDmg": 2, "backstabBonus": 2 } },
       { "name": "ファントムレイド", "cost": 3, "desc": "敵1体に15ダメージ。自機加速(+30)", "type": "attack", "target": "enemy_single", "baseDmg": 15, "stat": "OUT", "applySelfSpeed": 30, "upgrade": { "baseDmg": 2 } },
-      { "name": "シャドウステップ", "cost": 0, "desc": "自機に加速(+20)付与", "type": "buff", "target": "self", "applySelfSpeed": 20, "upgrade": {} },
+      { "name": "シャドウステップ", "cost": 0, "desc": "自機に加速(+20)付与", "type": "buff", "target": "self", "applySelfSpeed": 20, "upgrade": { "applySelfSpeed": 10 } },
       { "name": "アンブッシュ", "cost": 1, "desc": "敵1体に6ダメージ。背面攻撃+8。減速(-10)", "type": "attack", "target": "enemy_single", "baseDmg": 6, "stat": "OUT", "backstabBonus": 8, "applySpeed": -10, "upgrade": { "baseDmg": 2, "backstabBonus": 2 } },
-      { "name": "ミラージュ", "cost": 1, "desc": "味方全機に加速(+15)付与", "type": "buff", "target": "ally_all", "applyAllySpeed": 15, "upgrade": {} },
+      { "name": "ミラージュ", "cost": 1, "desc": "味方全機に加速(+15)付与", "type": "buff", "target": "ally_all", "applyAllySpeed": 15, "upgrade": { "costReduction": 1 } },
       { "name": "ブレードダンス", "cost": 2, "desc": "ランダム敵に4ダメージ×3回。各命中時減速(-10)", "type": "attack", "target": "enemy_random", "baseDmg": 4, "stat": "OUT", "hits": 3, "applySpeed": -10, "upgrade": { "baseDmg": 2 } },
       { "name": "ファントムアサルト", "cost": 4, "desc": "敵1体に20ダメージ。背面+10。自機加速(+40)", "type": "attack", "target": "enemy_single", "baseDmg": 20, "stat": "OUT", "backstabBonus": 10, "applySelfSpeed": 40, "upgrade": { "baseDmg": 3, "backstabBonus": 2 } }
     ]
