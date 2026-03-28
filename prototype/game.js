@@ -150,57 +150,105 @@ const LINEAR_EVENTS = [
   {
     id: 'repair',
     title: '整備',
-    desc: '作戦の合間に整備の時間が取れた。機体の損傷を修復できる。',
+    desc: '機体の損傷を修復できる。',
     choices: [
       { label: '修復する', desc: '全機HP30%回復', action: 'repair_30' },
     ]
   },
   {
-    id: 'optimize',
+    id: 'upgrade',
     title: '最適化',
-    desc: 'カードシステムの最適化が可能だ。戦闘データを元にチューニングする。',
+    desc: 'カードシステムの最適化が可能だ。',
     choices: [
       { label: '最適化実行', desc: 'ランダムなカード1枚を+化', action: 'free_upgrade' },
     ]
   },
   {
-    id: 'resupply',
-    title: '補給',
-    desc: '補給ポイントを発見した。物資を受け取れる。',
+    id: 'remove',
+    title: 'データ整理',
+    desc: '不要なカードデータを削除してデッキを最適化できる。',
     choices: [
-      { label: '補給を受ける', desc: 'ランダムアイテム獲得', action: 'resupply_item' },
+      { label: 'カードを除去', desc: 'デッキから1枚選んで除去', action: 'remove_card' },
       { label: '見送る', desc: '何も起きない', action: 'nothing' },
+    ]
+  },
+  {
+    id: 'relic_find',
+    title: '残骸発見',
+    desc: '先行部隊の残骸からパーツを回収できる。',
+    choices: [
+      { label: '回収する', desc: 'レリックを1つ獲得', action: 'find_relic' },
     ]
   },
   {
     id: 'gamble',
     title: '賭け',
-    desc: '不安定なエネルギー源を発見。取り込めば強化できるが、リスクもある。',
+    desc: '不安定なエネルギー源を発見。リスクを取るか？',
     choices: [
-      { label: '取り込む', desc: '全機HP20%消費 → 50%でTP+2、50%で何もなし', action: 'gamble_tp' },
+      { label: '取り込む', desc: '全機HP20%消費 → 50%でレリック獲得', action: 'gamble_relic' },
       { label: '見送る', desc: '何も起きない', action: 'nothing' },
-    ]
-  },
-  {
-    id: 'recon',
-    title: '偵察',
-    desc: '偵察ドローンを展開する余裕がある。次の敵情報を取得できる。',
-    choices: [
-      { label: '偵察する', desc: '次の敵の情報が見える', action: 'recon_next' },
     ]
   },
 ];
 
 // ============================================================
-// CONSUMABLE ITEMS
+// RELIC DEFINITIONS
 // ============================================================
-const ITEM_DEFS = {
-  hp_potion: { name: 'HPポーション', desc: '味方1機HP15回復', needsTarget: true, targetType: 'ally_alive' },
-  barrier_pack: { name: 'フィールドパック', desc: '全機フィールド+8', needsTarget: false },
-  en_cell: { name: 'ENセル', desc: '今ターンEN+2', needsTarget: false },
+const RELIC_DEFS = {
+  // --- Combat ---
+  power_core:       { name: 'パワーコア', desc: '全攻撃ダメージ+2', rarity: 'common' },
+  rapid_loader:     { name: 'ラピッドローダー', desc: '毎ターンのドロー枚数+1(6枚)', rarity: 'uncommon' },
+  reserve_battery:  { name: '予備バッテリー', desc: '各戦闘開始時EN+1', rarity: 'common' },
+  en_converter:     { name: 'ENコンバーター', desc: 'EN上限+1(6)', rarity: 'uncommon' },
+  twin_strike:      { name: 'ツインストライク', desc: 'EN0カード使用後、次のカードダメージ+3', rarity: 'uncommon' },
+  berserker_chip:   { name: 'バーサーカーチップ', desc: 'HP50%以下の味方の攻撃+4', rarity: 'uncommon' },
+  crit_module:      { name: 'クリティカルモジュール', desc: '10%の確率でダメージ1.5倍', rarity: 'common' },
+  multi_target:     { name: 'マルチターゲット', desc: '単体攻撃が別の敵にも50%ダメージ', rarity: 'rare' },
+  // --- Defense ---
+  auto_repair:      { name: 'オートリペア', desc: 'ターン開始時、最もHP低い味方をHP3回復', rarity: 'common' },
+  reactive_armor:   { name: 'リアクティブアーマー', desc: 'フィールド残量の50%を次ターンに持越し', rarity: 'uncommon' },
+  emergency_shield: { name: '緊急シールド', desc: '戦闘開始時、全味方にフィールド+5', rarity: 'common' },
+  damage_absorber:  { name: 'ダメージアブソーバー', desc: '受けるダメージ-1(最低1)', rarity: 'uncommon' },
+  last_stand_relic: { name: 'ラストスタンド', desc: 'HPが1になった時、1回だけフィールド+15', rarity: 'rare' },
+  guardian_angel:   { name: 'ガーディアンエンジェル', desc: '大破時、1回だけHP1で復活(ラン中1回)', rarity: 'rare' },
+  // --- Status ---
+  heat_amplifier:   { name: '過熱増幅器', desc: '過熱ダメージ+1', rarity: 'common' },
+  corrosive_coat:   { name: '腐食コート', desc: '脆弱付与量+2', rarity: 'common' },
+  static_field:     { name: '静電フィールド', desc: 'ターン開始時、ランダム敵1体に感電1T', rarity: 'uncommon' },
+  deep_freeze:      { name: 'ディープフリーズ', desc: '減速効果の持続+2ターン', rarity: 'uncommon' },
+  chain_lightning:  { name: 'チェインライトニング', desc: '感電中の敵にダメージ時、隣の敵にも3ダメージ', rarity: 'rare' },
+  thermal_cascade:  { name: 'サーマルカスケード', desc: '過熱で敵撃破時、過熱値を別の敵に伝播', rarity: 'rare' },
+  // --- Speed ---
+  accel_boot:       { name: 'アクセルブート', desc: '戦闘開始時、全味方に加速+5%', rarity: 'common' },
+  friction_field:   { name: 'フリクションフィールド', desc: '戦闘開始時、全敵に減速-5%', rarity: 'common' },
+  // --- Economy ---
+  card_scanner:     { name: 'カードスキャナー', desc: 'カード報酬の選択肢が4枚になる', rarity: 'uncommon' },
+  upgrade_kit:      { name: 'アップグレードキット', desc: 'カード報酬で選んだカードが50%で+付き', rarity: 'uncommon' },
+  lucky_coin:       { name: 'ラッキーコイン', desc: 'イベントの賭けが70%成功になる', rarity: 'common' },
+  scout_drone:      { name: 'スカウトドローン', desc: '次の戦闘の敵情報が常に見える', rarity: 'common' },
+  // --- Boss relics ---
+  overclock:        { name: 'オーバークロック', desc: 'EN回復量+1(毎ターン4回復)', rarity: 'boss' },
+  nano_repair_sys:  { name: 'ナノリペアシステム', desc: '毎ターン全味方HP1回復', rarity: 'boss' },
+  war_machine:      { name: 'ウォーマシン', desc: '手札のEN2以上のカードのコスト-1', rarity: 'boss' },
+  quantum_link:     { name: '量子リンク', desc: 'カード使用時にフィールド+1(使用者)', rarity: 'boss' },
+  infinity_core:    { name: 'インフィニティコア', desc: 'デッキ1周ごとに全味方HP5回復', rarity: 'boss' },
 };
 
-const ITEM_DROP_POOL = ['hp_potion', 'hp_potion', 'barrier_pack', 'barrier_pack', 'en_cell'];
+function hasRelic(id) {
+  return state.relics && state.relics.includes(id);
+}
+
+function getRelicChoices(rarity, count) {
+  const pool = Object.entries(RELIC_DEFS)
+    .filter(([id, r]) => {
+      if (rarity === 'boss') return r.rarity === 'boss';
+      return r.rarity !== 'boss';
+    })
+    .filter(([id]) => !hasRelic(id))
+    .map(([id]) => id);
+  shuffle(pool);
+  return pool.slice(0, count);
+}
 
 // ============================================================
 // GAME STATE
@@ -208,11 +256,8 @@ const ITEM_DROP_POOL = ['hp_potion', 'hp_potion', 'barrier_pack', 'barrier_pack'
 let state = {
   // Setup
   selectedFrames: [],
-  statPoints: {},
-  totalSP: 24,
-  remainingSP: 24,
   // Run state
-  run: null, // will hold the run object
+  run: null,
   // Battle state
   allies: [],
   enemies: [],
@@ -226,13 +271,11 @@ let state = {
   turnBuffs: {},
   logs: [],
   battleOver: false,
-  // Items
-  items: [], // max 3
+  // Relics
+  relics: [],
   // Reward
-  rewardSPGained: 0,
-  rewardSPRemaining: 0,
-  rewardUpgradeChosen: false,
-  rewardItemChosen: false,
+  rewardCardChosen: false,
+  rewardRelicChosen: false,
 };
 
 // ============================================================
@@ -268,34 +311,40 @@ function generateEnemySequence(actNum) {
 function startRun() {
   state.run = {
     act: 1,
-    battleIndex: 0,      // 0-9 within current act (next battle to fight)
-    overallBattle: 0,    // total battles completed
-    enemySequence: [],   // 10 enemy groups for current act
+    battleIndex: 0,
+    overallBattle: 0,
+    enemySequence: [],
     totalTurns: 0,
     battlesWon: 0,
     elitesKilled: 0,
     bossesKilled: 0,
-    scoutedNext: false,  // recon event flag
+    scoutedNext: false,
+    cardPool: [],       // discoverable cards not yet in deck
+    guardianUsed: false, // guardian_angel one-time flag
   };
 
-  // Build initial allies from setup (slot-based, supports duplicate frames)
+  state.relics = [];
+
+  // Build initial allies from setup (baseStats only, no TP)
   state.allies = state.selectedFrames.filter(fk => fk !== null).map((fk, i) => {
     const frame = FRAMES[fk];
-    const slotKey = `slot${i}`;
-    const allocatedPts = { ...state.statPoints[slotKey] };
-    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0 };
-    const stats = {};
-    for (const s of ['OUT','SHL','CTRL']) {
-      stats[s] = (base[s] || 0) + (allocatedPts[s] || 0);
-    }
+    const stats = { ...(frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0 }) };
     const maxHP = Math.round(frame.baseHP * (1 + stats.SHL * 0.03));
     const dupeCount = state.selectedFrames.slice(0, i + 1).filter(f => f === fk).length;
     const totalDupes = state.selectedFrames.filter(f => f === fk).length;
     const displayName = totalDupes > 1 ? `${frame.name} #${dupeCount}` : frame.name;
+    // Starter cards = first 3, rest go to discovery pool
+    const starterCards = frame.cards.slice(0, 3).map((c, ci) => ({
+      ...c, id: `${fk}_${i}_${ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false
+    }));
+    const discoverCards = frame.cards.slice(3).map((c, ci) => ({
+      ...c, id: `${fk}_${i}_${3 + ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false
+    }));
+    state.run.cardPool.push(...discoverCards);
     return {
       id: i, frameKey: fk, name: displayName, stats,
       hp: maxHP, maxHP, barrier: 0, dead: false, speed: 0, speedEffects: [],
-      cards: frame.cards.map((c, ci) => ({ ...c, id: `${fk}_${i}_${ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false })),
+      cards: starterCards,
       buffs: {}, persistentBarrier: 0, attackLocked: false, counterDmg: 0, reactive: false, siegeBuff: 0, spikeReflect: 0,
       fullDriveActive: false,
       elementCoat: null, absorbField: false, elementStacks: 0,
@@ -310,7 +359,6 @@ function startRun() {
     };
   });
 
-  state.items = [];
   enterAct(1);
 }
 
@@ -348,15 +396,11 @@ function advanceToBattle() {
 // SETUP SCREEN
 // ============================================================
 function initSetup() {
-  // Slot-based selection: 4 slots, each picks a frame (duplicates allowed)
-  state.selectedFrames = [null, null, null, null]; // slot index -> frame key
-  state.statPoints = {};
-  state.remainingSP = state.totalSP;
+  state.selectedFrames = [null, null, null, null];
 
   const grid = document.getElementById('frame-grid');
   grid.innerHTML = '';
 
-  // Only show base pack frames in selection UI
   const baseFrames = Object.entries(FRAMES).filter(([k, f]) => f.pack === 'base');
 
   for (const [key, frame] of baseFrames) {
@@ -370,7 +414,6 @@ function initSetup() {
   }
 
   renderSlotIndicator();
-  updateStatAlloc();
   updateStartBtn();
 }
 
@@ -381,31 +424,17 @@ function getActiveSlot() {
 
 function pickFrameForSlot(key) {
   const slot = getActiveSlot();
-  if (slot < 0) return; // all 4 slots filled
+  if (slot < 0) return;
   state.selectedFrames[slot] = key;
   renderSlotIndicator();
-  updateStatAlloc();
   updateStartBtn();
 }
 
 function removeSlot(slotIdx) {
-  // Remove this slot and shift remaining slots left, clear its stat points
   state.selectedFrames[slotIdx] = null;
-  // Compact: shift nulls to end
   const filled = state.selectedFrames.filter(f => f !== null);
   state.selectedFrames = [...filled, ...Array(4 - filled.length).fill(null)];
-  // Rebuild stat points to match new slot indices
-  const newPoints = {};
-  state.selectedFrames.forEach((fk, i) => {
-    if (fk !== null) {
-      // Try to preserve old points if same frame at same or nearby slot
-      newPoints[`slot${i}`] = state.statPoints[`slot${i}`] || { OUT: 0, SHL: 0, CTRL: 0 };
-    }
-  });
-  state.statPoints = newPoints;
-  recalcSP();
   renderSlotIndicator();
-  updateStatAlloc();
   updateStartBtn();
 }
 
@@ -431,181 +460,6 @@ function renderSlotIndicator() {
   });
 }
 
-// Recommended stat presets per frame (weights that sum to 1.0, used to distribute points)
-const FRAME_PRESETS = {
-  striker:    { OUT: 0.7, SHL: 0.2, CTRL: 0.1 },
-  gunner:     { OUT: 0.6, SHL: 0.1, CTRL: 0.3 },
-  blaster:    { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
-  shielder:   { OUT: 0, SHL: 0.7, CTRL: 0.3 },
-  medic:      { OUT: 0, SHL: 0.2, CTRL: 0.8 },
-  jammer:     { OUT: 0, SHL: 0.2, CTRL: 0.8 },
-  cracker:    { OUT: 0.3, SHL: 0.1, CTRL: 0.6 },
-  booster:    { OUT: 0.2, SHL: 0.4, CTRL: 0.4 },
-  phantom:    { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
-  overload:   { OUT: 0.7, SHL: 0.1, CTRL: 0.2 },
-  // Expansion (not in base selection)
-  fortress:   { OUT: 0.3, SHL: 0.5, CTRL: 0.2 },
-  // PROTOCOL:EX
-  converter:  { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
-  linker:     { OUT: 0, SHL: 0.4, CTRL: 0.6 },
-  decoy:      { OUT: 0, SHL: 0.8, CTRL: 0.2 },
-  scavenger:  { OUT: 0.5, SHL: 0.3, CTRL: 0.2 },
-  oracle:     { OUT: 0.4, SHL: 0.2, CTRL: 0.4 },
-  // PROTOCOL:HV
-  seeker:     { OUT: 0.6, SHL: 0.1, CTRL: 0.3 },
-  launcher:   { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
-  bulk:       { OUT: 0.3, SHL: 0.5, CTRL: 0.2 },
-  drone:      { OUT: 0.6, SHL: 0.2, CTRL: 0.2 },
-  carrier:    { OUT: 0, SHL: 0.4, CTRL: 0.6 },
-};
-
-function applyPreset(slotIdx) {
-  const fk = state.selectedFrames[slotIdx];
-  if (!fk) return;
-  const slotKey = `slot${slotIdx}`;
-  // Clear current points for this slot
-  const oldUsed = Object.values(state.statPoints[slotKey]).reduce((a, b) => a + b, 0);
-  state.remainingSP += oldUsed;
-  // Distribute available SP for this slot based on weights
-  const perSlot = Math.floor(state.totalSP / 4);
-  const points = Math.min(perSlot, state.remainingSP);
-  const weights = FRAME_PRESETS[fk];
-  const newStats = { OUT: 0, SHL: 0, CTRL: 0 };
-  let assigned = 0;
-  for (const stat of Object.keys(newStats)) {
-    newStats[stat] = Math.floor(points * (weights[stat] || 0));
-    assigned += newStats[stat];
-  }
-  // Distribute remainder to highest weight stat
-  const topStat = Object.entries(weights).sort((a, b) => b[1] - a[1])[0][0];
-  newStats[topStat] += points - assigned;
-  state.statPoints[slotKey] = newStats;
-  state.remainingSP -= points;
-  document.getElementById('sp-remaining').textContent = state.remainingSP;
-  updateStatAlloc();
-  updateStartBtn();
-}
-
-function autoAllocAll() {
-  // Reset all points
-  state.selectedFrames.forEach((fk, i) => {
-    if (fk === null) return;
-    state.statPoints[`slot${i}`] = { OUT: 0, SHL: 0, CTRL: 0 };
-  });
-  state.remainingSP = state.totalSP;
-  // Apply presets sequentially
-  state.selectedFrames.forEach((fk, i) => {
-    if (fk !== null) applyPreset(i);
-  });
-  updateStatAlloc();
-  updateStartBtn();
-}
-
-function resetAllStats() {
-  state.selectedFrames.forEach((fk, i) => {
-    if (fk === null) return;
-    state.statPoints[`slot${i}`] = { OUT: 0, SHL: 0, CTRL: 0 };
-  });
-  state.remainingSP = state.totalSP;
-  document.getElementById('sp-remaining').textContent = state.remainingSP;
-  updateStatAlloc();
-  updateStartBtn();
-}
-
-function updateStatAlloc() {
-  const container = document.getElementById('stat-alloc');
-  container.innerHTML = '';
-  const newPoints = {};
-  state.selectedFrames.forEach((fk, i) => {
-    if (fk === null) return;
-    const slotKey = `slot${i}`;
-    newPoints[slotKey] = state.statPoints[slotKey] || { OUT: 0, SHL: 0, CTRL: 0 };
-  });
-  state.statPoints = newPoints;
-  recalcSP();
-
-  state.selectedFrames.forEach((fk, i) => {
-    if (fk === null) return;
-    const slotKey = `slot${i}`;
-    const frame = FRAMES[fk];
-    const div = document.createElement('div');
-    div.className = 'unit-stats';
-    const dupeCount = state.selectedFrames.filter(f => f === fk).length;
-    const label = dupeCount > 1 ? `${frame.name} #${state.selectedFrames.slice(0, i + 1).filter(f => f === fk).length}` : frame.name;
-    div.innerHTML = `<div class="uname">${label}</div>`;
-    // Preset button
-    const presetBtn = document.createElement('button');
-    presetBtn.textContent = '推奨ビルド';
-    presetBtn.style.cssText = 'font-size:10px;padding:2px 6px;margin-bottom:6px;border-color:#4a4adf;color:#8a8aff;width:100%;';
-    presetBtn.onclick = () => applyPreset(i);
-    div.appendChild(presetBtn);
-
-    const base = frame.baseStats || { OUT: 0, SHL: 0, CTRL: 0 };
-    for (const stat of Object.keys(STAT_NAMES)) {
-      const alloc = state.statPoints[slotKey][stat];
-      const baseVal = base[stat] || 0;
-      const total = baseVal + alloc;
-      const row = document.createElement('div');
-      row.className = 'stat-row';
-      row.innerHTML = `
-        <span class="stat-label">${stat}</span>
-        <span class="stat-controls">
-          <button onclick="changeStat('${slotKey}','${stat}',-5)">-5</button>
-          <button onclick="changeStat('${slotKey}','${stat}',-1)">-</button>
-          <span style="display:inline-block;width:14px;text-align:center;color:#6a6a9a;font-size:10px;">${baseVal}</span>
-          <span style="color:#555;font-size:9px;">+</span>
-          <span style="display:inline-block;width:14px;text-align:center;color:#8af;" id="stat-${slotKey}-${stat}">${alloc}</span>
-          <span style="color:#555;font-size:9px;">=</span>
-          <span style="display:inline-block;width:16px;text-align:center;font-weight:bold;" id="stat-total-${slotKey}-${stat}">${total}</span>
-          <button onclick="changeStat('${slotKey}','${stat}',1)">+</button>
-          <button onclick="changeStat('${slotKey}','${stat}',5)">+5</button>
-        </span>
-      `;
-      div.appendChild(row);
-    }
-    container.appendChild(div);
-  });
-
-  // Global buttons
-  if (state.selectedFrames.filter(f => f !== null).length > 0) {
-    const globalDiv = document.createElement('div');
-    globalDiv.style.cssText = 'grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 4px;';
-    globalDiv.innerHTML = `
-      <button onclick="autoAllocAll()" style="padding:6px 16px;border-color:#4a4adf;color:#8a8aff;">全機おまかせ配分</button>
-      <button onclick="resetAllStats()" style="padding:6px 16px;border-color:#666;color:#888;">全リセット</button>
-    `;
-    container.appendChild(globalDiv);
-  }
-}
-
-function changeStat(slotKey, stat, delta) {
-  const cur = state.statPoints[slotKey][stat];
-  const actualDelta = delta > 0 ? Math.min(delta, state.remainingSP) : Math.max(delta, -cur);
-  if (actualDelta === 0) return;
-  state.statPoints[slotKey][stat] = cur + actualDelta;
-  state.remainingSP -= actualDelta;
-  const newAlloc = cur + actualDelta;
-  document.getElementById(`stat-${slotKey}-${stat}`).textContent = newAlloc;
-  // Update total display (base + alloc)
-  const slotIdx = parseInt(slotKey.replace('slot', ''));
-  const fk = state.selectedFrames[slotIdx];
-  if (fk) {
-    const base = (FRAMES[fk].baseStats || {})[stat] || 0;
-    const totalEl = document.getElementById(`stat-total-${slotKey}-${stat}`);
-    if (totalEl) totalEl.textContent = base + newAlloc;
-  }
-  document.getElementById('sp-remaining').textContent = state.remainingSP;
-  updateStartBtn();
-}
-
-function recalcSP() {
-  let used = 0;
-  for (const fk in state.statPoints) {
-    for (const s in state.statPoints[fk]) used += state.statPoints[fk][s];
-  }
-  state.remainingSP = state.totalSP - used;
-  document.getElementById('sp-remaining').textContent = state.remainingSP;
-}
 
 function updateStartBtn() {
   document.getElementById('btn-start').disabled = state.selectedFrames.filter(f => f !== null).length !== 4;
@@ -1858,79 +1712,6 @@ function handleOnKill(ally, onKill) {
 // ============================================================
 // CONSUMABLE ITEMS
 // ============================================================
-let pendingItem = null;
-
-function useItem(slotIdx) {
-  if (state.battleOver) return;
-  if (slotIdx >= state.items.length) return;
-  const itemKey = state.items[slotIdx];
-  if (!itemKey) return;
-  const def = ITEM_DEFS[itemKey];
-
-  if (def.needsTarget) {
-    pendingItem = slotIdx;
-    const targets = state.allies.filter(a => !a.dead);
-    showItemTargetModal('対象を選択', targets);
-  } else {
-    applyItem(slotIdx, null);
-  }
-}
-
-function applyItem(slotIdx, targetId) {
-  const itemKey = state.items[slotIdx];
-  if (!itemKey) return;
-
-  switch (itemKey) {
-    case 'hp_potion': {
-      const target = state.allies[targetId];
-      if (target && !target.dead) {
-        const heal = 15;
-        target.hp = Math.min(target.maxHP, target.hp + heal);
-        addLog(`${target.name}: HPポーション +${heal}`, 'heal');
-      }
-      break;
-    }
-    case 'barrier_pack': {
-      state.allies.filter(a => !a.dead).forEach(a => {
-        a.barrier += 8;
-      });
-      addLog('全機: フィールドパック +8', 'barrier');
-      break;
-    }
-    case 'en_cell': {
-      state.en = Math.min(state.en + 2, state.enCap);
-      addLog('ENセル: EN +2', 'info');
-      break;
-    }
-  }
-
-  state.items.splice(slotIdx, 1);
-  pendingItem = null;
-  renderBattle();
-}
-
-function showItemTargetModal(title, units) {
-  document.getElementById('item-target-title').textContent = title;
-  const container = document.getElementById('item-target-buttons');
-  container.innerHTML = '';
-  units.forEach(u => {
-    const btn = document.createElement('button');
-    btn.className = 'target-btn';
-    btn.textContent = `${u.name} (HP: ${u.hp}/${u.maxHP})`;
-    btn.onclick = () => {
-      document.getElementById('item-target-modal').style.display = 'none';
-      applyItem(pendingItem, u.id);
-    };
-    container.appendChild(btn);
-  });
-  document.getElementById('item-target-modal').style.display = 'flex';
-}
-
-function closeItemTargetModal() {
-  document.getElementById('item-target-modal').style.display = 'none';
-  pendingItem = null;
-}
-
 // ============================================================
 // CARD UPGRADE SYSTEM
 // ============================================================
@@ -2043,180 +1824,112 @@ function buildCardDesc(card) {
 // REWARD SCREEN
 // ============================================================
 function showRewardScreen() {
-  const encounterType = state._encounterType;
-  let spGain = 3;
-  if (encounterType === 'elite') spGain = 5;
-  if (encounterType === 'boss') spGain = 8;
-
-  state.rewardSPGained = spGain;
-  state.rewardSPRemaining = spGain;
-  state.rewardUpgradeChosen = false;
-  state.rewardItemChosen = false;
-
-  // Snapshot current stats as floor (cannot reduce below this)
-  state.rewardStatFloor = {};
-  state.allies.forEach(a => {
-    state.rewardStatFloor[a.id] = { ...a.stats };
-  });
+  state.rewardCardChosen = false;
+  state.rewardRelicChosen = false;
+  const isEliteOrBoss = state._encounterType === 'elite' || state._encounterType === 'boss';
 
   showScreen('reward-screen');
 
-  // SP section
-  document.getElementById('reward-sp-amount').textContent = `+${spGain} TP`;
-  document.getElementById('reward-sp-remaining').textContent = state.rewardSPRemaining;
-  renderRewardStatAlloc();
+  // Card discovery
+  renderRewardCardChoice();
 
-  // Card upgrade section
-  renderRewardCardUpgrade();
-
-  // Item drop section
-  renderRewardItemDrop();
-
-  updateContinueBtn();
-}
-
-function renderRewardStatAlloc() {
-  const container = document.getElementById('reward-stat-alloc');
-  container.innerHTML = '';
-
-  state.allies.forEach(a => {
-    if (a.dead) return;
-    const div = document.createElement('div');
-    div.className = 'unit-stats';
-    div.innerHTML = `<div class="uname">${a.name}</div>`;
-    for (const stat of Object.keys(STAT_NAMES)) {
-      const val = a.stats[stat];
-      const row = document.createElement('div');
-      row.className = 'stat-row';
-      row.innerHTML = `
-        <span>${stat}</span>
-        <span>
-          <button onclick="rewardChangeStat(${a.id},'${stat}',-1)">-</button>
-          <span style="display:inline-block;width:24px;text-align:center;" id="rstat-${a.id}-${stat}">${val}</span>
-          <button onclick="rewardChangeStat(${a.id},'${stat}',1)">+</button>
-        </span>
-      `;
-      div.appendChild(row);
-    }
-    container.appendChild(div);
-  });
-}
-
-function rewardChangeStat(allyId, stat, delta) {
-  const ally = state.allies[allyId];
-  if (!ally) return;
-  const cur = ally.stats[stat];
-  const newVal = cur + delta;
-  if (newVal < 0) return;
-  if (delta > 0 && state.rewardSPRemaining <= 0) return;
-  // Cannot reduce below the value at the start of this reward screen
-  const floor = state.rewardStatFloor?.[allyId]?.[stat] ?? 0;
-  if (newVal < floor) return;
-  ally.stats[stat] = newVal;
-  state.rewardSPRemaining -= delta;
-
-  // Recalc maxHP if SHL changed
-  if (stat === 'SHL') {
-    const frame = FRAMES[ally.frameKey];
-    const oldMax = ally.maxHP;
-    ally.maxHP = Math.round(frame.baseHP * (1 + ally.stats.SHL * 0.03));
-    // Adjust current HP proportionally if max increased
-    if (ally.maxHP > oldMax) {
-      ally.hp += (ally.maxHP - oldMax);
-    }
-    if (ally.hp > ally.maxHP) ally.hp = ally.maxHP;
+  // Relic for elite/boss
+  if (isEliteOrBoss) {
+    document.getElementById('reward-relic-section').style.display = '';
+    renderRewardRelicChoice();
+  } else {
+    document.getElementById('reward-relic-section').style.display = 'none';
+    state.rewardRelicChosen = true;
   }
 
-  const el = document.getElementById(`rstat-${allyId}-${stat}`);
-  if (el) el.textContent = newVal;
-  document.getElementById('reward-sp-remaining').textContent = state.rewardSPRemaining;
   updateContinueBtn();
 }
 
-function renderRewardCardUpgrade() {
+function renderRewardCardChoice() {
   const container = document.getElementById('reward-card-list');
   container.innerHTML = '';
 
-  // Pick 3 random non-upgraded cards from alive allies
-  const allCards = [];
-  state.allies.forEach(a => {
-    if (a.dead) return;
-    a.cards.forEach((c, ci) => {
-      if (!c.upgraded) {
-        allCards.push({ allyId: a.id, cardIdx: ci, card: c });
-      }
-    });
-  });
-
-  shuffle(allCards);
-  const choices = allCards.slice(0, 3);
+  const pool = [...state.run.cardPool];
+  shuffle(pool);
+  const count = hasRelic('card_scanner') ? 4 : 3;
+  const choices = pool.slice(0, count);
 
   if (choices.length === 0) {
-    container.innerHTML = '<p style="color:#888;">アップグレード可能なカードがありません</p>';
-    state.rewardUpgradeChosen = true;
+    container.innerHTML = '<p style="color:#888;">発見可能なカードがありません</p>';
+    state.rewardCardChosen = true;
     updateContinueBtn();
     return;
   }
 
-  choices.forEach(({ allyId, cardIdx, card }) => {
-    const upgraded = getUpgradedCard(card);
+  choices.forEach(card => {
+    const owner = state.allies[card.ownerIdx];
+    const ownerName = owner ? owner.name : '?';
     const div = document.createElement('div');
     div.className = 'reward-card-option';
     div.innerHTML = `
-      <div class="card-current">${card.name} (EN${card.cost}) - ${card.desc}</div>
-      <div style="color:#666; margin:2px 0;">--></div>
-      <div class="card-upgraded">${upgraded.name} (EN${upgraded.cost}) - ${upgraded.desc}</div>
+      <div style="color:#666;font-size:10px;margin-bottom:2px;">${ownerName}</div>
+      <div><span style="color:#ff6;font-weight:bold;">EN${card.cost}</span> <span style="color:#aaf;font-weight:bold;">${card.name}</span></div>
+      <div style="color:#999;font-size:11px;margin-top:4px;">${card.desc}</div>
     `;
     div.onclick = () => {
-      if (state.rewardUpgradeChosen) return;
-      // Apply upgrade
-      const ally = state.allies[allyId];
-      ally.cards[cardIdx] = { ...upgraded, ownerIdx: allyId, ownerFrame: ally.frameKey, playable: true, id: card.id };
-      state.rewardUpgradeChosen = true;
+      if (state.rewardCardChosen) return;
+      // Add card to owner's deck
+      const ally = state.allies[card.ownerIdx];
+      if (!ally) return;
+      let newCard = { ...card };
+      // Apply upgrade_kit relic: 50% chance to auto-upgrade
+      if (hasRelic('upgrade_kit') && !newCard.upgraded && newCard.upgrade && Math.random() < 0.5) {
+        newCard = getUpgradedCard(newCard);
+        newCard.ownerIdx = card.ownerIdx;
+        newCard.ownerFrame = card.ownerFrame;
+        newCard.playable = !ally.dead;
+        newCard.id = card.id;
+      }
+      ally.cards.push(newCard);
+      // Remove from pool
+      state.run.cardPool = state.run.cardPool.filter(c => c.id !== card.id);
+      state.rewardCardChosen = true;
       container.querySelectorAll('.reward-card-option').forEach(el => el.style.opacity = '0.3');
       div.style.opacity = '1';
       div.style.borderColor = '#6aff6a';
+      if (newCard.upgraded) div.style.borderColor = '#4a4';
       updateContinueBtn();
     };
     container.appendChild(div);
   });
 }
 
-function renderRewardItemDrop() {
-  const container = document.getElementById('reward-item-list');
+function renderRewardRelicChoice() {
+  const container = document.getElementById('reward-relic-list');
   container.innerHTML = '';
 
-  if (state.items.length >= 3) {
-    container.innerHTML = '<p style="color:#888;">アイテム枠が満杯です</p>';
-    state.rewardItemChosen = true;
-    document.getElementById('btn-skip-item').style.display = 'none';
+  const rarity = state._encounterType === 'boss' ? 'boss' : 'any';
+  const choices = getRelicChoices(rarity, 3);
+
+  if (choices.length === 0) {
+    container.innerHTML = '<p style="color:#888;">獲得可能なレリックがありません</p>';
+    state.rewardRelicChosen = true;
     updateContinueBtn();
     return;
   }
 
-  document.getElementById('btn-skip-item').style.display = '';
-
-  // Offer 2 random items
-  const pool = [...ITEM_DROP_POOL];
-  shuffle(pool);
-  const offers = pool.slice(0, 2);
-
-  offers.forEach(itemKey => {
-    const def = ITEM_DEFS[itemKey];
+  choices.forEach(relicId => {
+    const def = RELIC_DEFS[relicId];
     const div = document.createElement('div');
-    div.className = 'reward-item';
+    div.className = 'reward-relic';
+    const rarityColor = { common: '#6aff6a', uncommon: '#6af', rare: '#fa0', boss: '#f6f' }[def.rarity] || '#fff';
     div.innerHTML = `
-      <div class="item-name">${def.name}</div>
-      <div class="item-desc">${def.desc}</div>
+      <div class="relic-name" style="color:${rarityColor};">${def.name}</div>
+      <div class="relic-desc">${def.desc}</div>
+      <div class="relic-rarity" style="color:${rarityColor};font-size:9px;">${def.rarity.toUpperCase()}</div>
     `;
     div.onclick = () => {
-      if (state.rewardItemChosen) return;
-      if (state.items.length >= 3) return;
-      state.items.push(itemKey);
-      state.rewardItemChosen = true;
-      container.querySelectorAll('.reward-item').forEach(el => el.style.opacity = '0.3');
+      if (state.rewardRelicChosen) return;
+      state.relics.push(relicId);
+      state.rewardRelicChosen = true;
+      container.querySelectorAll('.reward-relic').forEach(el => el.style.opacity = '0.3');
       div.style.opacity = '1';
-      div.style.borderColor = '#6aff6a';
+      div.style.borderColor = rarityColor;
       updateContinueBtn();
     };
     container.appendChild(div);
@@ -2224,7 +1937,7 @@ function renderRewardItemDrop() {
 }
 
 function updateContinueBtn() {
-  const allDone = state.rewardSPRemaining === 0 && state.rewardUpgradeChosen && state.rewardItemChosen;
+  const allDone = state.rewardCardChosen && state.rewardRelicChosen;
   document.getElementById('btn-continue-run').disabled = !allDone;
 }
 
@@ -2303,47 +2016,42 @@ function resolveEvent(action) {
       }
       break;
     }
-    case 'resupply_item': {
-      const item = ITEM_DROP_POOL[Math.floor(Math.random() * ITEM_DROP_POOL.length)];
-      if (state.items.length < 3) {
-        state.items.push(item);
-        resultMsg = `${ITEM_DEFS[item].name} を入手!`;
+    case 'remove_card':
+      showCardRemovalUI();
+      return; // Don't show result yet
+    case 'find_relic': {
+      const choices = getRelicChoices('any', 1);
+      if (choices.length > 0) {
+        state.relics.push(choices[0]);
+        const def = RELIC_DEFS[choices[0]];
+        resultMsg = `レリック「${def.name}」を獲得!\n${def.desc}`;
       } else {
-        resultMsg = 'アイテム枠が満杯だ。補給を受けられなかった。';
+        resultMsg = '獲得可能なレリックがなかった。';
       }
       break;
     }
-    case 'gamble_tp':
-      // Consume 20% HP from all alive allies
+    case 'gamble_relic': {
       state.allies.filter(a => !a.dead).forEach(a => {
         const cost = Math.floor(a.maxHP * 0.2);
         a.hp = Math.max(1, a.hp - cost);
       });
-      if (Math.random() < 0.5) {
-        // Success: TP+2
-        state.rewardSPGained = 2;
-        state.rewardSPRemaining = 2;
-        showQuickSP(2);
-        return;
+      const successRate = hasRelic('lucky_coin') ? 0.7 : 0.5;
+      if (Math.random() < successRate) {
+        const choices = getRelicChoices('any', 1);
+        if (choices.length > 0) {
+          state.relics.push(choices[0]);
+          const def = RELIC_DEFS[choices[0]];
+          resultMsg = `成功! レリック「${def.name}」を獲得!\n${def.desc}`;
+        } else {
+          resultMsg = '成功したが、獲得可能なレリックがなかった。';
+        }
       } else {
         resultMsg = 'エネルギーは不安定すぎた。HPを消耗しただけだった...';
       }
       break;
-    case 'recon_next':
-      state.run.scoutedNext = true;
-      // Show next enemy info
-      if (state.run.battleIndex < 10) {
-        const next = state.run.enemySequence[state.run.battleIndex];
-        const scale = getActScale(state.run.act);
-        const info = next.enemies.map(e => `${e.name} HP:${Math.floor(e.hp * scale)} ATK:${Math.floor(e.atk * scale)}`).join('\n');
-        resultMsg = '偵察成功! 次の敵:\n' + info;
-      } else {
-        resultMsg = '偵察成功! 次はボスエリアだ...';
-      }
-      break;
+    }
   }
 
-  // Show result and continue button
   const container = document.getElementById('event-choices');
   container.innerHTML = `
     <pre style="color:#6aff6a; margin:12px 0; white-space:pre-wrap;">${resultMsg}</pre>
@@ -2351,25 +2059,40 @@ function resolveEvent(action) {
   `;
 }
 
-function showQuickSP(amount) {
-  state.rewardSPGained = amount;
-  state.rewardSPRemaining = amount;
-  state.rewardUpgradeChosen = true;
-  state.rewardItemChosen = true;
+function showCardRemovalUI() {
+  const container = document.getElementById('event-choices');
+  container.innerHTML = '<p style="color:#fff;margin-bottom:8px;">除去するカードを選択:</p>';
+  const cardList = document.createElement('div');
+  cardList.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
 
-  // Snapshot current stats as floor
-  state.rewardStatFloor = {};
   state.allies.forEach(a => {
-    state.rewardStatFloor[a.id] = { ...a.stats };
+    a.cards.forEach((c, ci) => {
+      const div = document.createElement('button');
+      div.className = 'event-choice-btn';
+      div.innerHTML = `<span class="choice-label">${a.name} - ${c.name}${c.upgraded ? '+' : ''} (EN${c.cost})</span><span class="choice-desc">${c.desc}</span>`;
+      div.onclick = () => {
+        a.cards.splice(ci, 1);
+        container.innerHTML = `
+          <pre style="color:#6aff6a; margin:12px 0;">「${c.name}」を除去した。デッキ枚数: ${state.allies.reduce((s, al) => s + al.cards.length, 0)}枚</pre>
+          <button class="btn-primary" onclick="showProgressScreen()">CONTINUE</button>
+        `;
+      };
+      cardList.appendChild(div);
+    });
   });
 
-  showScreen('reward-screen');
-  document.getElementById('reward-sp-amount').textContent = `+${amount} TP`;
-  document.getElementById('reward-sp-remaining').textContent = state.rewardSPRemaining;
-  renderRewardStatAlloc();
-  document.getElementById('reward-upgrade-section').style.display = 'none';
-  document.getElementById('reward-item-section').style.display = 'none';
-  updateContinueBtn();
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'やめる';
+  cancelBtn.style.cssText = 'margin-top:8px;';
+  cancelBtn.onclick = () => {
+    container.innerHTML = `
+      <pre style="color:#888; margin:12px 0;">カード除去を見送った。</pre>
+      <button class="btn-primary" onclick="showProgressScreen()">CONTINUE</button>
+    `;
+  };
+
+  container.appendChild(cardList);
+  container.appendChild(cancelBtn);
 }
 
 // ============================================================
@@ -2386,6 +2109,8 @@ function showRunEnd(victory) {
   html += `<p><span class="stat-label">Act内戦闘: </span><span class="stat-value">${state.run.battleIndex}/10</span></p>`;
   html += `<p><span class="stat-label">総戦闘数: </span><span class="stat-value">${state.run.battlesWon}</span></p>`;
   html += `<p><span class="stat-label">ボス撃破: </span><span class="stat-value">${state.run.bossesKilled}</span></p>`;
+  html += `<p><span class="stat-label">レリック: </span><span class="stat-value">${state.relics.length}</span></p>`;
+  html += `<p><span class="stat-label">デッキ枚数: </span><span class="stat-value">${state.allies.reduce((s, a) => s + a.cards.length, 0)}</span></p>`;
   html += `<p><span class="stat-label">総ターン数: </span><span class="stat-value">${state.run.totalTurns}</span></p>`;
 
   html += '<h3 style="margin-top:12px;">// SQUAD STATUS</h3>';
@@ -2434,7 +2159,8 @@ function renderProgressScreen() {
   hudHtml += `<div class="run-hud-item"><span class="label">ACT</span> <span class="value">${act}</span></div>`;
   hudHtml += `<div class="run-hud-item"><span class="label">BATTLE</span> <span class="value">${battleNum}/10</span></div>`;
   hudHtml += `<div class="run-hud-item"><span class="label">TOTAL</span> <span class="value">${state.run.overallBattle}</span></div>`;
-  hudHtml += `<div class="run-hud-item"><span class="label">ITEMS</span> <span class="value">${state.items.length}/3</span></div>`;
+  hudHtml += `<div class="run-hud-item"><span class="label">RELICS</span> <span class="value">${state.relics.length}</span></div>`;
+  hudHtml += `<div class="run-hud-item"><span class="label">DECK</span> <span class="value">${state.allies.reduce((s, a) => s + a.cards.length, 0)}</span></div>`;
   hud.innerHTML = hudHtml;
 
   // Progress bar (10 segments for current act)
@@ -2480,7 +2206,7 @@ function renderBattleHUD() {
   html += `<div class="run-hud-item"><span class="label">ACT</span> <span class="value">${state.run.act}</span></div>`;
   html += `<div class="run-hud-item"><span class="label">BATTLE</span> <span class="value">${state.run.battleIndex}/10</span></div>`;
   if (typeLabel) html += `<div class="run-hud-item"><span class="label">TYPE</span> <span class="value" style="color:#f88;">${typeLabel}</span></div>`;
-  html += `<div class="run-hud-item"><span class="label">ITEMS</span> <span class="value">${state.items.length}/3</span></div>`;
+  html += `<div class="run-hud-item"><span class="label">RELICS</span> <span class="value">${state.relics.length}</span></div>`;
   hud.innerHTML = html;
 }
 
@@ -2543,8 +2269,8 @@ function renderBattle() {
     `;
   });
 
-  // Items bar
-  renderItemsBar();
+  // Relic bar
+  renderRelicBar();
 
   // EN & Turn
   document.getElementById('en-display').textContent = `${state.en}/${state.enCap}`;
@@ -2557,17 +2283,20 @@ function renderBattle() {
   logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-function renderItemsBar() {
-  const bar = document.getElementById('items-bar');
-  let html = '<span style="color:#888; font-size:11px;">ITEMS:</span>';
-  for (let i = 0; i < 3; i++) {
-    if (i < state.items.length) {
-      const def = ITEM_DEFS[state.items[i]];
-      html += `<div class="item-slot" onclick="useItem(${i})" title="${def.desc}">${def.name}</div>`;
-    } else {
-      html += `<div class="item-slot empty">---</div>`;
-    }
+function renderRelicBar() {
+  const bar = document.getElementById('relic-bar');
+  if (!bar) return;
+  if (state.relics.length === 0) {
+    bar.innerHTML = '<span style="color:#555;font-size:10px;">RELICS: ---</span>';
+    return;
   }
+  let html = '<span style="color:#888;font-size:10px;">RELICS:</span>';
+  state.relics.forEach(id => {
+    const def = RELIC_DEFS[id];
+    if (!def) return;
+    const color = { common: '#6aff6a', uncommon: '#6af', rare: '#fa0', boss: '#f6f' }[def.rarity] || '#fff';
+    html += `<span class="relic-icon" title="${def.desc}" style="border-color:${color};color:${color};">${def.name.slice(0, 2)}</span>`;
+  });
   bar.innerHTML = html;
 }
 
@@ -2683,8 +2412,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   // Reset hidden sections when showing reward screen
   if (id === 'reward-screen') {
-    document.getElementById('reward-upgrade-section').style.display = '';
-    document.getElementById('reward-item-section').style.display = '';
+    document.getElementById('reward-relic-section').style.display = '';
   }
 }
 
@@ -2730,14 +2458,9 @@ document.getElementById('btn-next-battle').onclick = () => {
   advanceToBattle();
 };
 document.getElementById('btn-continue-run').onclick = continueRun;
-document.getElementById('btn-skip-upgrade').onclick = () => {
-  state.rewardUpgradeChosen = true;
+document.getElementById('btn-skip-card').onclick = () => {
+  state.rewardCardChosen = true;
   document.getElementById('reward-card-list').querySelectorAll('.reward-card-option').forEach(el => el.style.opacity = '0.3');
-  updateContinueBtn();
-};
-document.getElementById('btn-skip-item').onclick = () => {
-  state.rewardItemChosen = true;
-  document.getElementById('reward-item-list').querySelectorAll('.reward-item').forEach(el => el.style.opacity = '0.3');
   updateContinueBtn();
 };
 document.getElementById('btn-new-run').onclick = () => {

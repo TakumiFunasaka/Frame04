@@ -43,20 +43,26 @@
     <div class="help-content" id="help-basics">
       <h3>// ゲームの流れ</h3>
       <div class="help-section">
-        <p><strong>1. 小隊編成</strong> ── 10種のフレーム（メカ）から4機を選び、チューニングポイント(TP)を配分</p>
+        <p><strong>1. 小隊編成</strong> ── 10種のフレーム（メカ）から4機を選ぶ</p>
         <p><strong>2. 出撃</strong> ── 全戦エリート級。1 Act = 10戦（弱→中→強→ボス）</p>
         <p><strong>3. 戦闘</strong> ── ターン制カードバトル。ENを管理してカードを使う</p>
-        <p><strong>4. 報酬</strong> ── 勝利でTP獲得 → ステ強化、カード最適化(+化)、アイテム入手</p>
+        <p><strong>4. 報酬</strong> ── 勝利でカード発見、レリック獲得</p>
         <p><strong>5. 無限Act</strong> ── Actは無限に続く。敵はAct毎にスケーリング。全滅するまで戦え</p>
       </div>
       <h3>// デッキ</h3>
       <div class="help-section">
-        <p>4機 × 5枚 = <strong>計20枚の固定デッキ</strong>（追加・削除なし）</p>
-        <p>カードは戦闘報酬で<strong>最適化(+)</strong>して永続強化できる</p>
+        <p>4機 × 3枚 = <strong>初期12枚</strong>のデッキで開始</p>
+        <p>戦闘報酬で<strong>新カードを発見</strong>してデッキに追加できる</p>
+        <p>イベントでカードを除去してデッキを圧縮することも可能</p>
+      </div>
+      <h3>// レリック</h3>
+      <div class="help-section">
+        <p>エリート・ボス撃破でレリックを獲得。<strong>パッシブ効果</strong>が永続発動</p>
+        <p>攻撃強化 / 防御強化 / 状態異常強化 / 経済系など多種多様</p>
       </div>
       <h3>// 大破（デッドドロー）</h3>
       <div class="help-section">
-        <p>HPが0になった機体のカード5枚は<strong>すべて使用不可</strong>に。手札を圧迫し続ける</p>
+        <p>HPが0になった機体のカードは<strong>すべて使用不可</strong>に。手札を圧迫し続ける</p>
         <p>メディックの「リブート」で復活可能</p>
       </div>
     </div>
@@ -135,10 +141,10 @@
         <p>敵は「次に誰に何をするか」を<strong>事前表示</strong>する</p>
         <p>挑発カードで敵のターゲットを自機に強制変更できる</p>
       </div>
-      <h3>// アイテム</h3>
+      <h3>// レリック</h3>
       <div class="help-section">
-        <p>最大3個所持。戦闘中にクリックで即時使用（使い切り）</p>
-        <p>HPポーション / フィールドパック / ENセル の3種</p>
+        <p>パッシブ効果を持つアーティファクト。所持数に上限なし</p>
+        <p>エリート・ボス撃破、イベント等で獲得</p>
       </div>
     </div>
 
@@ -146,15 +152,14 @@
       <h3>// 3ステータス</h3>
       <div class="help-section">
         <table class="help-table">
-          <tr><th>OUT（出力）</th><td>攻撃ダメージ倍率: baseDmg × (1 + OUT × 0.04)</td></tr>
-          <tr><th>SHL（外殻）</th><td>最大HP倍率: baseHP × (1 + SHL × 0.03)<br>フィールド倍率: base × (1 + SHL × 0.04)</td></tr>
-          <tr><th>CTRL（制御）</th><td>回復倍率: baseHeal × (1 + CTRL × 0.04)<br>過熱/脆弱の付与量もスケーリング</td></tr>
+          <tr><th>OUT（出力）</th><td>攻撃ダメージ倍率: baseDmg x (1 + OUT x 0.04)</td></tr>
+          <tr><th>SHL（外殻）</th><td>最大HP倍率: baseHP x (1 + SHL x 0.03)<br>フィールド倍率: base x (1 + SHL x 0.04)</td></tr>
+          <tr><th>CTRL（制御）</th><td>回復倍率: baseHeal x (1 + CTRL x 0.04)<br>過熱/脆弱の付与量もスケーリング</td></tr>
         </table>
       </div>
-      <h3>// TP（チューニングポイント）</h3>
+      <h3>// ステータスについて</h3>
       <div class="help-section">
-        <p>初期<strong>24pt</strong>を4機に自由配分。戦闘勝利で追加TP獲得</p>
-        <p>各フレームにはbaseStats（固定10pt分）があり、TPはその上に加算される</p>
+        <p>各フレームにはbaseStats（固定値）があり、戦闘中のダメージ計算に使用される</p>
       </div>
     </div>
 
@@ -164,7 +169,7 @@
         <table class="help-table">
           <tr><th style="color:#f88;">過熱(N)</th><td>ターン終了時にNダメージ。毎ターン-1減衰。スタック可<br>CTRLスケーリングあり</td></tr>
           <tr><th style="color:#fa0;">脆弱(N)</th><td>次にダメージを受けた時+N。被弾1回で消費<br>CTRLスケーリングあり</td></tr>
-          <tr><th style="color:#ff0;">感電(T)</th><td>Tターンの間、受けるダメージ×1.2倍<br>スケーリングなし</td></tr>
+          <tr><th style="color:#ff0;">感電(T)</th><td>Tターンの間、受けるダメージx1.2倍<br>スケーリングなし</td></tr>
         </table>
       </div>
       <h3>// 速度軸</h3>
@@ -188,16 +193,22 @@
         <p>アタッカー2 + タンク/サポート1 + ヒーラー/デバッファ1 がバランス型</p>
         <p>アタッカー4の速攻編成もあり。大破リスクは高いが殲滅力が段違い</p>
       </div>
-      <h3>// TP配分</h3>
+      <h3>// カード発見</h3>
       <div class="help-section">
-        <p>「おまかせ配分」が便利。迷ったらまずそれで試そう</p>
-        <p>アタッカーにOUT全振り、タンクにSHL全振りが基本</p>
+        <p>初期デッキは各フレーム3枚ずつ計12枚。戦闘報酬でカードを発見してデッキを強化</p>
+        <p>イベント「データ整理」でカードを除去してデッキを圧縮することも重要</p>
+      </div>
+      <h3>// レリック</h3>
+      <div class="help-section">
+        <p>エリート・ボスを倒すとレリックを獲得できる</p>
+        <p>攻撃系 / 防御系 / 状態異常系 / 速度系 / 経済系など効果は多彩</p>
+        <p>ボスレリックは特に強力。ビルドの方向性を決める要</p>
       </div>
       <h3>// 戦闘間イベント</h3>
       <div class="help-section">
         <p>戦闘後40%の確率でランダムイベントが発生:</p>
-        <p><strong>整備</strong>=HP30%回復 / <strong>最適化</strong>=カード+化 / <strong>補給</strong>=アイテム</p>
-        <p><strong>賭け</strong>=HP消費でTP獲得チャンス / <strong>偵察</strong>=次の敵情報</p>
+        <p><strong>整備</strong>=HP30%回復 / <strong>最適化</strong>=カード+化 / <strong>データ整理</strong>=カード除去</p>
+        <p><strong>残骸発見</strong>=レリック獲得 / <strong>賭け</strong>=HP消費でレリック獲得チャンス</p>
       </div>
       <h3>// 重要メカニクス</h3>
       <div class="help-section">
@@ -224,10 +235,6 @@
   <div class="frame-grid" id="frame-grid"></div>
   <p id="select-count" style="color:#888; margin:4px 0;">Selected: 0/4</p>
 
-  <h2>// TUNE</h2>
-  <p class="sp-remaining">Remaining TP: <span id="sp-remaining">24</span> / 24</p>
-  <div class="stat-alloc" id="stat-alloc"></div>
-
   <div class="btn-row" style="margin-top:16px;">
     <button class="btn-primary" id="btn-start" disabled>BEGIN RUN</button>
   </div>
@@ -239,6 +246,7 @@
   <div class="run-hud" id="progress-hud"></div>
   <div id="progress-bar-wrapper"></div>
   <div id="progress-info"></div>
+  <div class="relic-bar" id="progress-relic-bar"></div>
   <div class="btn-row" style="justify-content:center; margin-top:16px;">
     <button class="btn-primary" id="btn-next-battle">NEXT BATTLE</button>
     <button id="btn-abandon-run" class="btn-danger">ABANDON RUN</button>
@@ -267,9 +275,7 @@
     </div>
   </div>
 
-  <div class="items-bar" id="items-bar">
-    <span style="color:#888; font-size:11px;">ITEMS:</span>
-  </div>
+  <div class="relic-bar" id="relic-bar"></div>
 
   <div class="hand-area">
     <h3>// HAND <span id="deck-info" style="color:#666; font-weight:normal;"></span></h3>
@@ -292,32 +298,26 @@
   </div>
 </div>
 
-<!-- ITEM TARGET MODAL -->
-<div id="item-target-modal" class="target-select" style="display:none;">
+<!-- CARD REMOVAL MODAL -->
+<div id="card-removal-modal" class="target-select" style="display:none;">
   <div class="target-select-inner">
-    <h3 id="item-target-title">Select Target</h3>
-    <div id="item-target-buttons"></div>
-    <button style="margin-top:8px;" onclick="closeItemTargetModal()">Cancel</button>
+    <h3>除去するカードを選択</h3>
+    <div id="card-removal-list" class="reward-card-list"></div>
+    <button style="margin-top:8px;" onclick="closeCardRemovalModal()">Cancel</button>
   </div>
 </div>
 
 <!-- REWARD SCREEN -->
 <div id="reward-screen" class="screen">
   <h1>[ BATTLE COMPLETE ]</h1>
-  <div id="reward-sp-section" class="reward-section">
-    <h3>// TP GAINED: <span id="reward-sp-amount"></span></h3>
-    <p class="sp-remaining">Remaining TP: <span id="reward-sp-remaining">0</span></p>
-    <div class="sp-alloc-mini" id="reward-stat-alloc"></div>
-  </div>
-  <div id="reward-upgrade-section" class="reward-section">
-    <h3>// CARD UPGRADE - Pick 1 (or skip)</h3>
+  <div id="reward-card-section" class="reward-section">
+    <h3>// CARD DISCOVERY - Pick 1 (or skip)</h3>
     <div class="reward-card-list" id="reward-card-list"></div>
-    <button id="btn-skip-upgrade" style="margin-top:4px;">SKIP UPGRADE</button>
+    <button id="btn-skip-card" style="margin-top:4px;">SKIP</button>
   </div>
-  <div id="reward-item-section" class="reward-section">
-    <h3>// ITEM DROP</h3>
-    <div class="reward-item-list" id="reward-item-list"></div>
-    <button id="btn-skip-item" style="margin-top:4px;">SKIP ITEM</button>
+  <div id="reward-relic-section" class="reward-section">
+    <h3>// RELIC - Pick 1</h3>
+    <div class="reward-relic-list" id="reward-relic-list"></div>
   </div>
   <div class="btn-row" style="margin-top:16px;">
     <button class="btn-primary" id="btn-continue-run" disabled>CONTINUE</button>
