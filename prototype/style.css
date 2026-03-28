@@ -13,6 +13,29 @@ h1 { color: #6a6aff; font-size: 20px; margin-bottom: 16px; letter-spacing: 2px; 
 h2 { color: #4a4adf; font-size: 16px; margin: 12px 0 8px; }
 h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
 
+/* ---- Title Screen ---- */
+.title-hero { text-align: center; padding: 40px 20px; max-width: 640px; margin: 0 auto; }
+.title-logo { font-size: 48px; letter-spacing: 8px; color: #6a6aff; margin-bottom: 4px; }
+.title-colon { color: #ff6a6a; }
+.title-sub { font-size: 14px; color: #888; letter-spacing: 4px; margin-bottom: 32px; }
+.title-story { text-align: left; border: 1px solid #333; background: #0a0a14; padding: 16px 20px; font-size: 13px; line-height: 1.8; color: #999; margin: 0 auto; }
+.title-story strong { color: #6aff6a; }
+.btn-large { padding: 12px 32px; font-size: 16px; letter-spacing: 2px; }
+
+/* ---- Help Modal ---- */
+.help-modal-inner { background: #0a0a14; border: 2px solid #6a6aff; padding: 20px; max-width: 700px; width: 90vw; max-height: 85vh; overflow-y: auto; }
+.help-tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+.help-tab { padding: 6px 12px; font-size: 12px; border: 1px solid #444; background: #111; color: #888; }
+.help-tab.active { border-color: #6a6aff; background: #1a1a3e; color: #fff; }
+.help-tab:hover:not(.active) { border-color: #6a6aff; }
+.help-content h3 { color: #6a6aff; margin: 16px 0 4px; }
+.help-content h3:first-child { margin-top: 0; }
+.help-section { border-left: 2px solid #333; padding: 8px 12px; margin: 4px 0 12px; font-size: 12px; line-height: 1.8; color: #bbb; }
+.help-section strong { color: #6aff6a; }
+.help-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.help-table th { text-align: left; padding: 6px 8px; border-bottom: 1px solid #333; color: #aaf; width: 120px; vertical-align: top; }
+.help-table td { padding: 6px 8px; border-bottom: 1px solid #222; color: #bbb; line-height: 1.6; }
+
 /* ---- Setup Screen ---- */
 .frame-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0; }
 .frame-btn { padding: 10px 6px; text-align: center; font-size: 11px; line-height: 1.4; border: 2px solid #333; background: #111; transition: all 0.15s; }
@@ -78,35 +101,30 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
 .item-slot:hover:not(.empty) { border-color: #6aff6a; background: #1a2e1a; }
 .item-slot.empty { opacity: 0.3; cursor: default; border-style: dashed; }
 
-/* ---- Map Screen ---- */
-.map-container { margin: 16px 0; position: relative; }
-.map-layer { display: flex; justify-content: center; gap: 0; margin: 4px 0; align-items: center; }
-.map-node { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 36px; border: 2px solid #444; background: #111; font-size: 12px; cursor: pointer; transition: all 0.15s; margin: 0 16px; text-align: center; font-weight: bold; }
-.map-node:hover:not(.locked):not(.visited) { border-color: #6a6aff; background: #1a1a3e; }
-.map-node.available { border-color: #6aff6a; background: #0a1a0a; animation: pulse-green 1.5s infinite; }
-.map-node.current { border-color: #ffff6a; background: #2e2e0a; }
-.map-node.visited { opacity: 0.35; border-color: #333; cursor: default; }
-.map-node.locked { opacity: 0.5; cursor: default; }
-.map-node.boss-node { border-color: #f44; background: #2a0a0a; }
-.map-node.elite-node { border-color: #fa0; }
-.map-node.rest-node { border-color: #4af; }
-.map-node.unknown-node { border-color: #a6a; }
-.map-node.enemy-node { border-color: #f88; }
+/* ---- Progress Screen ---- */
+.progress-act-label { color: #6a6aff; font-size: 16px; text-align: center; margin: 12px 0 8px; letter-spacing: 3px; }
+.progress-bar-segments { display: flex; gap: 4px; justify-content: center; margin: 8px 0 16px; }
+.progress-segment { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 32px; border: 2px solid #444; background: #111; font-size: 12px; font-weight: bold; color: #888; transition: all 0.2s; }
+.progress-segment.completed { border-color: #333; background: #1a2e1a; color: #4a4; opacity: 0.6; }
+.progress-segment.current { border-color: #6aff6a; background: #0a1a0a; color: #6aff6a; animation: pulse-green 1.5s infinite; }
+.progress-segment.boss { border-color: #f44; }
+.progress-segment.boss.current { border-color: #f44; background: #2a0a0a; color: #f44; animation: pulse-red 1.5s infinite; }
 
 @keyframes pulse-green {
   0%, 100% { box-shadow: 0 0 4px #6aff6a44; }
   50% { box-shadow: 0 0 12px #6aff6a88; }
 }
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 4px #f4444444; }
+  50% { box-shadow: 0 0 12px #f4444488; }
+}
 
-.map-connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-.map-connections line { stroke: #444; stroke-width: 1; }
-.map-connections line.active-path { stroke: #6aff6a; stroke-width: 2; }
-.map-connections line.visited-path { stroke: #333; stroke-width: 1; }
-
-.map-act-title { color: #6a6aff; font-size: 16px; text-align: center; margin: 12px 0 4px; letter-spacing: 3px; }
-.map-legend { display: flex; gap: 16px; justify-content: center; margin: 8px 0; font-size: 11px; color: #888; }
-.map-legend span { display: inline-flex; align-items: center; gap: 4px; }
-.map-legend .legend-dot { width: 10px; height: 10px; border: 1px solid; display: inline-block; }
+.progress-squad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+.progress-unit { border: 1px solid #333; background: #111; padding: 8px; font-size: 12px; }
+.progress-unit-name { color: #6aff6a; font-weight: bold; display: block; margin-bottom: 4px; }
+.progress-unit-hp { font-size: 11px; }
+.progress-hp-bar { height: 4px; background: #333; margin-top: 4px; border-radius: 2px; overflow: hidden; }
+.progress-hp-fill { height: 100%; transition: width 0.3s; border-radius: 2px; }
 
 .run-hud { display: flex; gap: 16px; align-items: center; margin-bottom: 12px; font-size: 12px; flex-wrap: wrap; }
 .run-hud-item { border: 1px solid #333; background: #111; padding: 4px 10px; }
@@ -127,10 +145,7 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
 .reward-item .item-name { color: #6aff6a; font-weight: bold; font-size: 12px; }
 .reward-item .item-desc { font-size: 10px; color: #888; margin-top: 4px; }
 
-/* ---- Rest Screen ---- */
-.rest-visual { text-align: center; margin: 20px 0; font-size: 14px; color: #4af; }
-
-/* ---- Game Over / Victory Screen ---- */
+/* ---- Game Over Screen ---- */
 .run-stats { margin: 12px 0; }
 .run-stats p { margin: 4px 0; font-size: 13px; }
 .run-stats .stat-label { color: #888; }
@@ -155,6 +170,16 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
   .screen { padding: 10px; }
   h1 { font-size: 16px; }
   h2 { font-size: 14px; }
+
+  /* Title */
+  .title-logo { font-size: 32px; letter-spacing: 4px; }
+  .title-sub { font-size: 12px; }
+  .title-story { font-size: 12px; padding: 12px 14px; }
+  .btn-large { padding: 10px 24px; font-size: 14px; }
+  .help-modal-inner { padding: 14px; }
+  .help-tabs { gap: 2px; }
+  .help-tab { padding: 5px 8px; font-size: 11px; }
+  .help-table th { width: 80px; font-size: 11px; }
 
   /* Setup: frame grid 2 columns */
   .frame-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
@@ -195,9 +220,9 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
   .target-select-inner { padding: 16px; width: 90vw; max-width: none; }
   .target-btn { padding: 12px; font-size: 13px; }
 
-  /* Map */
-  .map-node { width: 40px; height: 32px; font-size: 10px; margin: 0 8px; }
-  .map-legend { flex-wrap: wrap; gap: 8px; font-size: 10px; }
+  /* Progress */
+  .progress-segment { width: 28px; height: 28px; font-size: 10px; }
+  .progress-squad { grid-template-columns: 1fr 1fr; }
   .run-hud { gap: 8px; font-size: 11px; }
 
   /* Items bar */
@@ -221,5 +246,6 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
 @media (max-width: 380px) {
   .frame-grid { grid-template-columns: repeat(2, 1fr); }
   .sp-alloc-mini { grid-template-columns: 1fr; }
-  .map-node { width: 32px; height: 28px; font-size: 9px; margin: 0 4px; }
+  .progress-segment { width: 24px; height: 24px; font-size: 9px; }
+  .progress-squad { grid-template-columns: 1fr; }
 }

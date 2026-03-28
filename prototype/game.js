@@ -10,19 +10,15 @@ let FRAMES = {};
 const STAT_NAMES = { OUT: '出力', SHL: '外殻', CTRL: '制御' };
 
 // ============================================================
-// ENEMY POOLS PER ACT
+// ENEMY POOLS PER ACT (tiered: weak/mid/strong/boss)
+// Act 4+ reuses Act 1-3 templates with act-based scaling
 // ============================================================
 const ENEMY_POOLS = {
   1: {
-    normal: [
+    weak: [
       [
         { name: 'ドローン-A', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
         { name: 'ドローン-B', hp: 20, atk: 5, speed: 0, patterns: ['attack','attack','barrier'] },
-      ],
-      [
-        { name: 'ドローン-A', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
-        { name: 'ドローン-B', hp: 22, atk: 5, speed: 0, patterns: ['attack','attack_all','attack'] },
-        { name: 'ドローン-C', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
       ],
       [
         { name: 'スカウト', hp: 18, atk: 5, speed: 0, patterns: ['attack','attack','attack'] },
@@ -33,7 +29,18 @@ const ENEMY_POOLS = {
         { name: 'ガード-B', hp: 20, atk: 5, speed: 0, patterns: ['attack','attack','barrier'] },
       ],
     ],
-    elite: [
+    mid: [
+      [
+        { name: 'ドローン-A', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+        { name: 'ドローン-B', hp: 22, atk: 5, speed: 0, patterns: ['attack','attack_all','attack'] },
+        { name: 'ドローン-C', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
+      ],
+      [
+        { name: '重装ドローン-A', hp: 28, atk: 6, speed: 0, patterns: ['attack','attack','barrier','attack_all'] },
+        { name: '重装ドローン-B', hp: 28, atk: 7, speed: 0, patterns: ['attack','barrier','attack','attack'] },
+      ],
+    ],
+    strong: [
       [
         { name: 'ヘビーガード', hp: 60, atk: 9, speed: 0, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
       ],
@@ -43,25 +50,29 @@ const ENEMY_POOLS = {
       ],
     ],
     boss: [
-      { name: 'コマンダー Mk-I', hp: 100, atk: 10, speed: 0, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
-      { name: 'ビット-L', hp: 18, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
-      { name: 'ビット-R', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
+      [
+        { name: 'コマンダー Mk-I', hp: 100, atk: 10, speed: 0, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
+        { name: 'ビット-L', hp: 18, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+        { name: 'ビット-R', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
+      ],
     ],
   },
   2: {
-    normal: [
+    weak: [
       [
         { name: '重装ドローン-A', hp: 28, atk: 6, speed: 0, patterns: ['attack','attack','barrier','attack_all'] },
         { name: '重装ドローン-B', hp: 28, atk: 7, speed: 0, patterns: ['attack','barrier','attack','attack'] },
       ],
       [
+        { name: 'スナイパー', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack','attack_heavy'] },
+        { name: 'シールダー', hp: 30, atk: 6, speed: 0, patterns: ['barrier','barrier','attack','attack_all'] },
+      ],
+    ],
+    mid: [
+      [
         { name: 'アサルト-A', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack','attack_heavy'] },
         { name: 'アサルト-B', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack_heavy','attack'] },
         { name: 'リペアビット', hp: 18, atk: 3, speed: 0, patterns: ['barrier','barrier','attack'] },
-      ],
-      [
-        { name: 'スナイパー', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack','attack_heavy'] },
-        { name: 'シールダー', hp: 30, atk: 6, speed: 0, patterns: ['barrier','barrier','attack','attack_all'] },
       ],
       [
         { name: 'ストーム', hp: 28, atk: 6, speed: 0, patterns: ['attack_all','attack_all','barrier'] },
@@ -69,7 +80,7 @@ const ENEMY_POOLS = {
         { name: 'ガード', hp: 30, atk: 6, speed: 0, patterns: ['barrier','attack','attack'] },
       ],
     ],
-    elite: [
+    strong: [
       [
         { name: 'ジャガーノート', hp: 75, atk: 11, speed: 0, patterns: ['attack_heavy','attack','barrier','attack_all','buff_self','attack_heavy'] },
       ],
@@ -79,28 +90,32 @@ const ENEMY_POOLS = {
       ],
     ],
     boss: [
-      { name: 'コア・ユニット Mk-II', hp: 130, atk: 12, speed: 0, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
-      { name: 'ガードビット-L', hp: 25, atk: 6, speed: 0, patterns: ['attack','barrier','attack'] },
-      { name: 'ガードビット-R', hp: 25, atk: 6, speed: 0, patterns: ['barrier','attack','attack'] },
+      [
+        { name: 'コア・ユニット Mk-II', hp: 130, atk: 12, speed: 0, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
+        { name: 'ガードビット-L', hp: 25, atk: 6, speed: 0, patterns: ['attack','barrier','attack'] },
+        { name: 'ガードビット-R', hp: 25, atk: 6, speed: 0, patterns: ['barrier','attack','attack'] },
+      ],
     ],
   },
   3: {
-    normal: [
+    weak: [
       [
         { name: 'エリート兵-A', hp: 32, atk: 8, speed: 0, patterns: ['attack','attack_heavy','barrier','attack_all'] },
         { name: 'エリート兵-B', hp: 32, atk: 9, speed: 0, patterns: ['attack','barrier','attack_heavy','attack'] },
-      ],
-      [
-        { name: 'ハンター', hp: 30, atk: 9, speed: 0, patterns: ['attack','attack','attack_heavy','attack'] },
-        { name: 'メディック', hp: 30, atk: 6, speed: 0, patterns: ['barrier','barrier','attack','attack_all'] },
-        { name: 'アサルト', hp: 35, atk: 8, speed: 0, patterns: ['attack','attack','attack_heavy'] },
       ],
       [
         { name: 'バーサーカー', hp: 35, atk: 9, speed: 0, patterns: ['attack_heavy','attack','buff_self','attack_heavy'] },
         { name: 'バーサーカー', hp: 35, atk: 9, speed: 0, patterns: ['attack','attack_heavy','attack','buff_self'] },
       ],
     ],
-    elite: [
+    mid: [
+      [
+        { name: 'ハンター', hp: 30, atk: 9, speed: 0, patterns: ['attack','attack','attack_heavy','attack'] },
+        { name: 'メディック', hp: 30, atk: 6, speed: 0, patterns: ['barrier','barrier','attack','attack_all'] },
+        { name: 'アサルト', hp: 35, atk: 8, speed: 0, patterns: ['attack','attack','attack_heavy'] },
+      ],
+    ],
+    strong: [
       [
         { name: 'デストロイヤー', hp: 90, atk: 12, speed: 0, patterns: ['attack_heavy','attack_all','buff_self','attack_heavy','barrier','attack_all','attack_heavy'] },
       ],
@@ -110,46 +125,68 @@ const ENEMY_POOLS = {
       ],
     ],
     boss: [
-      { name: 'アーキテクト', hp: 150, atk: 14, speed: 0, patterns: ['barrier','attack_heavy','attack_all','buff_self','attack','attack_heavy','attack_all','buff_self','attack_heavy'] },
+      [
+        { name: 'アーキテクト', hp: 150, atk: 14, speed: 0, patterns: ['barrier','attack_heavy','attack_all','buff_self','attack','attack_heavy','attack_all','buff_self','attack_heavy'] },
+      ],
     ],
-  }
+  },
 };
 
+// Get enemy pool for any act (Act 4+ cycles Act 1-3 templates)
+function getEnemyPool(actNum) {
+  const baseAct = ((actNum - 1) % 3) + 1; // 1,2,3,1,2,3,...
+  return ENEMY_POOLS[baseAct];
+}
+
+// Act-based scaling: each act beyond 1 increases stats
+function getActScale(actNum) {
+  return 1 + (actNum - 1) * 0.15;
+}
+
 // ============================================================
-// UNKNOWN EVENTS
+// INTER-BATTLE EVENTS
 // ============================================================
-const UNKNOWN_EVENTS = [
+const LINEAR_EVENTS = [
   {
-    title: '漂流する補給コンテナ',
-    desc: '損傷した補給コンテナが漂流している。開けるか?',
+    id: 'repair',
+    title: '整備',
+    desc: '作戦の合間に整備の時間が取れた。機体の損傷を修復できる。',
     choices: [
-      { label: '開ける', desc: 'ランダムアイテム入手 / 10%で爆発(全機-8HP)', action: 'supply_gamble' },
-      { label: '無視する', desc: '何も起きない', action: 'nothing' },
+      { label: '修復する', desc: '全機HP30%回復', action: 'repair_30' },
     ]
   },
   {
-    title: '放棄されたラボ',
-    desc: '無人のラボが見つかった。まだ電源が入っている。',
+    id: 'optimize',
+    title: '最適化',
+    desc: 'カードシステムの最適化が可能だ。戦闘データを元にチューニングする。',
     choices: [
-      { label: '調査する', desc: 'ランダムなカード1枚をアップグレード', action: 'free_upgrade' },
-      { label: 'データを回収', desc: 'TP+2を獲得', action: 'gain_sp' },
-      { label: '立ち去る', desc: '何も起きない', action: 'nothing' },
+      { label: '最適化実行', desc: 'ランダムなカード1枚を+化', action: 'free_upgrade' },
     ]
   },
   {
-    title: '謎のビーコン',
-    desc: '強い電波を発するビーコンを検知。近づくと...',
+    id: 'resupply',
+    title: '補給',
+    desc: '補給ポイントを発見した。物資を受け取れる。',
     choices: [
-      { label: '接近する', desc: '全機HP15回復 / 20%で敵の罠(全機-12HP)', action: 'beacon_gamble' },
-      { label: '迂回する', desc: '何も起きない', action: 'nothing' },
+      { label: '補給を受ける', desc: 'ランダムアイテム獲得', action: 'resupply_item' },
+      { label: '見送る', desc: '何も起きない', action: 'nothing' },
     ]
   },
   {
-    title: '友軍の残骸',
-    desc: '先行部隊の残骸が見つかった。まだ使えるパーツがある。',
+    id: 'gamble',
+    title: '賭け',
+    desc: '不安定なエネルギー源を発見。取り込めば強化できるが、リスクもある。',
     choices: [
-      { label: 'パーツ回収', desc: 'HP最低の味方を20HP回復', action: 'heal_lowest' },
-      { label: 'データ回収', desc: 'TP+3を獲得', action: 'gain_sp3' },
+      { label: '取り込む', desc: '全機HP20%消費 → 50%でTP+2、50%で何もなし', action: 'gamble_tp' },
+      { label: '見送る', desc: '何も起きない', action: 'nothing' },
+    ]
+  },
+  {
+    id: 'recon',
+    title: '偵察',
+    desc: '偵察ドローンを展開する余裕がある。次の敵情報を取得できる。',
+    choices: [
+      { label: '偵察する', desc: '次の敵の情報が見える', action: 'recon_next' },
     ]
   },
 ];
@@ -199,98 +236,46 @@ let state = {
 };
 
 // ============================================================
-// MAP GENERATION
+// ENEMY SEQUENCE GENERATION (linear progression)
 // ============================================================
-function generateMap(actNum) {
-  // Layers: 0=start, 1-4=middle layers, 5=pre-boss, 6=boss
-  const layerCount = 5; // middle layers
-  const nodesPerLayer = [1, 3, 4, 3, 4, 3, 1]; // start, middles..., pre-boss, boss
-  const layers = [];
-
-  // Layer 0: starting node (always enemy)
-  layers.push([{ id: '0-0', type: 'enemy', layer: 0, pos: 0, connections: [], visited: false }]);
-
-  // Middle layers
-  for (let l = 1; l <= layerCount; l++) {
-    const count = 2 + Math.floor(Math.random() * 2); // 2-3 nodes per layer
-    const layer = [];
-    for (let n = 0; n < count; n++) {
-      const type = pickNodeType(l, layerCount);
-      layer.push({ id: `${l}-${n}`, type, layer: l, pos: n, connections: [], visited: false });
-    }
-    layers.push(layer);
+function generateEnemySequence(actNum) {
+  const pool = getEnemyPool(actNum);
+  const sequence = [];
+  // Battles 1-3: weak tier
+  for (let i = 0; i < 3; i++) {
+    const group = pool.weak[Math.floor(Math.random() * pool.weak.length)];
+    sequence.push({ tier: 'weak', enemies: group });
   }
-
-  // Pre-boss layer (layer layerCount+1): always 1 rest or enemy
-  const preBossType = Math.random() < 0.5 ? 'rest' : 'enemy';
-  layers.push([{ id: `${layerCount+1}-0`, type: preBossType, layer: layerCount+1, pos: 0, connections: [], visited: false }]);
-
-  // Boss layer
-  layers.push([{ id: `${layerCount+2}-0`, type: 'boss', layer: layerCount+2, pos: 0, connections: [], visited: false }]);
-
-  // Generate connections (each node connects to 1-2 nodes in next layer)
-  for (let l = 0; l < layers.length - 1; l++) {
-    const current = layers[l];
-    const next = layers[l + 1];
-
-    // Ensure every node in current has at least 1 forward connection
-    current.forEach(node => {
-      const connCount = Math.min(next.length, 1 + Math.floor(Math.random() * 2));
-      const indices = [];
-      // Pick random indices in next layer
-      while (indices.length < connCount) {
-        const idx = Math.floor(Math.random() * next.length);
-        if (!indices.includes(idx)) indices.push(idx);
-      }
-      indices.forEach(idx => {
-        if (!node.connections.includes(next[idx].id)) {
-          node.connections.push(next[idx].id);
-        }
-      });
-    });
-
-    // Ensure every node in next is reachable from at least one node in current
-    next.forEach(nextNode => {
-      const isReachable = current.some(n => n.connections.includes(nextNode.id));
-      if (!isReachable) {
-        const randomParent = current[Math.floor(Math.random() * current.length)];
-        randomParent.connections.push(nextNode.id);
-      }
-    });
+  // Battles 4-6: mid tier
+  for (let i = 0; i < 3; i++) {
+    const group = pool.mid[Math.floor(Math.random() * pool.mid.length)];
+    sequence.push({ tier: 'mid', enemies: group });
   }
-
-  return layers;
-}
-
-function pickNodeType(layer, totalMiddleLayers) {
-  const r = Math.random();
-  if (layer === 1) {
-    // Early: mostly enemies
-    if (r < 0.7) return 'enemy';
-    if (r < 0.85) return 'unknown';
-    return 'rest';
+  // Battles 7-9: strong tier
+  for (let i = 0; i < 3; i++) {
+    const group = pool.strong[Math.floor(Math.random() * pool.strong.length)];
+    sequence.push({ tier: 'strong', enemies: group });
   }
-  // Middle-late layers
-  if (r < 0.40) return 'enemy';
-  if (r < 0.60) return 'elite';
-  if (r < 0.80) return 'unknown';
-  return 'rest';
+  // Battle 10: boss
+  const bossGroup = pool.boss[Math.floor(Math.random() * pool.boss.length)];
+  sequence.push({ tier: 'boss', enemies: bossGroup });
+  return sequence;
 }
 
 // ============================================================
-// RUN MANAGEMENT
+// RUN MANAGEMENT (linear progression)
 // ============================================================
 function startRun() {
   state.run = {
     act: 1,
-    maps: {}, // act -> layers
-    currentNode: null,
-    visitedNodes: new Set(),
+    battleIndex: 0,      // 0-9 within current act (next battle to fight)
+    overallBattle: 0,    // total battles completed
+    enemySequence: [],   // 10 enemy groups for current act
     totalTurns: 0,
     battlesWon: 0,
     elitesKilled: 0,
     bossesKilled: 0,
-    depth: 0,
+    scoutedNext: false,  // recon event flag
   };
 
   // Build initial allies from setup (slot-based, supports duplicate frames)
@@ -312,106 +297,51 @@ function startRun() {
       hp: maxHP, maxHP, barrier: 0, dead: false, speed: 0,
       cards: frame.cards.map((c, ci) => ({ ...c, id: `${fk}_${i}_${ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false })),
       buffs: {}, persistentBarrier: 0, attackLocked: false, counterDmg: 0, reactive: false, siegeBuff: 0, spikeReflect: 0,
-      fullDriveActive: false,  // booster: next card costs -1 EN
-      // Expansion persistent state
-      elementCoat: null,      // 'heat' or 'shock' - converter coating
-      absorbField: false,     // converter absorb field active
-      elementStacks: 0,       // converter accumulated element stacks
-      linkedTo: -1,           // linker: index of linked partner
-      linkMode: null,         // 'barrier_share'|'attack_sync'|'damage_share'
-      bombCounter: 0,         // decoy bomb counter
-      phoenixCore: false,     // decoy undying
-      ironBody: false,        // bulk iron body active this turn
-      ironBodyRate: 0,        // bulk absorb rate
-      dmgTakenThisTurn: 0,    // bulk tracking
-      damageCounter: 0,       // bulk damage counter (persists)
-      lastStand: false,       // bulk last stand active this turn
-      berserkerBonus: 0,      // bulk berserker mode bonus this turn
-      loadCounter: 0,         // launcher load counter (persists)
-      drones: [],             // drone entities [{hp, atk, mode:'attack'|'guard'}]
-      droneGuardMode: false,  // drone mode toggle
-      droneFocusTarget: -1,   // drone focus target for this turn
-      droneFocusMultiplier: 1,// drone focus damage multiplier
-      partsSalvageActive: false, // scavenger parts salvage this turn
-      junkShieldActive: false,   // scavenger junk shield this turn
-      junkShieldBonus: 0,        // scavenger junk shield per-kill bonus
-      scanned: false,            // seeker: is this unit scanned (for enemies)
+      fullDriveActive: false,
+      elementCoat: null, absorbField: false, elementStacks: 0,
+      linkedTo: -1, linkMode: null,
+      bombCounter: 0, phoenixCore: false,
+      ironBody: false, ironBodyRate: 0, dmgTakenThisTurn: 0,
+      damageCounter: 0, lastStand: false, berserkerBonus: 0,
+      loadCounter: 0,
+      drones: [], droneGuardMode: false, droneFocusTarget: -1, droneFocusMultiplier: 1,
+      partsSalvageActive: false, junkShieldActive: false, junkShieldBonus: 0,
+      scanned: false,
     };
   });
 
   state.items = [];
-  state.run.maps[1] = generateMap(1);
-  state.run.maps[2] = generateMap(2);
-  state.run.maps[3] = generateMap(3);
-
-  // Mark first node as available
   enterAct(1);
 }
 
 function enterAct(actNum) {
   state.run.act = actNum;
-  state.run.currentNode = null;
-  state.run.visitedNodes = new Set();
-  showScreen('map-screen');
-  renderMap();
+  state.run.battleIndex = 0;
+  state.run.enemySequence = generateEnemySequence(actNum);
+  showProgressScreen();
 }
 
-function getAvailableNodes() {
-  const layers = state.run.maps[state.run.act];
-  if (!state.run.currentNode) {
-    // Only the start nodes
-    return layers[0].map(n => n.id);
-  }
-  // Find current node and return its connections
-  for (const layer of layers) {
-    for (const node of layer) {
-      if (node.id === state.run.currentNode) {
-        return node.connections;
-      }
-    }
-  }
-  return [];
+function showProgressScreen() {
+  showScreen('progress-screen');
+  renderProgressScreen();
 }
 
-function findNode(nodeId) {
-  const layers = state.run.maps[state.run.act];
-  for (const layer of layers) {
-    for (const node of layer) {
-      if (node.id === nodeId) return node;
-    }
+function advanceToBattle() {
+  const bi = state.run.battleIndex;
+  if (bi >= 10) {
+    // Act complete, move to next act
+    enterAct(state.run.act + 1);
+    return;
   }
-  return null;
-}
+  const encounter = state.run.enemySequence[bi];
+  state.run.battleIndex++;
+  state.run.overallBattle++;
 
-function selectNode(nodeId) {
-  const available = getAvailableNodes();
-  if (!available.includes(nodeId)) return;
+  // Map tier to encounter type for reward scaling
+  const encounterType = encounter.tier === 'boss' ? 'boss'
+    : encounter.tier === 'strong' ? 'elite' : 'normal';
 
-  const node = findNode(nodeId);
-  if (!node || node.visited) return;
-
-  node.visited = true;
-  state.run.visitedNodes.add(nodeId);
-  state.run.currentNode = nodeId;
-  state.run.depth++;
-
-  switch (node.type) {
-    case 'enemy':
-      startBattle('normal');
-      break;
-    case 'elite':
-      startBattle('elite');
-      break;
-    case 'boss':
-      startBattle('boss');
-      break;
-    case 'rest':
-      showRestScreen();
-      break;
-    case 'unknown':
-      showUnknownEvent();
-      break;
-  }
+  startBattleFromSequence(encounter.enemies, encounterType);
 }
 
 // ============================================================
@@ -683,29 +613,15 @@ function updateStartBtn() {
 // ============================================================
 // BATTLE INITIALIZATION
 // ============================================================
-function startBattle(encounterType) {
-  const act = state.run.act;
-  const pool = ENEMY_POOLS[act];
-  let enemyDefs;
-
-  if (encounterType === 'boss') {
-    enemyDefs = pool.boss;
-  } else if (encounterType === 'elite') {
-    const options = pool.elite;
-    enemyDefs = options[Math.floor(Math.random() * options.length)];
-  } else {
-    const options = pool.normal;
-    enemyDefs = options[Math.floor(Math.random() * options.length)];
-  }
-
-  // Scale enemies slightly by depth
-  const depthScale = 1 + (state.run.depth - 1) * 0.03;
+function startBattleFromSequence(enemyDefs, encounterType) {
+  // Scale enemies by act number
+  const actScale = getActScale(state.run.act);
 
   state.enemies = enemyDefs.map((e, i) => ({
     id: i, name: e.name,
-    hp: Math.floor(e.hp * depthScale), maxHP: Math.floor(e.hp * depthScale),
+    hp: Math.floor(e.hp * actScale), maxHP: Math.floor(e.hp * actScale),
     barrier: 0, dead: false,
-    atk: Math.floor(e.atk * depthScale), speed: 0,
+    atk: Math.floor(e.atk * actScale), speed: 0,
     patterns: e.patterns, patternIdx: 0,
     intent: null, targetIdx: 0,
     statuses: { overheat: 0, vulnerability: 0, shock: 0 },
@@ -766,6 +682,14 @@ function startBattle(encounterType) {
   state.battleOver = false;
   state.turnBuffs = {};
   state._encounterType = encounterType;
+
+  // Show scouted info if recon was used
+  if (state.run && state.run.scoutedNext) {
+    state.run.scoutedNext = false;
+    enemyDefs.forEach(e => {
+      addLog(`[偵察] ${e.name} - HP:${Math.floor(e.hp * actScale)} ATK:${Math.floor(e.atk * actScale)}`, 'info');
+    });
+  }
 
   showScreen('battle-screen');
   renderBattleHUD();
@@ -1128,13 +1052,7 @@ function endBattle(win) {
     if (state._encounterType === 'boss') state.run.bossesKilled++;
   }
 
-  // Check if this was the final boss
-  if (state._encounterType === 'boss' && state.run.act === 3) {
-    showRunEnd(true);
-    return;
-  }
-
-  // Show reward screen
+  // Show reward screen (no final boss - infinite progression)
   showRewardScreen();
 }
 
@@ -2302,59 +2220,28 @@ function updateContinueBtn() {
 }
 
 function continueRun() {
-  const node = findNode(state.run.currentNode);
-  // If boss beaten, go to next act
-  if (node && node.type === 'boss') {
-    const nextAct = state.run.act + 1;
-    if (nextAct > 3) {
-      showRunEnd(true);
-      return;
-    }
-    enterAct(nextAct);
+  // After boss, go directly to next act (no event between acts)
+  if (state._encounterType === 'boss') {
+    advanceToBattle();
+    return;
+  }
+  // ~40% chance to show an inter-battle event
+  if (Math.random() < 0.4) {
+    showLinearEvent();
   } else {
-    showScreen('map-screen');
-    renderMap();
+    showProgressScreen();
   }
 }
 
 // ============================================================
-// REST SCREEN
+// INTER-BATTLE EVENT SCREEN
 // ============================================================
-function showRestScreen() {
-  showScreen('rest-screen');
-  let html = '<pre style="color:#4af; font-size:16px; margin:16px 0;">';
-  html += '    ~~ DOCK ~~\n';
-  html += '  All units recovering...\n\n';
-
-  state.allies.forEach(a => {
-    if (a.dead) {
-      html += `  ${a.name}: [DESTROYED] - no recovery\n`;
-    } else {
-      const heal = Math.floor(a.maxHP * 0.3);
-      const oldHP = a.hp;
-      a.hp = Math.min(a.maxHP, a.hp + heal);
-      const actual = a.hp - oldHP;
-      html += `  ${a.name}: HP ${oldHP} -> ${a.hp}/${a.maxHP} (+${actual})\n`;
-    }
-  });
-
-  html += '</pre>';
-  document.getElementById('rest-visual').innerHTML = html;
-}
-
-function leaveRest() {
-  showScreen('map-screen');
-  renderMap();
-}
-
-// ============================================================
-// UNKNOWN EVENT SCREEN
-// ============================================================
-function showUnknownEvent() {
-  const event = UNKNOWN_EVENTS[Math.floor(Math.random() * UNKNOWN_EVENTS.length)];
+function showLinearEvent() {
+  const event = LINEAR_EVENTS[Math.floor(Math.random() * LINEAR_EVENTS.length)];
   showScreen('event-screen');
 
-  document.getElementById('event-description').innerHTML = `<p style="margin-bottom:8px; color:#fff;">${event.title}</p><p>${event.desc}</p>`;
+  document.getElementById('event-title').textContent = `[ ${event.title} ]`;
+  document.getElementById('event-description').innerHTML = `<p>${event.desc}</p>`;
 
   const container = document.getElementById('event-choices');
   container.innerHTML = '';
@@ -2377,19 +2264,15 @@ function resolveEvent(action) {
     case 'nothing':
       resultMsg = '何も起きなかった。';
       break;
-    case 'supply_gamble':
-      if (Math.random() < 0.1) {
-        state.allies.filter(a => !a.dead).forEach(a => { a.hp = Math.max(1, a.hp - 8); });
-        resultMsg = '爆発! 全機 -8 HP!';
-      } else {
-        const item = ITEM_DROP_POOL[Math.floor(Math.random() * ITEM_DROP_POOL.length)];
-        if (state.items.length < 3) {
-          state.items.push(item);
-          resultMsg = `${ITEM_DEFS[item].name} を入手!`;
-        } else {
-          resultMsg = 'アイテムを見つけたが、枠が満杯だ。';
-        }
-      }
+    case 'repair_30':
+      state.allies.filter(a => !a.dead).forEach(a => {
+        const heal = Math.floor(a.maxHP * 0.3);
+        const oldHP = a.hp;
+        a.hp = Math.min(a.maxHP, a.hp + heal);
+        const actual = a.hp - oldHP;
+        resultMsg += `${a.name}: HP +${actual} (${a.hp}/${a.maxHP})\n`;
+      });
+      resultMsg = '機体を整備した。\n' + resultMsg;
       break;
     case 'free_upgrade': {
       const upgradable = [];
@@ -2405,57 +2288,61 @@ function resolveEvent(action) {
         upgraded.playable = true;
         upgraded.id = pick.ally.cards[pick.idx].id;
         pick.ally.cards[pick.idx] = upgraded;
-        resultMsg = `${pick.ally.name}の${upgraded.name} にアップグレード!`;
+        resultMsg = `${pick.ally.name}の ${upgraded.name} を最適化(+)した!`;
       } else {
         resultMsg = 'アップグレード可能なカードがなかった。';
       }
       break;
     }
-    case 'gain_sp':
-      state.rewardSPGained = 2;
-      state.rewardSPRemaining = 2;
-      showQuickSP(2);
-      return;
-    case 'gain_sp3':
-      state.rewardSPGained = 3;
-      state.rewardSPRemaining = 3;
-      showQuickSP(3);
-      return;
-    case 'beacon_gamble':
-      if (Math.random() < 0.2) {
-        state.allies.filter(a => !a.dead).forEach(a => { a.hp = Math.max(1, a.hp - 12); });
-        resultMsg = '罠だった! 全機 -12 HP!';
+    case 'resupply_item': {
+      const item = ITEM_DROP_POOL[Math.floor(Math.random() * ITEM_DROP_POOL.length)];
+      if (state.items.length < 3) {
+        state.items.push(item);
+        resultMsg = `${ITEM_DEFS[item].name} を入手!`;
       } else {
-        state.allies.filter(a => !a.dead).forEach(a => {
-          a.hp = Math.min(a.maxHP, a.hp + 15);
-        });
-        resultMsg = '修復フィールド! 全機 +15 HP!';
-      }
-      break;
-    case 'heal_lowest': {
-      const alive = state.allies.filter(a => !a.dead);
-      if (alive.length > 0) {
-        alive.sort((a, b) => (a.hp / a.maxHP) - (b.hp / b.maxHP));
-        const target = alive[0];
-        target.hp = Math.min(target.maxHP, target.hp + 20);
-        resultMsg = `${target.name} を 20 HP 回復!`;
-      } else {
-        resultMsg = '味方がいない...';
+        resultMsg = 'アイテム枠が満杯だ。補給を受けられなかった。';
       }
       break;
     }
+    case 'gamble_tp':
+      // Consume 20% HP from all alive allies
+      state.allies.filter(a => !a.dead).forEach(a => {
+        const cost = Math.floor(a.maxHP * 0.2);
+        a.hp = Math.max(1, a.hp - cost);
+      });
+      if (Math.random() < 0.5) {
+        // Success: TP+2
+        state.rewardSPGained = 2;
+        state.rewardSPRemaining = 2;
+        showQuickSP(2);
+        return;
+      } else {
+        resultMsg = 'エネルギーは不安定すぎた。HPを消耗しただけだった...';
+      }
+      break;
+    case 'recon_next':
+      state.run.scoutedNext = true;
+      // Show next enemy info
+      if (state.run.battleIndex < 10) {
+        const next = state.run.enemySequence[state.run.battleIndex];
+        const scale = getActScale(state.run.act);
+        const info = next.enemies.map(e => `${e.name} HP:${Math.floor(e.hp * scale)} ATK:${Math.floor(e.atk * scale)}`).join('\n');
+        resultMsg = '偵察成功! 次の敵:\n' + info;
+      } else {
+        resultMsg = '偵察成功! 次はボスエリアだ...';
+      }
+      break;
   }
 
-  // Show result and continue
+  // Show result and continue button
   const container = document.getElementById('event-choices');
   container.innerHTML = `
-    <p style="color:#6aff6a; margin:12px 0;">${resultMsg}</p>
-    <button class="btn-primary" onclick="showScreen('map-screen'); renderMap();">CONTINUE</button>
+    <pre style="color:#6aff6a; margin:12px 0; white-space:pre-wrap;">${resultMsg}</pre>
+    <button class="btn-primary" onclick="showProgressScreen()">CONTINUE</button>
   `;
 }
 
 function showQuickSP(amount) {
-  // Redirect to a mini SP allocation then back to map
   state.rewardSPGained = amount;
   state.rewardSPRemaining = amount;
   state.rewardUpgradeChosen = true;
@@ -2476,16 +2363,15 @@ function showQuickSP(amount) {
 function showRunEnd(victory) {
   showScreen('runend-screen');
   const title = document.getElementById('runend-title');
-  title.textContent = victory ? '[ MISSION COMPLETE ]' : '[ MISSION FAILED ]';
-  title.style.color = victory ? '#6aff6a' : '#ff6a6a';
+  title.textContent = '[ MISSION FAILED ]';
+  title.style.color = '#ff6a6a';
 
   let html = '<div class="run-stats">';
-  html += `<p><span class="stat-label">Act: </span><span class="stat-value">${state.run.act}</span></p>`;
-  html += `<p><span class="stat-label">Depth: </span><span class="stat-value">${state.run.depth}</span></p>`;
-  html += `<p><span class="stat-label">Battles Won: </span><span class="stat-value">${state.run.battlesWon}</span></p>`;
-  html += `<p><span class="stat-label">Elites Killed: </span><span class="stat-value">${state.run.elitesKilled}</span></p>`;
-  html += `<p><span class="stat-label">Bosses Killed: </span><span class="stat-value">${state.run.bossesKilled}</span></p>`;
-  html += `<p><span class="stat-label">Total Turns: </span><span class="stat-value">${state.run.totalTurns}</span></p>`;
+  html += `<p><span class="stat-label">到達Act: </span><span class="stat-value">${state.run.act}</span></p>`;
+  html += `<p><span class="stat-label">Act内戦闘: </span><span class="stat-value">${state.run.battleIndex}/10</span></p>`;
+  html += `<p><span class="stat-label">総戦闘数: </span><span class="stat-value">${state.run.battlesWon}</span></p>`;
+  html += `<p><span class="stat-label">ボス撃破: </span><span class="stat-value">${state.run.bossesKilled}</span></p>`;
+  html += `<p><span class="stat-label">総ターン数: </span><span class="stat-value">${state.run.totalTurns}</span></p>`;
 
   html += '<h3 style="margin-top:12px;">// SQUAD STATUS</h3>';
   state.allies.forEach(a => {
@@ -2520,159 +2406,65 @@ function closeTargetModal() {
 }
 
 // ============================================================
-// MAP RENDERING
+// PROGRESS SCREEN RENDERING
 // ============================================================
-function renderMap() {
+function renderProgressScreen() {
   const act = state.run.act;
-  const layers = state.run.maps[act];
-  const available = getAvailableNodes();
+  const bi = state.run.battleIndex; // next battle index (0-based)
+  const battleNum = bi + 1; // display as 1-based
 
-  document.getElementById('map-act-title').textContent = `-- ACT ${act} --`;
+  // HUD
+  const hud = document.getElementById('progress-hud');
+  let hudHtml = '';
+  hudHtml += `<div class="run-hud-item"><span class="label">ACT</span> <span class="value">${act}</span></div>`;
+  hudHtml += `<div class="run-hud-item"><span class="label">BATTLE</span> <span class="value">${battleNum}/10</span></div>`;
+  hudHtml += `<div class="run-hud-item"><span class="label">TOTAL</span> <span class="value">${state.run.overallBattle}</span></div>`;
+  hudHtml += `<div class="run-hud-item"><span class="label">ITEMS</span> <span class="value">${state.items.length}/3</span></div>`;
+  hud.innerHTML = hudHtml;
 
-  // Render HUD
-  renderMapHUD();
+  // Progress bar (10 segments for current act)
+  const barWrapper = document.getElementById('progress-bar-wrapper');
+  let barHtml = `<div class="progress-act-label">-- ACT ${act} --</div>`;
+  barHtml += '<div class="progress-bar-segments">';
+  for (let i = 0; i < 10; i++) {
+    const isBoss = i === 9;
+    let cls = 'progress-segment';
+    if (i < bi) cls += ' completed';
+    else if (i === bi) cls += ' current';
+    if (isBoss) cls += ' boss';
 
-  const container = document.getElementById('map-container');
-  container.innerHTML = '';
+    const tierLabels = { weak: 'W', mid: 'M', strong: 'S', boss: 'BOSS' };
+    const tier = state.run.enemySequence[i]?.tier || '?';
+    barHtml += `<div class="${cls}">${isBoss ? 'B' : (i + 1)}</div>`;
+  }
+  barHtml += '</div>';
+  barWrapper.innerHTML = barHtml;
 
-  // We use SVG for connections + divs for nodes
-  const mapWidth = 700;
-  const layerHeight = 52;
-  const totalHeight = layers.length * layerHeight + 20;
-
-  // Create wrapper
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'relative';
-  wrapper.style.width = mapWidth + 'px';
-  wrapper.style.margin = '0 auto';
-  wrapper.style.height = totalHeight + 'px';
-
-  // SVG for lines
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('width', mapWidth);
-  svg.setAttribute('height', totalHeight);
-  svg.style.position = 'absolute';
-  svg.style.top = '0';
-  svg.style.left = '0';
-  svg.style.pointerEvents = 'none';
-  wrapper.appendChild(svg);
-
-  // Calculate node positions
-  const nodePositions = {};
-  layers.forEach((layer, li) => {
-    const count = layer.length;
-    const layerWidth = count * 80;
-    const startX = (mapWidth - layerWidth) / 2 + 40;
-    const y = li * layerHeight + 18;
-
-    layer.forEach((node, ni) => {
-      const x = startX + ni * 80;
-      nodePositions[node.id] = { x, y };
-    });
-  });
-
-  // Draw connections
-  layers.forEach(layer => {
-    layer.forEach(node => {
-      const from = nodePositions[node.id];
-      node.connections.forEach(connId => {
-        const to = nodePositions[connId];
-        if (from && to) {
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', from.x);
-          line.setAttribute('y1', from.y + 18);
-          line.setAttribute('x2', to.x);
-          line.setAttribute('y2', to.y - 2);
-
-          // Color based on visited path
-          if (node.visited && findNode(connId)?.visited) {
-            line.setAttribute('stroke', '#333');
-            line.setAttribute('stroke-width', '1');
-          } else if (node.id === state.run.currentNode && available.includes(connId)) {
-            line.setAttribute('stroke', '#6aff6a');
-            line.setAttribute('stroke-width', '2');
-          } else if (!state.run.currentNode && node.layer === 0 && available.includes(node.id)) {
-            // Starting connections
-            line.setAttribute('stroke', '#444');
-            line.setAttribute('stroke-width', '1');
-          } else {
-            line.setAttribute('stroke', '#333');
-            line.setAttribute('stroke-width', '1');
-          }
-          svg.appendChild(line);
-        }
-      });
-    });
-  });
-
-  // Draw nodes
-  layers.forEach(layer => {
-    layer.forEach(node => {
-      const pos = nodePositions[node.id];
-      const div = document.createElement('div');
-      div.className = 'map-node';
-      div.style.position = 'absolute';
-      div.style.left = (pos.x - 24) + 'px';
-      div.style.top = (pos.y - 2) + 'px';
-
-      // Node appearance
-      const typeLabels = { enemy: 'E', elite: 'EL', rest: 'R', unknown: '?', boss: 'BOSS' };
-      div.textContent = typeLabels[node.type] || '?';
-
-      // CSS classes
-      if (node.type === 'boss') div.classList.add('boss-node');
-      else if (node.type === 'elite') div.classList.add('elite-node');
-      else if (node.type === 'rest') div.classList.add('rest-node');
-      else if (node.type === 'unknown') div.classList.add('unknown-node');
-      else div.classList.add('enemy-node');
-
-      if (node.visited) {
-        div.classList.add('visited');
-      } else if (node.id === state.run.currentNode) {
-        div.classList.add('current');
-      } else if (available.includes(node.id)) {
-        div.classList.add('available');
-        div.onclick = () => selectNode(node.id);
-      } else {
-        div.classList.add('locked');
-      }
-
-      wrapper.appendChild(div);
-    });
-  });
-
-  container.appendChild(wrapper);
-}
-
-function renderMapHUD() {
-  const hud = document.getElementById('map-hud');
-  let html = '';
-  html += `<div class="run-hud-item"><span class="label">ACT</span> <span class="value">${state.run.act}/3</span></div>`;
-  html += `<div class="run-hud-item"><span class="label">DEPTH</span> <span class="value">${state.run.depth}</span></div>`;
-  html += `<div class="run-hud-item"><span class="label">ITEMS</span> <span class="value">${state.items.length}/3</span></div>`;
-
-  // Squad HP summary
+  // Squad status
+  const info = document.getElementById('progress-info');
+  let infoHtml = '<div class="progress-squad">';
   state.allies.forEach(a => {
-    const color = a.dead ? '#f44' : (a.hp / a.maxHP < 0.3 ? '#fa0' : '#6aff6a');
-    html += `<div class="run-hud-item"><span class="label">${a.name}</span> <span class="value" style="color:${color};">${a.dead ? 'DEAD' : `${a.hp}/${a.maxHP}`}</span></div>`;
+    const hpPct = (a.hp / a.maxHP * 100);
+    const color = a.dead ? '#f44' : (hpPct < 30 ? '#fa0' : '#6aff6a');
+    infoHtml += `<div class="progress-unit">
+      <span class="progress-unit-name">${a.name}</span>
+      <span class="progress-unit-hp" style="color:${color};">${a.dead ? 'DESTROYED' : `${a.hp}/${a.maxHP}`}</span>
+      ${!a.dead ? `<div class="progress-hp-bar"><div class="progress-hp-fill" style="width:${hpPct}%;background:${color};"></div></div>` : ''}
+    </div>`;
   });
-
-  hud.innerHTML = html;
+  infoHtml += '</div>';
+  info.innerHTML = infoHtml;
 }
 
 function renderBattleHUD() {
   const hud = document.getElementById('battle-hud');
   if (!state.run) { hud.innerHTML = ''; return; }
-  const node = findNode(state.run.currentNode);
-  let nodeLabel = '';
-  if (node) {
-    const labels = { enemy: 'ENEMY', elite: 'ELITE', boss: 'BOSS' };
-    nodeLabel = labels[node.type] || '';
-  }
+  const tierLabels = { normal: 'NORMAL', elite: 'ELITE', boss: 'BOSS' };
+  const typeLabel = tierLabels[state._encounterType] || '';
   let html = '';
   html += `<div class="run-hud-item"><span class="label">ACT</span> <span class="value">${state.run.act}</span></div>`;
-  html += `<div class="run-hud-item"><span class="label">DEPTH</span> <span class="value">${state.run.depth}</span></div>`;
-  if (nodeLabel) html += `<div class="run-hud-item"><span class="label">TYPE</span> <span class="value" style="color:#f88;">${nodeLabel}</span></div>`;
+  html += `<div class="run-hud-item"><span class="label">BATTLE</span> <span class="value">${state.run.battleIndex}/10</span></div>`;
+  if (typeLabel) html += `<div class="run-hud-item"><span class="label">TYPE</span> <span class="value" style="color:#f88;">${typeLabel}</span></div>`;
   html += `<div class="run-hud-item"><span class="label">ITEMS</span> <span class="value">${state.items.length}/3</span></div>`;
   hud.innerHTML = html;
 }
@@ -2847,18 +2639,45 @@ function showScreen(id) {
 // ============================================================
 // EVENT LISTENERS
 // ============================================================
+
+// Title & Help
+document.getElementById('btn-to-setup').onclick = () => {
+  showScreen('setup-screen');
+  initSetup();
+};
+document.getElementById('btn-how-to-play').onclick = () => {
+  document.getElementById('help-modal').style.display = 'flex';
+};
+document.getElementById('btn-show-help').onclick = () => {
+  document.getElementById('help-modal').style.display = 'flex';
+};
+document.getElementById('btn-close-help').onclick = () => {
+  document.getElementById('help-modal').style.display = 'none';
+};
+// Help tab switching
+document.querySelectorAll('.help-tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.help-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.help-content').forEach(c => c.style.display = 'none');
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).style.display = 'block';
+  };
+});
+
+// Game
 document.getElementById('btn-start').onclick = () => {
   startRun();
 };
 document.getElementById('btn-end-turn').onclick = endTurn;
 document.getElementById('btn-abandon-run').onclick = () => {
   if (confirm('Run を放棄しますか?')) {
-    showScreen('setup-screen');
-    initSetup();
+    showScreen('title-screen');
   }
 };
+document.getElementById('btn-next-battle').onclick = () => {
+  advanceToBattle();
+};
 document.getElementById('btn-continue-run').onclick = continueRun;
-document.getElementById('btn-leave-rest').onclick = leaveRest;
 document.getElementById('btn-skip-upgrade').onclick = () => {
   state.rewardUpgradeChosen = true;
   document.getElementById('reward-card-list').querySelectorAll('.reward-card-option').forEach(el => el.style.opacity = '0.3');
@@ -2870,8 +2689,7 @@ document.getElementById('btn-skip-item').onclick = () => {
   updateContinueBtn();
 };
 document.getElementById('btn-new-run').onclick = () => {
-  showScreen('setup-screen');
-  initSetup();
+  showScreen('title-screen');
 };
 
 // Init: Load frames from JSON then start
@@ -2879,7 +2697,7 @@ async function init() {
   try {
     const resp = await fetch('frames.json');
     FRAMES = await resp.json();
-    initSetup();
+    // Show title screen on load (no initSetup yet)
   } catch (e) {
     console.error('Failed to load frames.json:', e);
     document.body.innerHTML = '<h1 style="color:red;">Error: Could not load frames.json</h1>';

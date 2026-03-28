@@ -48,68 +48,89 @@ const FRAME_PRESETS = {
 // ENEMY PRESETS FOR SIMULATION
 // ============================================================
 const ENEMY_PRESETS = {
-  '3_weak': {
-    label: '3 Weak (Act1 Drones)',
+  'act1_weak': {
+    label: 'Act1 Weak (Drones)',
     enemies: [
       { name: 'ドローン-A', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
-      { name: 'ドローン-B', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+      { name: 'ドローン-B', hp: 20, atk: 5, speed: 0, patterns: ['attack','attack','barrier'] },
+    ]
+  },
+  'act1_mid': {
+    label: 'Act1 Mid (3 Drones)',
+    enemies: [
+      { name: 'ドローン-A', hp: 20, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
+      { name: 'ドローン-B', hp: 22, atk: 5, speed: 0, patterns: ['attack','attack_all','attack'] },
       { name: 'ドローン-C', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
     ]
   },
-  '1_elite': {
-    label: '1 Elite (Heavy Guard)',
+  'act1_strong': {
+    label: 'Act1 Strong (Heavy Guard)',
     enemies: [
-      { name: 'ヘビーガード', hp: 65, atk: 8, speed: 0, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
+      { name: 'ヘビーガード', hp: 60, atk: 9, speed: 0, patterns: ['attack','attack','attack_heavy','barrier','attack_all'] },
     ]
   },
-  'elite_pair': {
-    label: 'Elite + Support',
-    enemies: [
-      { name: 'エヴェイダー', hp: 45, atk: 8, speed: 0, patterns: ['attack','attack','buff_self','attack','attack_heavy'] },
-      { name: 'サポートビット', hp: 18, atk: 4, speed: 0, patterns: ['barrier','attack','barrier'] },
-    ]
-  },
-  '1_boss': {
-    label: '1 Boss (Mk-I)',
-    enemies: [
-      { name: 'コマンダー Mk-I', hp: 100, atk: 10, speed: 0, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
-    ]
-  },
-  'boss_adds': {
-    label: 'Boss + Adds (Mk-I)',
+  'act1_boss': {
+    label: 'Act1 Boss (Mk-I + Bits)',
     enemies: [
       { name: 'コマンダー Mk-I', hp: 100, atk: 10, speed: 0, patterns: ['barrier','attack','attack_heavy','attack_all','attack','buff_self','attack_heavy'] },
       { name: 'ビット-L', hp: 18, atk: 4, speed: 0, patterns: ['attack','attack','barrier'] },
       { name: 'ビット-R', hp: 18, atk: 4, speed: 0, patterns: ['attack','barrier','attack'] },
     ]
   },
+  'act2_weak': {
+    label: 'Act2 Weak (Heavy Drones)',
+    enemies: [
+      { name: '重装ドローン-A', hp: 28, atk: 6, speed: 0, patterns: ['attack','attack','barrier','attack_all'] },
+      { name: '重装ドローン-B', hp: 28, atk: 7, speed: 0, patterns: ['attack','barrier','attack','attack'] },
+    ]
+  },
+  'act2_mid': {
+    label: 'Act2 Mid (Assault Squad)',
+    enemies: [
+      { name: 'アサルト-A', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack','attack_heavy'] },
+      { name: 'アサルト-B', hp: 25, atk: 7, speed: 0, patterns: ['attack','attack_heavy','attack'] },
+      { name: 'リペアビット', hp: 18, atk: 3, speed: 0, patterns: ['barrier','barrier','attack'] },
+    ]
+  },
+  'act2_strong': {
+    label: 'Act2 Strong (Juggernaut)',
+    enemies: [
+      { name: 'ジャガーノート', hp: 75, atk: 11, speed: 0, patterns: ['attack_heavy','attack','barrier','attack_all','buff_self','attack_heavy'] },
+    ]
+  },
   'act2_boss': {
     label: 'Act2 Boss (Mk-II + Guards)',
     enemies: [
-      { name: 'コア・ユニット Mk-II', hp: 140, atk: 12, speed: 0, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
+      { name: 'コア・ユニット Mk-II', hp: 130, atk: 12, speed: 0, patterns: ['barrier','attack_heavy','attack','attack_all','buff_self','attack_heavy','attack_all'] },
       { name: 'ガードビット-L', hp: 25, atk: 6, speed: 0, patterns: ['attack','barrier','attack'] },
       { name: 'ガードビット-R', hp: 25, atk: 6, speed: 0, patterns: ['barrier','attack','attack'] },
     ]
   },
-  'act3_elite': {
-    label: 'Act3 Elite (Twin Heavies)',
+  'act3_weak': {
+    label: 'Act3 Weak (Elite Soldiers)',
     enemies: [
-      { name: 'ヘビーガード-A', hp: 90, atk: 14, speed: 0, patterns: ['attack','attack_heavy','barrier','attack_all','attack_heavy'] },
-      { name: 'ヘビーガード-B', hp: 90, atk: 14, speed: 0, patterns: ['barrier','attack','attack_heavy','attack','attack_all'] },
+      { name: 'エリート兵-A', hp: 32, atk: 8, speed: 0, patterns: ['attack','attack_heavy','barrier','attack_all'] },
+      { name: 'エリート兵-B', hp: 32, atk: 9, speed: 0, patterns: ['attack','barrier','attack_heavy','attack'] },
+    ]
+  },
+  'act3_mid': {
+    label: 'Act3 Mid (Hunter Squad)',
+    enemies: [
+      { name: 'ハンター', hp: 30, atk: 9, speed: 0, patterns: ['attack','attack','attack_heavy','attack'] },
+      { name: 'メディック', hp: 30, atk: 6, speed: 0, patterns: ['barrier','barrier','attack','attack_all'] },
+      { name: 'アサルト', hp: 35, atk: 8, speed: 0, patterns: ['attack','attack','attack_heavy'] },
+    ]
+  },
+  'act3_strong': {
+    label: 'Act3 Strong (Destroyer)',
+    enemies: [
+      { name: 'デストロイヤー', hp: 90, atk: 12, speed: 0, patterns: ['attack_heavy','attack_all','buff_self','attack_heavy','barrier','attack_all','attack_heavy'] },
     ]
   },
   'act3_boss': {
-    label: 'Act3 Boss (Final)',
+    label: 'Act3 Boss (Architect)',
     enemies: [
-      { name: 'アーキタイプ', hp: 250, atk: 18, speed: 0, patterns: ['barrier','attack_heavy','attack_all','attack','buff_self','attack_heavy','attack_all','attack_heavy'] },
-    ]
-  },
-  'act3_boss_adds': {
-    label: 'Act3 Boss + Elites',
-    enemies: [
-      { name: 'アーキタイプ', hp: 200, atk: 16, speed: 0, patterns: ['barrier','attack_heavy','attack_all','buff_self','attack_heavy','attack_all'] },
-      { name: 'ガーディアン-L', hp: 50, atk: 10, speed: 0, patterns: ['attack','barrier','attack_heavy','attack'] },
-      { name: 'ガーディアン-R', hp: 50, atk: 10, speed: 0, patterns: ['barrier','attack','attack','attack_heavy'] },
+      { name: 'アーキテクト', hp: 150, atk: 14, speed: 0, patterns: ['barrier','attack_heavy','attack_all','buff_self','attack','attack_heavy','attack_all','buff_self','attack_heavy'] },
     ]
   },
 };
@@ -2009,7 +2030,7 @@ function getAllCombinations(frameKeysList, choose) {
 
 function runCompare() {
   const COMPARE_RUNS = 5;
-  const COMPARE_PRESETS = ['3_weak', '1_elite', 'act2_boss'];
+  const COMPARE_PRESETS = ['act1_weak', 'act1_strong', 'act2_boss'];
   const frameKeys = Object.keys(FRAMES);
 
   console.log('============================================================');

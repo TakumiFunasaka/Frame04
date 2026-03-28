@@ -8,9 +8,160 @@
 </head>
 <body>
 
+<!-- TITLE SCREEN -->
+<div id="title-screen" class="screen active">
+  <div class="title-hero">
+    <h1 class="title-logo">FRAME<span class="title-colon">:</span>04</h1>
+    <p class="title-sub">ROGUELIKE MECH CARD BATTLE</p>
+    <div class="title-story">
+      <p>西暦2187年――人類は「魔導機関」の発見により、新たなエネルギー革命を迎えた。</p>
+      <p>魔導機関を搭載した機動兵器<strong>「フレーム」</strong>は軍事の中核となり、</p>
+      <p>各国は最強の小隊を競う国際競技リーグ<strong>「セクターダイブ」</strong>を開催。</p>
+      <p style="margin-top:8px;">プレイヤーは4機のフレームで小隊を編成し、</p>
+      <p>無限に続く深層セクターへ挑む。到達深度がそのままランク。</p>
+      <p><strong>どこまで潜れるか――それがすべてだ。</strong></p>
+    </div>
+    <div class="btn-row" style="justify-content:center; margin-top:24px; gap:16px;">
+      <button class="btn-primary btn-large" id="btn-to-setup">START</button>
+      <button class="btn-large" id="btn-how-to-play">HOW TO PLAY</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOW TO PLAY MODAL -->
+<div id="help-modal" class="target-select" style="display:none;">
+  <div class="help-modal-inner">
+    <div class="help-tabs">
+      <button class="help-tab active" data-tab="help-basics">基本ルール</button>
+      <button class="help-tab" data-tab="help-battle">バトル</button>
+      <button class="help-tab" data-tab="help-stats">ステータス</button>
+      <button class="help-tab" data-tab="help-status">状態異常</button>
+      <button class="help-tab" data-tab="help-tips">攻略ヒント</button>
+    </div>
+
+    <div class="help-content" id="help-basics">
+      <h3>// ゲームの流れ</h3>
+      <div class="help-section">
+        <p><strong>1. 小隊編成</strong> ── 10種のフレーム（メカ）から4機を選び、チューニングポイント(TP)を配分</p>
+        <p><strong>2. 出撃</strong> ── 全戦エリート級。1 Act = 10戦（弱→中→強→ボス）</p>
+        <p><strong>3. 戦闘</strong> ── ターン制カードバトル。ENを管理してカードを使う</p>
+        <p><strong>4. 報酬</strong> ── 勝利でTP獲得 → ステ強化、カード最適化(+化)、アイテム入手</p>
+        <p><strong>5. 無限Act</strong> ── Actは無限に続く。敵はAct毎にスケーリング。全滅するまで戦え</p>
+      </div>
+      <h3>// デッキ</h3>
+      <div class="help-section">
+        <p>4機 × 5枚 = <strong>計20枚の固定デッキ</strong>（追加・削除なし）</p>
+        <p>カードは戦闘報酬で<strong>最適化(+)</strong>して永続強化できる</p>
+      </div>
+      <h3>// 大破（デッドドロー）</h3>
+      <div class="help-section">
+        <p>HPが0になった機体のカード5枚は<strong>すべて使用不可</strong>に。手札を圧迫し続ける</p>
+        <p>メディックの「リブート」で復活可能</p>
+      </div>
+    </div>
+
+    <div class="help-content" id="help-battle" style="display:none;">
+      <h3>// ターンの流れ</h3>
+      <div class="help-section">
+        <p><strong>1.</strong> ターン開始: EN+3（上限5、繰り越しあり）。山札から5枚ドロー</p>
+        <p><strong>2.</strong> プレイヤーフェーズ: ENが許す限りカードをプレイ</p>
+        <p><strong>3.</strong> END TURN: 残り手札→捨て札。敵が行動。過熱ダメージ処理</p>
+        <p><strong>4.</strong> 山札0枚で捨て札をシャッフルして山に戻す</p>
+      </div>
+      <h3>// EN（エネルギー）</h3>
+      <div class="help-section">
+        <p>4機<strong>共有</strong>のリソース。毎ターン+3、最大5までストック</p>
+        <p>各カードにENコストがあり、コスト分を消費してプレイ</p>
+      </div>
+      <h3>// インテント</h3>
+      <div class="help-section">
+        <p>敵は「次に誰に何をするか」を<strong>事前表示</strong>する</p>
+        <p>挑発カードで敵のターゲットを自機に強制変更できる</p>
+      </div>
+      <h3>// アイテム</h3>
+      <div class="help-section">
+        <p>最大3個所持。戦闘中にクリックで即時使用（使い切り）</p>
+        <p>HPポーション / フィールドパック / ENセル の3種</p>
+      </div>
+    </div>
+
+    <div class="help-content" id="help-stats" style="display:none;">
+      <h3>// 3ステータス</h3>
+      <div class="help-section">
+        <table class="help-table">
+          <tr><th>OUT（出力）</th><td>攻撃ダメージ倍率: baseDmg × (1 + OUT × 0.04)</td></tr>
+          <tr><th>SHL（外殻）</th><td>最大HP倍率: baseHP × (1 + SHL × 0.03)<br>フィールド倍率: base × (1 + SHL × 0.04)</td></tr>
+          <tr><th>CTRL（制御）</th><td>回復倍率: baseHeal × (1 + CTRL × 0.04)<br>過熱/脆弱の付与量もスケーリング</td></tr>
+        </table>
+      </div>
+      <h3>// TP（チューニングポイント）</h3>
+      <div class="help-section">
+        <p>初期<strong>24pt</strong>を4機に自由配分。戦闘勝利で追加TP獲得</p>
+        <p>各フレームにはbaseStats（固定10pt分）があり、TPはその上に加算される</p>
+      </div>
+    </div>
+
+    <div class="help-content" id="help-status" style="display:none;">
+      <h3>// 状態異常（敵に付与）</h3>
+      <div class="help-section">
+        <table class="help-table">
+          <tr><th style="color:#f88;">過熱(N)</th><td>ターン終了時にNダメージ。毎ターン-1減衰。スタック可<br>CTRLスケーリングあり</td></tr>
+          <tr><th style="color:#fa0;">脆弱(N)</th><td>次にダメージを受けた時+N。被弾1回で消費<br>CTRLスケーリングあり</td></tr>
+          <tr><th style="color:#ff0;">感電(T)</th><td>Tターンの間、受けるダメージ×1.2倍<br>スケーリングなし</td></tr>
+        </table>
+      </div>
+      <h3>// 速度軸</h3>
+      <div class="help-section">
+        <table class="help-table">
+          <tr><th style="color:#4af;">加速(+N%)</th><td>味方に付与。被弾率が100-N%に低下</td></tr>
+          <tr><th style="color:#a6a;">減速(-N%)</th><td>敵に付与。命中率が100-N%に低下</td></tr>
+        </table>
+        <p style="margin-top:4px; color:#888;">毎ターンリセット。重ねがけは加算。相殺も加算</p>
+      </div>
+      <h3>// フィールド（味方バフ）</h3>
+      <div class="help-section">
+        <p>ダメージ吸収バリア。<strong>毎ターン開始時にリセット</strong>される（使い切り）</p>
+        <p>SHLスケーリングあり</p>
+      </div>
+    </div>
+
+    <div class="help-content" id="help-tips" style="display:none;">
+      <h3>// 編成のコツ</h3>
+      <div class="help-section">
+        <p>アタッカー2 + タンク/サポート1 + ヒーラー/デバッファ1 がバランス型</p>
+        <p>アタッカー4の速攻編成もあり。大破リスクは高いが殲滅力が段違い</p>
+      </div>
+      <h3>// TP配分</h3>
+      <div class="help-section">
+        <p>「おまかせ配分」が便利。迷ったらまずそれで試そう</p>
+        <p>アタッカーにOUT全振り、タンクにSHL全振りが基本</p>
+      </div>
+      <h3>// 戦闘間イベント</h3>
+      <div class="help-section">
+        <p>戦闘後40%の確率でランダムイベントが発生:</p>
+        <p><strong>整備</strong>=HP30%回復 / <strong>最適化</strong>=カード+化 / <strong>補給</strong>=アイテム</p>
+        <p><strong>賭け</strong>=HP消費でTP獲得チャンス / <strong>偵察</strong>=次の敵情報</p>
+      </div>
+      <h3>// 重要メカニクス</h3>
+      <div class="help-section">
+        <p>敵のインテントを見て、挑発でターゲットをタンクに集める</p>
+        <p>フィールドは毎ターンリセット → 「今ターン守る」判断が重要</p>
+        <p>大破は致命的 → メディックがいればリブートで復活可能</p>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:16px;">
+      <button class="btn-primary" id="btn-close-help">CLOSE</button>
+    </div>
+  </div>
+</div>
+
 <!-- SETUP SCREEN -->
-<div id="setup-screen" class="screen active">
-  <h1>[ FRAME:04 ] ROGUELIKE RUN</h1>
+<div id="setup-screen" class="screen">
+  <h1>[ FRAME:04 ] SQUAD SETUP</h1>
+  <div class="btn-row" style="margin-bottom:12px;">
+    <button id="btn-show-help" style="font-size:11px;">HOW TO PLAY</button>
+  </div>
 
   <h2>// SELECT 4 FRAMES</h2>
   <div class="frame-grid" id="frame-grid"></div>
@@ -25,20 +176,14 @@
   </div>
 </div>
 
-<!-- MAP SCREEN -->
-<div id="map-screen" class="screen">
-  <h1>[ MAP ]</h1>
-  <div class="run-hud" id="map-hud"></div>
-  <div id="map-act-title" class="map-act-title"></div>
-  <div class="map-legend">
-    <span><span class="legend-dot" style="border-color:#f88;background:#200;"></span> Enemy</span>
-    <span><span class="legend-dot" style="border-color:#fa0;background:#220;"></span> Elite</span>
-    <span><span class="legend-dot" style="border-color:#4af;background:#024;"></span> Rest</span>
-    <span><span class="legend-dot" style="border-color:#a6a;background:#202;"></span> Unknown</span>
-    <span><span class="legend-dot" style="border-color:#f44;background:#400;"></span> BOSS</span>
-  </div>
-  <div class="map-container" id="map-container"></div>
-  <div class="btn-row">
+<!-- PROGRESS SCREEN -->
+<div id="progress-screen" class="screen">
+  <h1>[ SORTIE ]</h1>
+  <div class="run-hud" id="progress-hud"></div>
+  <div id="progress-bar-wrapper"></div>
+  <div id="progress-info"></div>
+  <div class="btn-row" style="justify-content:center; margin-top:16px;">
+    <button class="btn-primary" id="btn-next-battle">NEXT BATTLE</button>
     <button id="btn-abandon-run" class="btn-danger">ABANDON RUN</button>
   </div>
 </div>
@@ -122,18 +267,9 @@
   </div>
 </div>
 
-<!-- REST SCREEN -->
-<div id="rest-screen" class="screen">
-  <h1>[ DOCK - REST POINT ]</h1>
-  <div class="rest-visual" id="rest-visual"></div>
-  <div class="btn-row" style="justify-content:center;">
-    <button class="btn-primary" id="btn-leave-rest">DEPART</button>
-  </div>
-</div>
-
-<!-- UNKNOWN EVENT SCREEN -->
+<!-- EVENT SCREEN -->
 <div id="event-screen" class="screen">
-  <h1>[ UNKNOWN SIGNAL ]</h1>
+  <h1 id="event-title">[ EVENT ]</h1>
   <div id="event-description" style="margin:12px 0; color:#a6a;"></div>
   <div class="event-choices" id="event-choices"></div>
 </div>
