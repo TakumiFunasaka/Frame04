@@ -294,7 +294,7 @@ function startRun() {
     const displayName = totalDupes > 1 ? `${frame.name} #${dupeCount}` : frame.name;
     return {
       id: i, frameKey: fk, name: displayName, stats,
-      hp: maxHP, maxHP, barrier: 0, dead: false, speed: 0,
+      hp: maxHP, maxHP, barrier: 0, dead: false, speed: 0, speedEffects: [],
       cards: frame.cards.map((c, ci) => ({ ...c, id: `${fk}_${i}_${ci}`, ownerIdx: i, ownerFrame: fk, playable: true, upgraded: false })),
       buffs: {}, persistentBarrier: 0, attackLocked: false, counterDmg: 0, reactive: false, siegeBuff: 0, spikeReflect: 0,
       fullDriveActive: false,
@@ -621,7 +621,7 @@ function startBattleFromSequence(enemyDefs, encounterType) {
     id: i, name: e.name,
     hp: Math.floor(e.hp * actScale), maxHP: Math.floor(e.hp * actScale),
     barrier: 0, dead: false,
-    atk: Math.floor(e.atk * actScale), speed: 0,
+    atk: Math.floor(e.atk * actScale), speed: 0, speedEffects: [],
     patterns: e.patterns, patternIdx: 0,
     intent: null, targetIdx: 0,
     statuses: { overheat: 0, vulnerability: 0, shock: 0 },
@@ -633,7 +633,7 @@ function startBattleFromSequence(enemyDefs, encounterType) {
   // Prepare allies for battle (preserve HP, dead status carries over)
   state.allies.forEach(a => {
     a.barrier = 0;
-    a.speed = 0;
+    clearSpeedEffects(a);
     a.buffs = {};
     a.persistentBarrier = 0;
     a.attackLocked = false;
@@ -728,8 +728,8 @@ function nextTurn() {
       a.junkShieldBonus = 0;
       a.droneFocusTarget = -1;
       a.droneFocusMultiplier = 1;
-      // Reset speed at turn start
-      a.speed = 0;
+      // Tick speed effects (decrement turns, remove expired)
+      tickSpeedEffects(a);
     }
     a.buffs = a.buffs.dmgBonus ? { dmgBonus: a.buffs.dmgBonus } : {};
   });
@@ -741,7 +741,7 @@ function nextTurn() {
   state.enemies.forEach(e => {
     if (e.dead) return;
     e.barrier = 0;
-    e.speed = 0; // Reset speed at turn start
+    tickSpeedEffects(e); // Tick speed effects (decrement turns, remove expired)
     // Overheat: deal N damage, then N decreases by 1
     if (e.statuses.overheat > 0) {
       const dmg = e.statuses.overheat;
@@ -1152,7 +1152,7 @@ function executeCard(targetId) {
           if (stacks >= card.accumThreshold && !enemy.dead) {
             enemy.statuses.overheat = (enemy.statuses.overheat || 0) + 2;
             enemy.statuses.shock = (enemy.statuses.shock || 0) + 1;
-            enemy.speed -= 10; // deceleration from fusion burst
+            addSpeedEffect(enemy, -10); // deceleration from fusion burst
           }
         });
         addLog(`${ally.name}: フュージョンバースト ${baseDmg}全体ダメ (蓄積${stacks}消費)`, 'dmg');
@@ -1260,7 +1260,7 @@ function executeCard(targetId) {
         if (ally.hp <= 0) killAlly(ally);
       }
       if (card.selfRemoveBarrier) ally.barrier = 0;
-      if (card.selfBuffAGI) ally.speed += card.selfBuffAGI;
+      if (card.selfBuffAGI) addSpeedEffect(ally, card.selfBuffAGI);
 
       if (ally.buffs.warcryBonus) delete ally.buffs.warcryBonus;
       break;
@@ -1366,8 +1366,8 @@ function executeCard(targetId) {
         addLog(`${target.name}: パワーリンク +${card.amount}`, 'status');
       } else if (card.effect === 'accel') {
         const target = state.allies[targetId];
-        target.speed += card.amount;
-        addLog(`${target.name}: 加速(+${card.amount}%)`, 'status');
+        addSpeedEffect(target, card.amount);
+        addLog(`${target.name}: 加速(+${card.amount}%, ${SPEED_DURATION}T)`, 'status');
       } else if (card.effect === 'fullboost') {
         state.allies.filter(a => !a.dead).forEach(a => {
           a.buffs.outBonus = (a.buffs.outBonus || 0) + card.amount;
@@ -1377,9 +1377,9 @@ function executeCard(targetId) {
         addLog(`全機: OUT +${card.amount}, EN +1`, 'status');
       } else if (card.effect === 'smoke') {
         state.allies.filter(a => !a.dead).forEach(a => {
-          a.speed += card.amount;
+          addSpeedEffect(a, card.amount);
         });
-        addLog(`全機: 加速(+${card.amount}%)`, 'status');
+        addLog(`全機: 加速(+${card.amount}%, ${SPEED_DURATION}T)`, 'status');
       // --- Expansion buff effects ---
       } else if (card.effect === 'element_coat_heat') {
         const target = state.allies[targetId];
@@ -1429,14 +1429,14 @@ function executeCard(targetId) {
       if (card.applyAllySpeed) {
         if (card.target === 'ally_all') {
           state.allies.filter(a => !a.dead).forEach(a => {
-            a.speed += card.applyAllySpeed;
+            addSpeedEffect(a, card.applyAllySpeed);
           });
-          addLog(`全機: 加速(+${card.applyAllySpeed}%)`, 'status');
+          addLog(`全機: 加速(+${card.applyAllySpeed}%, ${SPEED_DURATION}T)`, 'status');
         } else if (card.target === 'ally_single') {
           const target = state.allies[targetId];
           if (target) {
-            target.speed += card.applyAllySpeed;
-            addLog(`${target.name}: 加速(+${card.applyAllySpeed}%)`, 'status');
+            addSpeedEffect(target, card.applyAllySpeed);
+            addLog(`${target.name}: 加速(+${card.applyAllySpeed}%, ${SPEED_DURATION}T)`, 'status');
           }
         }
       }
@@ -1452,8 +1452,8 @@ function executeCard(targetId) {
         }
         // Apply speed to target enemy
         if (card.applySpeed) {
-          enemy.speed += card.applySpeed;
-          addLog(`${enemy.name}: 減速(${card.applySpeed}%) → 速度${enemy.speed}%`, 'status');
+          addSpeedEffect(enemy, card.applySpeed);
+          addLog(`${enemy.name}: 減速(${card.applySpeed}%, ${SPEED_DURATION}T) → 速度${enemy.speed}%`, 'status');
         }
         // Expansion: mark
         if (card.effect === 'mark') {
@@ -1485,9 +1485,9 @@ function executeCard(targetId) {
         // Apply speed to all enemies
         if (card.applySpeed) {
           state.enemies.filter(e => !e.dead).forEach(e => {
-            e.speed += card.applySpeed;
+            addSpeedEffect(e, card.applySpeed);
           });
-          addLog(`敵全体: 減速(${card.applySpeed}%)`, 'status');
+          addLog(`敵全体: 減速(${card.applySpeed}%, ${SPEED_DURATION}T)`, 'status');
         }
         // Expansion: analyze field (scan all)
         if (card.effect === 'analyze_field') {
@@ -1760,12 +1760,12 @@ function dealDmgToEnemy(ally, enemy, baseDmg, card) {
 
   // Apply speed effects from card
   if (card.applySpeed) {
-    enemy.speed += card.applySpeed;
-    addLog(`${enemy.name}: 減速(${card.applySpeed}%) → 速度${enemy.speed}%`, 'status');
+    addSpeedEffect(enemy, card.applySpeed);
+    addLog(`${enemy.name}: 減速(${card.applySpeed}%, ${SPEED_DURATION}T) → 速度${enemy.speed}%`, 'status');
   }
   if (card.applySelfSpeed) {
-    ally.speed += card.applySelfSpeed;
-    addLog(`${ally.name}: 加速(+${card.applySelfSpeed}%) → 速度+${ally.speed}%`, 'status');
+    addSpeedEffect(ally, card.applySelfSpeed);
+    addLog(`${ally.name}: 加速(+${card.applySelfSpeed}%, ${SPEED_DURATION}T) → 速度+${ally.speed}%`, 'status');
   }
 
   // Legacy debuffs for expansion frames
@@ -2576,8 +2576,14 @@ function getEnemyStatusText(e) {
   if (e.statuses.overheat > 0) parts.push(`過熱(${e.statuses.overheat})`);
   if (e.statuses.vulnerability > 0) parts.push(`脆弱(${e.statuses.vulnerability})`);
   if (e.statuses.shock > 0) parts.push(`感電(${e.statuses.shock}T)`);
-  if (e.speed > 0) parts.push(`加速+${e.speed}%`);
-  if (e.speed < 0) parts.push(`減速${e.speed}%`);
+  if (e.speed > 0) {
+    const maxT = e.speedEffects ? Math.max(...e.speedEffects.filter(s => s.value > 0).map(s => s.turns)) : 0;
+    parts.push(`加速+${e.speed}%(${maxT}T)`);
+  }
+  if (e.speed < 0) {
+    const maxT = e.speedEffects ? Math.max(...e.speedEffects.filter(s => s.value < 0).map(s => s.turns)) : 0;
+    parts.push(`減速${e.speed}%(${maxT}T)`);
+  }
   if (e.debuffs.agiReduction) parts.push(`AGI-${e.debuffs.agiReduction.val}`);
   if (e.debuffs.atkReduction) parts.push(`ATK-${e.debuffs.atkReduction}`);
   if (e.marked) parts.push('マーク');
@@ -2589,8 +2595,14 @@ function getEnemyStatusText(e) {
 function getAllyBuffText(a) {
   const parts = [];
   if (a.fullDriveActive) parts.push('FD');
-  if (a.speed > 0) parts.push(`加速+${a.speed}%`);
-  if (a.speed < 0) parts.push(`減速${a.speed}%`);
+  if (a.speed > 0) {
+    const maxT = a.speedEffects ? Math.max(...a.speedEffects.filter(s => s.value > 0).map(s => s.turns)) : 0;
+    parts.push(`加速+${a.speed}%(${maxT}T)`);
+  }
+  if (a.speed < 0) {
+    const maxT = a.speedEffects ? Math.max(...a.speedEffects.filter(s => s.value < 0).map(s => s.turns)) : 0;
+    parts.push(`減速${a.speed}%(${maxT}T)`);
+  }
   if (a.buffs.dmgBonus) parts.push(`ATK+${a.buffs.dmgBonus}`);
   if (a.buffs.warcryBonus) parts.push(`WC+${a.buffs.warcryBonus}`);
   if (a.buffs.overheat) parts.push(`過熱(${a.buffs.overheat})`);
@@ -2619,6 +2631,31 @@ function addLog(text, type) {
 // ============================================================
 // UTILITIES
 // ============================================================
+const SPEED_DURATION = 5;
+
+function addSpeedEffect(unit, value, turns) {
+  if (!unit.speedEffects) unit.speedEffects = [];
+  unit.speedEffects.push({ value, turns: turns || SPEED_DURATION });
+  recalcSpeed(unit);
+}
+
+function recalcSpeed(unit) {
+  if (!unit.speedEffects) unit.speedEffects = [];
+  unit.speed = unit.speedEffects.reduce((sum, e) => sum + e.value, 0);
+}
+
+function tickSpeedEffects(unit) {
+  if (!unit.speedEffects) { unit.speedEffects = []; unit.speed = 0; return; }
+  unit.speedEffects.forEach(e => e.turns--);
+  unit.speedEffects = unit.speedEffects.filter(e => e.turns > 0);
+  recalcSpeed(unit);
+}
+
+function clearSpeedEffects(unit) {
+  unit.speedEffects = [];
+  unit.speed = 0;
+}
+
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
