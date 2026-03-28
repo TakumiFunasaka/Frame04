@@ -479,7 +479,8 @@ function renderSlotIndicator() {
   // Show passives
   const uniqueFrames = [...new Set(state.selectedFrames.filter(f => f !== null))];
   const passiveHtml = uniqueFrames.map(fk => {
-    const p = FRAME_PASSIVES[fk];
+    const relicId = FRAME_PASSIVE_RELICS[fk];
+    const p = relicId ? RELIC_DEFS[relicId] : null;
     return p ? `<span style="border:1px solid #fa0;padding:1px 5px;font-size:10px;color:#fa0;" title="${p.desc}">${p.name}</span>` : '';
   }).join('');
   const passiveNote = count > 0 && uniqueFrames.length < count ? ` <span style="color:#888;font-size:10px;">(重複: パッシブ${uniqueFrames.length}種)</span>` : '';
