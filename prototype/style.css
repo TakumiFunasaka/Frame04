@@ -103,6 +103,10 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
 .btn-danger { background: #6e2a2a; border-color: #ff6a6a; color: #fff; padding: 8px 20px; }
 
 /* ---- Relic Bar ---- */
+/* ---- Deck/Relic viewer ---- */
+.deck-view-card { border: 1px solid #333; background: #0f0f1a; padding: 4px 8px; margin: 2px 0; font-size: 11px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.relic-view-item { border: 1px solid #333; background: #0f0f1a; padding: 8px; margin: 4px 0; }
+
 .relic-bar { margin: 8px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .relic-icon { border: 1px solid #555; background: #111; padding: 4px 8px; font-size: 10px; color: #fa0; cursor: default; white-space: nowrap; }
 .relic-icon.rarity-common { border-color: #666; color: #aaa; }

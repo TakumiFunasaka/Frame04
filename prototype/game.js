@@ -10,6 +10,23 @@ let FRAMES = {};
 const STAT_NAMES = { OUT: '出力', SHL: '外殻', CTRL: '制御' };
 
 // ============================================================
+// FRAME PASSIVES (1 per unique frame in squad)
+// ============================================================
+// Frame passive relics - auto-granted at run start based on unique frames selected
+const FRAME_PASSIVE_RELICS = {
+  striker:  'passive_striker',
+  gunner:   'passive_gunner',
+  blaster:  'passive_blaster',
+  shielder: 'passive_shielder',
+  medic:    'passive_medic',
+  jammer:   'passive_jammer',
+  cracker:  'passive_cracker',
+  booster:  'passive_booster',
+  phantom:  'passive_phantom',
+  overload: 'passive_overload',
+};
+
+// ============================================================
 // ENEMY POOLS PER ACT (tiered: weak/mid/strong/boss)
 // Act 4+ reuses Act 1-3 templates with act-based scaling
 // ============================================================
@@ -226,6 +243,17 @@ const RELIC_DEFS = {
   upgrade_kit:      { name: 'アップグレードキット', desc: 'カード報酬で選んだカードが50%で+付き', rarity: 'uncommon' },
   lucky_coin:       { name: 'ラッキーコイン', desc: 'イベントの賭けが70%成功になる', rarity: 'common' },
   scout_drone:      { name: 'スカウトドローン', desc: '次の戦闘の敵情報が常に見える', rarity: 'common' },
+  // --- Frame passive relics (auto-granted, cannot be found) ---
+  passive_striker:  { name: '先制打撃', desc: 'ターン1の攻撃ダメージ+3', rarity: 'frame' },
+  passive_gunner:   { name: '精密照準', desc: '脆弱付与量+1', rarity: 'frame' },
+  passive_blaster:  { name: '残火', desc: '過熱ダメージ+1', rarity: 'frame' },
+  passive_shielder: { name: '装甲', desc: '戦闘開始時シールダーにフィールド+5', rarity: 'frame' },
+  passive_medic:    { name: '応急修復', desc: 'ターン開始時、最低HP味方をHP2回復', rarity: 'frame' },
+  passive_jammer:   { name: '電磁干渉', desc: '感電付与ターン+1', rarity: 'frame' },
+  passive_cracker:  { name: '構造解析', desc: '脆弱状態の敵へのダメージ+2', rarity: 'frame' },
+  passive_booster:  { name: '充電', desc: '戦闘開始時EN+1', rarity: 'frame' },
+  passive_phantom:  { name: '残影', desc: '敵の攻撃回避時、次の攻撃+3', rarity: 'frame' },
+  passive_overload: { name: '暴走', desc: '自傷ダメージ-1(最低0)', rarity: 'frame' },
   // --- Boss relics ---
   overclock:        { name: 'オーバークロック', desc: 'EN回復量+1(毎ターン4回復)', rarity: 'boss' },
   nano_repair_sys:  { name: 'ナノリペアシステム', desc: '毎ターン全味方HP1回復', rarity: 'boss' },
@@ -241,6 +269,7 @@ function hasRelic(id) {
 function getRelicChoices(rarity, count) {
   const pool = Object.entries(RELIC_DEFS)
     .filter(([id, r]) => {
+      if (r.rarity === 'frame') return false; // frame passives never offered
       if (rarity === 'boss') return r.rarity === 'boss';
       return r.rarity !== 'boss';
     })
@@ -323,7 +352,9 @@ function startRun() {
     guardianUsed: false, // guardian_angel one-time flag
   };
 
-  state.relics = [];
+  // Grant frame passive relics (unique frames only - duplicates reduce passive count)
+  const uniqueFrames = [...new Set(state.selectedFrames.filter(f => f !== null))];
+  state.relics = uniqueFrames.map(fk => FRAME_PASSIVE_RELICS[fk]).filter(Boolean);
 
   // Build initial allies from setup (baseStats only, no TP)
   state.allies = state.selectedFrames.filter(fk => fk !== null).map((fk, i) => {
@@ -445,8 +476,17 @@ function renderSlotIndicator() {
     const name = fk ? FRAMES[fk].name : '---';
     return `<span style="border:1px solid ${fk ? '#6aff6a' : '#333'};padding:2px 6px;font-size:11px;color:${fk ? '#6aff6a' : '#666'};">${name}</span>`;
   }).join('');
+  // Show passives
+  const uniqueFrames = [...new Set(state.selectedFrames.filter(f => f !== null))];
+  const passiveHtml = uniqueFrames.map(fk => {
+    const p = FRAME_PASSIVES[fk];
+    return p ? `<span style="border:1px solid #fa0;padding:1px 5px;font-size:10px;color:#fa0;" title="${p.desc}">${p.name}</span>` : '';
+  }).join('');
+  const passiveNote = count > 0 && uniqueFrames.length < count ? ` <span style="color:#888;font-size:10px;">(重複: パッシブ${uniqueFrames.length}種)</span>` : '';
+
   el.innerHTML = `<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">${slots} <span style="color:#888;font-size:12px;">(${count}/4)</span>` +
-    (count > 0 ? ` <button onclick="removeSlot(${state.selectedFrames.findLastIndex(f => f !== null)})" style="font-size:11px;padding:2px 6px;">取消</button>` : '') + '</div>';
+    (count > 0 ? ` <button onclick="removeSlot(${state.selectedFrames.findLastIndex(f => f !== null)})" style="font-size:11px;padding:2px 6px;">取消</button>` : '') + '</div>' +
+    (passiveHtml ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">PASSIVE: ${passiveHtml}${passiveNote}</div>` : '');
   // Update frame button highlights
   document.querySelectorAll('.frame-btn').forEach(btn => {
     const key = btn.dataset.key;
@@ -538,6 +578,20 @@ function startBattleFromSequence(enemyDefs, encounterType) {
   state.turnBuffs = {};
   state._encounterType = encounterType;
 
+  // Apply frame passive relics at battle start
+  if (hasRelic('passive_shielder')) {
+    state.allies.forEach(a => {
+      if (!a.dead && a.frameKey === 'shielder') {
+        a.barrier += 5;
+        addLog(`${a.name}: [装甲] 戦闘開始フィールド+5`, 'barrier');
+      }
+    });
+  }
+  if (hasRelic('passive_booster')) {
+    state.en = Math.min(state.en + 1, state.enCap);
+    addLog('[充電] 戦闘開始EN+1', 'info');
+  }
+
   // Show scouted info if recon was used
   if (state.run && state.run.scoutedNext) {
     state.run.scoutedNext = false;
@@ -599,7 +653,8 @@ function nextTurn() {
     tickSpeedEffects(e); // Tick speed effects (decrement turns, remove expired)
     // Overheat: deal N damage, then N decreases by 1
     if (e.statuses.overheat > 0) {
-      const dmg = e.statuses.overheat;
+      let dmg = e.statuses.overheat;
+      if (hasRelic('passive_blaster')) dmg += 1; // 残火: +1
       e.hp -= dmg;
       addLog(`${e.name}: 過熱ダメージ ${dmg}`, 'dmg');
       e.statuses.overheat--;
@@ -652,6 +707,20 @@ function nextTurn() {
     e.intent = pattern;
     e.patternIdx++;
   });
+
+  // Frame passive relic: medic auto-heal
+  if (hasRelic('passive_medic')) {
+    const alive = state.allies.filter(a => !a.dead);
+    if (alive.length > 0) {
+      alive.sort((a, b) => (a.hp / a.maxHP) - (b.hp / b.maxHP));
+      const target = alive[0];
+      if (target.hp < target.maxHP) {
+        const heal = Math.min(2, target.maxHP - target.hp);
+        target.hp += heal;
+        addLog(`${target.name}: [応急修復] HP+${heal}`, 'heal');
+      }
+    }
+  }
 
   // Draw 5 cards
   state.hand = [];
@@ -788,6 +857,11 @@ function dealDmgToAlly(enemy, ally, dmg) {
   // Defender (ally) positive speed: DODGE
   if (ally.speed > 0 && Math.random() * 100 < ally.speed) {
     addLog(`${enemy.name} → ${ally.name}: DODGE! (加速+${ally.speed}%)`, 'info');
+    // Frame passive: phantom afterimage - next attack +3 on dodge
+    if (hasRelic('passive_phantom')) {
+      ally.buffs.dmgBonus = (ally.buffs.dmgBonus || 0) + 3;
+      addLog(`${ally.name}: [残影] 次の攻撃+3`, 'status');
+    }
     return;
   }
 
@@ -1110,6 +1184,7 @@ function executeCard(targetId) {
       // Self damage (Overload)
       if (card.selfDmg && !card.effect) {
         let selfDmg = card.selfDmg + (card.upgraded && card.upgrade && card.upgrade.selfDmg ? card.upgrade.selfDmg : 0);
+        if (hasRelic('passive_overload')) selfDmg = Math.max(0, selfDmg - 1); // 暴走: -1
         ally.hp -= selfDmg;
         addLog(`${ally.name}: 自傷 ${selfDmg}`, 'dmg');
         if (ally.hp <= 0) killAlly(ally);
@@ -1548,6 +1623,11 @@ function executeCard(targetId) {
 function dealDmgToEnemy(ally, enemy, baseDmg, card) {
   let dmg = baseDmg;
 
+  // Frame passive: striker turn 1 bonus
+  if (hasRelic('passive_striker') && state.turn === 1) dmg += 3;
+  // Frame passive: cracker bonus vs vulnerable enemies
+  if (hasRelic('passive_cracker') && enemy.statuses.vulnerability > 0) dmg += 2;
+
   // Seeker scan bonus: +20% damage to scanned enemies (expansion)
   if (enemy.scanned) {
     dmg = Math.floor(dmg * 1.2);
@@ -1679,10 +1759,12 @@ function applyCardStatuses(ally, enemy, card) {
     } else if (st.type === 'vulnerability') {
       let stacks = st.stacks + (upgraded && card.upgrade.stacks ? card.upgrade.stacks : 0);
       stacks = Math.floor(stacks * ctrlMultiplier);
+      if (hasRelic('passive_gunner')) stacks += 1; // 精密照準: +1
       enemy.statuses.vulnerability = (enemy.statuses.vulnerability || 0) + stacks;
       addLog(`${enemy.name}: 脆弱(${stacks})`, 'status');
     } else if (st.type === 'shock') {
       let turns = st.turns + (upgraded && card.upgrade.turns ? card.upgrade.turns : 0);
+      if (hasRelic('passive_jammer')) turns += 1; // 電磁干渉: +1T
       enemy.statuses.shock = (enemy.statuses.shock || 0) + turns;
       addLog(`${enemy.name}: 感電(${turns}T)`, 'status');
     }
@@ -2365,6 +2447,52 @@ function getAllyBuffText(a) {
   if (a.lastStand) parts.push('ラストスタンド');
   if (a.drones && a.drones.length > 0) parts.push(`ドローン×${a.drones.length}`);
   return parts.join(' / ');
+}
+
+// ============================================================
+// DECK & RELIC VIEWER MODALS
+// ============================================================
+function showDeckModal() {
+  const container = document.getElementById('deck-modal-content');
+  let html = '';
+  const totalCards = state.allies.reduce((s, a) => s + a.cards.length, 0);
+  html += `<p style="color:#888;margin-bottom:8px;">デッキ枚数: ${totalCards}枚</p>`;
+  state.allies.forEach(a => {
+    html += `<div style="margin-bottom:12px;"><div style="color:#6aff6a;font-weight:bold;margin-bottom:4px;">${a.name} (${a.cards.length}枚)${a.dead ? ' <span style="color:#f44;">[大破]</span>' : ''}</div>`;
+    a.cards.forEach(c => {
+      const upgCls = c.upgraded ? 'style="border-color:#4a4;"' : '';
+      html += `<div class="deck-view-card" ${upgCls}>
+        <span style="color:#ff6;font-weight:bold;">EN${c.cost}</span>
+        <span style="color:${c.upgraded ? '#6f6' : '#aaf'};font-weight:bold;">${c.name}</span>
+        <span style="color:#888;font-size:10px;">${c.desc}</span>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+  document.getElementById('deck-modal').style.display = 'flex';
+}
+
+function showRelicModal() {
+  const container = document.getElementById('relic-modal-content');
+  if (state.relics.length === 0) {
+    container.innerHTML = '<p style="color:#888;">レリックなし</p>';
+  } else {
+    let html = `<p style="color:#888;margin-bottom:8px;">所持レリック: ${state.relics.length}個</p>`;
+    state.relics.forEach(id => {
+      const def = RELIC_DEFS[id];
+      if (!def) return;
+      const color = { common: '#6aff6a', uncommon: '#6af', rare: '#fa0', boss: '#f6f', frame: '#fa0' }[def.rarity] || '#fff';
+      const tag = def.rarity === 'frame' ? 'PASSIVE' : def.rarity.toUpperCase();
+      html += `<div class="relic-view-item">
+        <span class="relic-name" style="color:${color};">${def.name}</span>
+        <span style="color:#666;font-size:9px;">[${tag}]</span>
+        <div style="color:#888;font-size:11px;">${def.desc}</div>
+      </div>`;
+    });
+    container.innerHTML = html;
+  }
+  document.getElementById('relic-modal').style.display = 'flex';
 }
 
 function addLog(text, type) {

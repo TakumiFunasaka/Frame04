@@ -247,6 +247,10 @@
   <div id="progress-bar-wrapper"></div>
   <div id="progress-info"></div>
   <div class="relic-bar" id="progress-relic-bar"></div>
+  <div class="btn-row" style="margin:8px 0;">
+    <button onclick="showDeckModal()" style="font-size:11px;">DECK確認</button>
+    <button onclick="showRelicModal()" style="font-size:11px;">RELIC一覧</button>
+  </div>
   <div class="btn-row" style="justify-content:center; margin-top:16px;">
     <button class="btn-primary" id="btn-next-battle">NEXT BATTLE</button>
     <button id="btn-abandon-run" class="btn-danger">ABANDON RUN</button>
@@ -276,6 +280,10 @@
   </div>
 
   <div class="relic-bar" id="relic-bar"></div>
+  <div class="btn-row" style="margin:4px 0;">
+    <button onclick="showDeckModal()" style="font-size:10px;padding:3px 8px;">DECK</button>
+    <button onclick="showRelicModal()" style="font-size:10px;padding:3px 8px;">RELICS</button>
+  </div>
 
   <div class="hand-area">
     <h3>// HAND <span id="deck-info" style="color:#666; font-weight:normal;"></span></h3>
@@ -310,6 +318,10 @@
 <!-- REWARD SCREEN -->
 <div id="reward-screen" class="screen">
   <h1>[ BATTLE COMPLETE ]</h1>
+  <div class="btn-row" style="margin-bottom:8px;">
+    <button onclick="showDeckModal()" style="font-size:11px;">DECK確認</button>
+    <button onclick="showRelicModal()" style="font-size:11px;">RELIC一覧</button>
+  </div>
   <div id="reward-card-section" class="reward-section">
     <h3>// CARD DISCOVERY - Pick 1 (or skip)</h3>
     <div class="reward-card-list" id="reward-card-list"></div>
@@ -321,6 +333,28 @@
   </div>
   <div class="btn-row" style="margin-top:16px;">
     <button class="btn-primary" id="btn-continue-run" disabled>CONTINUE</button>
+  </div>
+</div>
+
+<!-- DECK VIEWER MODAL -->
+<div id="deck-modal" class="target-select" style="display:none;">
+  <div class="help-modal-inner">
+    <h3>// DECK</h3>
+    <div id="deck-modal-content"></div>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="btn-primary" onclick="document.getElementById('deck-modal').style.display='none'">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- RELIC VIEWER MODAL -->
+<div id="relic-modal" class="target-select" style="display:none;">
+  <div class="help-modal-inner">
+    <h3>// RELICS</h3>
+    <div id="relic-modal-content"></div>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="btn-primary" onclick="document.getElementById('relic-modal').style.display='none'">CLOSE</button>
+    </div>
   </div>
 </div>
 
