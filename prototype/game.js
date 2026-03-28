@@ -572,6 +572,7 @@ function startBattleFromSequence(enemyDefs, encounterType) {
   state.discard = [];
   state.hand = [];
   state.en = state.maxEN;
+  state.enCap = 5 + (hasRelic('en_converter') ? 1 : 0);
   state.turn = 0;
   state.logs = [];
   state.battleOver = false;
@@ -610,7 +611,8 @@ function startBattleFromSequence(enemyDefs, encounterType) {
 // ============================================================
 function nextTurn() {
   state.turn++;
-  state.en = Math.min(state.en + state.maxEN, state.enCap);
+  const enRegen = state.maxEN + (hasRelic('overclock') ? 1 : 0);
+  state.en = Math.min(state.en + enRegen, state.enCap);
 
   // Reset per-turn states
   state.allies.forEach(a => {
