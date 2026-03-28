@@ -2035,9 +2035,89 @@ function getUpgradedCard(card) {
     // Status stacks/turns are handled at apply time via card.upgraded check
   }
 
-  // Update description
-  u.desc = card.desc + ' [+]';
+  // Rebuild description with actual upgraded values
+  u.desc = buildCardDesc(u);
   return u;
+}
+
+function buildCardDesc(card) {
+  const parts = [];
+
+  // Attack damage
+  if (card.type === 'attack' && card.baseDmg) {
+    if (card.target === 'enemy_all') {
+      parts.push(`敵全体に${card.baseDmg}ダメージ`);
+    } else if (card.target === 'enemy_random') {
+      parts.push(`ランダム敵に${card.baseDmg}×${card.hits || 1}回ダメージ`);
+    } else {
+      parts.push(`敵1体に${card.baseDmg}ダメージ`);
+    }
+  }
+
+  // Field removal
+  if (card.removeBarrier) parts.push('フィールド全除去');
+
+  // Self field
+  if (card.selfField) parts.push(`自機フィールド${card.selfField}`);
+
+  // Self heal
+  if (card.selfHeal) parts.push(`自機HP${card.selfHeal}回復`);
+
+  // Self damage
+  if (card.selfDmg) parts.push(`自機HP-${card.selfDmg}`);
+
+  // Unavoidable
+  if (card.unavoidable) parts.push('回避不可');
+
+  // Status effects
+  if (card.applyStatus) {
+    const st = card.applyStatus;
+    if (st.type === 'overheat') parts.push(`過熱(${st.stacks})付与`);
+    if (st.type === 'vulnerability') parts.push(`脆弱(${st.stacks})付与`);
+    if (st.type === 'shock') parts.push(`感電(${st.turns}T)付与`);
+  }
+
+  // Speed
+  if (card.applySpeed) parts.push(`減速(${card.applySpeed})付与`);
+  if (card.applySelfSpeed) parts.push(`自機加速(+${card.applySelfSpeed})`);
+  if (card.applyAllySpeed) parts.push(`全機加速(+${card.applyAllySpeed})`);
+
+  // Bonuses
+  if (card.backstabBonus) parts.push(`他をターゲット中なら+${card.backstabBonus}`);
+  if (card.overheatBonus) parts.push(`過熱敵に+${card.overheatBonus}`);
+  if (card.vulnerabilityBonus) parts.push(`脆弱敵に+${card.vulnerabilityBonus}`);
+
+  // Defend
+  if (card.type === 'defend') {
+    if (card.target === 'provoke') parts.push(`挑発。自機フィールド${card.baseBarrier}`);
+    else if (card.target === 'provoke_all') parts.push(`全体挑発。自機フィールド${card.baseBarrier}`);
+    else if (card.target === 'ally_all') parts.push(`全機フィールド${card.baseBarrier}`);
+    else parts.push(`自機フィールド${card.baseBarrier}`);
+  }
+
+  // Heal
+  if (card.type === 'heal') {
+    if (card.target === 'ally_all') parts.push(`全機HP${card.baseHeal}回復`);
+    else parts.push(`味方1機HP${card.baseHeal}回復`);
+  }
+
+  // Special
+  if (card.effect === 'reboot') parts.push('大破味方1機をHP1で再起動');
+  if (card.effect === 'encharge') parts.push(`EN+${card.amount}`);
+  if (card.effect === 'full_drive') parts.push('次カードEN-1');
+
+  // Debuff only (no damage)
+  if (card.type === 'debuff' && card.applyStatus) {
+    const st = card.applyStatus;
+    if (st.type === 'overheat') parts.push(`過熱(${st.stacks})付与`);
+    if (st.type === 'shock') parts.push(`感電(${st.turns}T)付与`);
+  }
+  if (card.type === 'debuff' && card.applySpeed) parts.push(`敵全体減速(${card.applySpeed})`);
+  if (card.type === 'buff' && card.applyAllySpeed) parts.push(`全機加速(+${card.applyAllySpeed})`);
+
+  let desc = parts.join('。');
+  if (card.upgraded) desc += ' [+]';
+  return desc;
 }
 
 // ============================================================
