@@ -36,6 +36,19 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
 .help-table th { text-align: left; padding: 6px 8px; border-bottom: 1px solid #333; color: #aaf; width: 120px; vertical-align: top; }
 .help-table td { padding: 6px 8px; border-bottom: 1px solid #222; color: #bbb; line-height: 1.6; }
 
+/* ---- Help Frame Cards ---- */
+.help-frame-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.help-frame-card { border: 1px solid #333; background: #0f0f1a; padding: 10px; font-size: 12px; line-height: 1.5; }
+.help-frame-card.hf-atk { border-left: 3px solid #f66; }
+.help-frame-card.hf-def { border-left: 3px solid #4af; }
+.help-frame-card.hf-sup { border-left: 3px solid #6f6; }
+.help-frame-card.hf-tech { border-left: 3px solid #fa0; }
+.hf-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+.hf-header strong { color: #fff; font-size: 13px; }
+.hf-role { color: #888; font-size: 10px; }
+.hf-stats { color: #6a6a9a; font-size: 10px; margin-bottom: 4px; }
+.hf-desc { color: #aaa; font-size: 11px; }
+
 /* ---- Setup Screen ---- */
 .frame-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0; }
 .frame-btn { padding: 10px 6px; text-align: center; font-size: 11px; line-height: 1.4; border: 2px solid #333; background: #111; transition: all 0.15s; }
@@ -43,6 +56,7 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
 .frame-btn.selected { border-color: #6aff6a; background: #1a2e1a; color: #6aff6a; }
 .frame-btn .fname { font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; }
 .frame-btn .frole { font-size: 10px; color: #888; display: block; }
+.frame-btn .fstats { font-size: 9px; color: #6a6a9a; display: block; margin-top: 2px; }
 
 .stat-alloc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
 .unit-stats { border: 1px solid #333; padding: 10px; background: #111; }
@@ -167,85 +181,107 @@ h3 { color: #8a8aff; font-size: 14px; margin: 8px 0 4px; }
    ============================================================ */
 @media (max-width: 768px) {
   body { font-size: 13px; }
-  .screen { padding: 10px; }
-  h1 { font-size: 16px; }
+  .screen { padding: 12px 10px; }
+  h1 { font-size: 16px; margin-bottom: 10px; }
   h2 { font-size: 14px; }
 
   /* Title */
-  .title-logo { font-size: 32px; letter-spacing: 4px; }
-  .title-sub { font-size: 12px; }
-  .title-story { font-size: 12px; padding: 12px 14px; }
-  .btn-large { padding: 10px 24px; font-size: 14px; }
-  .help-modal-inner { padding: 14px; }
-  .help-tabs { gap: 2px; }
-  .help-tab { padding: 5px 8px; font-size: 11px; }
-  .help-table th { width: 80px; font-size: 11px; }
+  .title-hero { padding: 24px 12px; }
+  .title-logo { font-size: 36px; letter-spacing: 4px; }
+  .title-sub { font-size: 11px; letter-spacing: 2px; margin-bottom: 20px; }
+  .title-story { font-size: 12px; padding: 12px 14px; line-height: 1.7; }
+  .btn-large { padding: 12px 28px; font-size: 15px; }
 
-  /* Setup: frame grid 2 columns */
+  /* Help modal */
+  .help-modal-inner { padding: 14px; max-height: 80vh; }
+  .help-tabs { gap: 3px; }
+  .help-tab { padding: 6px 8px; font-size: 11px; }
+  .help-table th { width: 72px; font-size: 11px; padding: 4px 6px; }
+  .help-table td { padding: 4px 6px; font-size: 11px; }
+  .help-frame-list { grid-template-columns: 1fr; }
+  .help-frame-card { padding: 8px 10px; }
+
+  /* Setup: frame grid - 2 columns, larger touch targets */
   .frame-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-  .frame-btn { padding: 8px 4px; }
-  .frame-btn .fname { font-size: 12px; }
+  .frame-btn { padding: 12px 6px; min-height: 56px; }
+  .frame-btn .fname { font-size: 13px; }
+  .frame-btn .frole { font-size: 10px; }
 
-  /* Setup: stat alloc 2 columns on mobile */
+  /* Setup: stat alloc stacked */
   .stat-alloc { grid-template-columns: 1fr 1fr; gap: 6px; }
-  .unit-stats { padding: 6px; }
-  .stat-row { font-size: 11px; flex-wrap: nowrap; gap: 2px; }
-  .stat-row .stat-label { font-size: 10px; min-width: 32px; flex-shrink: 0; }
-  .stat-row .stat-controls { display: flex; align-items: center; gap: 1px; flex-shrink: 0; }
-  .stat-row button { padding: 3px 6px; font-size: 11px; min-width: 22px; }
+  .unit-stats { padding: 8px; }
+  .unit-stats .uname { font-size: 13px; margin-bottom: 6px; }
+  .stat-row { font-size: 12px; flex-wrap: nowrap; gap: 2px; padding: 2px 0; }
+  .stat-row .stat-label { font-size: 11px; min-width: 36px; flex-shrink: 0; }
+  .stat-row .stat-controls { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  .stat-row button { padding: 6px 8px; font-size: 13px; min-width: 28px; min-height: 28px; }
 
   /* Battle: stack enemy/ally vertically */
-  .battle-area { grid-template-columns: 1fr; gap: 8px; }
+  .battle-area { grid-template-columns: 1fr; gap: 6px; }
   .enemy-side, .ally-side { min-height: auto; }
-  .unit-card { padding: 6px; font-size: 11px; }
+  .unit-card { padding: 8px; font-size: 12px; }
 
-  /* Cards: full width, smaller */
-  .hand-cards { gap: 4px; }
-  .card { width: 100%; max-width: none; padding: 8px; font-size: 11px; }
-  .card .cname { font-size: 11px; }
-  .card .ccost { font-size: 12px; }
-  .card .cdesc { font-size: 10px; }
-  /* Disable hover lift on touch */
+  /* Battle: sticky END TURN at bottom */
+  #battle-screen .btn-row { position: sticky; bottom: 0; background: #0a0a0f; padding: 8px 0; z-index: 10; border-top: 1px solid #333; }
+  #battle-screen .btn-row .btn-danger { width: 100%; font-size: 16px; padding: 14px; }
+
+  /* Cards: compact horizontal list */
+  .hand-cards { gap: 6px; }
+  .card { width: 100%; max-width: none; padding: 10px; font-size: 12px; }
+  .card .cname { font-size: 13px; }
+  .card .ccost { font-size: 14px; }
+  .card .cdesc { font-size: 11px; margin-top: 2px; }
   .card:hover:not(.unplayable) { transform: none; }
 
   /* EN/Turn info */
-  .en-display { font-size: 16px; }
-  .turn-info { font-size: 12px; }
+  .en-display { font-size: 18px; }
+  .turn-info { font-size: 13px; }
 
-  /* Buttons bigger for touch */
+  /* Buttons: larger touch targets */
   button { padding: 8px 14px; font-size: 14px; }
-  .btn-primary, .btn-danger { padding: 10px 20px; font-size: 14px; }
+  .btn-primary, .btn-danger { padding: 12px 20px; font-size: 15px; }
 
   /* Target modal */
-  .target-select-inner { padding: 16px; width: 90vw; max-width: none; }
-  .target-btn { padding: 12px; font-size: 13px; }
+  .target-select-inner { padding: 16px; width: 92vw; max-width: none; }
+  .target-btn { padding: 14px; font-size: 14px; }
 
   /* Progress */
   .progress-segment { width: 28px; height: 28px; font-size: 10px; }
   .progress-squad { grid-template-columns: 1fr 1fr; }
-  .run-hud { gap: 8px; font-size: 11px; }
+  .run-hud { gap: 6px; font-size: 11px; }
+  .run-hud-item { padding: 4px 8px; }
 
   /* Items bar */
-  .items-bar { flex-wrap: wrap; }
-  .item-slot { min-width: 90px; font-size: 10px; padding: 6px 8px; }
+  .items-bar { flex-wrap: wrap; gap: 4px; }
+  .item-slot { min-width: 0; flex: 1; font-size: 11px; padding: 8px 6px; }
 
   /* Reward screen */
   .reward-card-list { flex-direction: column; }
-  .reward-card-option { width: 100%; }
+  .reward-card-option { width: 100%; padding: 12px; }
   .reward-item-list { flex-direction: column; }
-  .reward-item { width: 100%; }
+  .reward-item { width: 100%; padding: 12px; }
   .sp-alloc-mini { grid-template-columns: 1fr 1fr; }
+  .sp-alloc-mini .unit-stats .stat-row button { padding: 6px 8px; min-width: 28px; min-height: 28px; font-size: 13px; }
 
   /* Log area */
-  .log-area { max-height: 150px; font-size: 10px; }
+  .log-area { max-height: 140px; font-size: 11px; padding: 6px; }
 
   /* Event choices */
   .event-choices { max-width: none; }
+  .event-choice-btn { padding: 14px 16px; }
+  .event-choice-btn .choice-label { font-size: 14px; }
+  .event-choice-btn .choice-desc { font-size: 12px; }
 }
 
-@media (max-width: 380px) {
-  .frame-grid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 480px) {
+  .title-logo { font-size: 28px; }
+  /* Stat alloc: single column */
+  .stat-alloc { grid-template-columns: 1fr; }
   .sp-alloc-mini { grid-template-columns: 1fr; }
+  /* Progress */
   .progress-segment { width: 24px; height: 24px; font-size: 9px; }
   .progress-squad { grid-template-columns: 1fr; }
+  /* Help tabs: wrap onto 2 rows */
+  .help-tabs { gap: 3px; }
+  .help-tab { padding: 5px 6px; font-size: 10px; }
 }

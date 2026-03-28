@@ -362,7 +362,8 @@ function initSetup() {
   for (const [key, frame] of baseFrames) {
     const btn = document.createElement('button');
     btn.className = 'frame-btn';
-    btn.innerHTML = `<span class="fname">${frame.name}</span><span class="frole">${frame.role}</span>`;
+    const base = frame.baseStats || {};
+    btn.innerHTML = `<span class="fname">${frame.name}</span><span class="frole">${frame.role}</span><span class="fstats">HP${frame.baseHP} O${base.OUT||0} S${base.SHL||0} C${base.CTRL||0}</span>`;
     btn.dataset.key = key;
     btn.onclick = () => pickFrameForSlot(key);
     grid.appendChild(btn);

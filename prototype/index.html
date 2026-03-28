@@ -32,7 +32,8 @@
 <div id="help-modal" class="target-select" style="display:none;">
   <div class="help-modal-inner">
     <div class="help-tabs">
-      <button class="help-tab active" data-tab="help-basics">基本ルール</button>
+      <button class="help-tab active" data-tab="help-basics">基本</button>
+      <button class="help-tab" data-tab="help-frames">フレーム</button>
       <button class="help-tab" data-tab="help-battle">バトル</button>
       <button class="help-tab" data-tab="help-stats">ステータス</button>
       <button class="help-tab" data-tab="help-status">状態異常</button>
@@ -57,6 +58,62 @@
       <div class="help-section">
         <p>HPが0になった機体のカード5枚は<strong>すべて使用不可</strong>に。手札を圧迫し続ける</p>
         <p>メディックの「リブート」で復活可能</p>
+      </div>
+    </div>
+
+    <div class="help-content" id="help-frames" style="display:none;">
+      <h3>// BASE FRAME 一覧（全10種）</h3>
+      <div class="help-frame-list">
+        <div class="help-frame-card hf-atk">
+          <div class="hf-header"><strong>ストライカー</strong><span class="hf-role">近接アタッカー</span></div>
+          <div class="hf-stats">HP50 | OUT6 SHL2 CTRL2</div>
+          <div class="hf-desc">単体最高火力。EN効率が良く、フィールド貫通やマルチヒットで安定ダメージを出す。迷ったらこれ。</div>
+        </div>
+        <div class="help-frame-card hf-atk">
+          <div class="hf-header"><strong>ガンナー</strong><span class="hf-role">射撃アタッカー</span></div>
+          <div class="hf-stats">HP45 | OUT5 SHL2 CTRL3</div>
+          <div class="hf-desc">ダメージ+脆弱付与。精密射撃で敵の弱点を暴き、チームの火力を底上げする。</div>
+        </div>
+        <div class="help-frame-card hf-atk">
+          <div class="hf-header"><strong>ブラスター</strong><span class="hf-role">範囲アタッカー</span></div>
+          <div class="hf-stats">HP40 | OUT6 SHL1 CTRL3</div>
+          <div class="hf-desc">AoE+過熱のスペシャリスト。複数の敵を焼き、過熱ダメージで継続的に削る。</div>
+        </div>
+        <div class="help-frame-card hf-def">
+          <div class="hf-header"><strong>シールダー</strong><span class="hf-role">タンク</span></div>
+          <div class="hf-stats">HP55 | OUT1 SHL7 CTRL2</div>
+          <div class="hf-desc">挑発+フィールドの盾役。敵の攻撃を自分に集め、チームを守る。パーティの生命線。</div>
+        </div>
+        <div class="help-frame-card hf-sup">
+          <div class="hf-header"><strong>メディック</strong><span class="hf-role">ヒーラー</span></div>
+          <div class="hf-stats">HP45 | OUT1 SHL2 CTRL7</div>
+          <div class="hf-desc">HP回復+大破復活（リブート）。長期戦の要。大破した味方を復帰させる唯一のフレーム。</div>
+        </div>
+        <div class="help-frame-card hf-tech">
+          <div class="hf-header"><strong>ジャマー</strong><span class="hf-role">過熱/感電デバッファ</span></div>
+          <div class="hf-stats">HP40 | OUT1 SHL2 CTRL7</div>
+          <div class="hf-desc">過熱と感電を大量に付与。自身は攻撃力を持たず、純粋なデバフで敵を蝕む。</div>
+        </div>
+        <div class="help-frame-card hf-tech">
+          <div class="hf-header"><strong>クラッカー</strong><span class="hf-role">脆弱/減速デバッファ</span></div>
+          <div class="hf-stats">HP40 | OUT3 SHL1 CTRL6</div>
+          <div class="hf-desc">脆弱+減速を付与。敵の攻撃精度を下げつつ、チームの与ダメを増やす万能妨害役。</div>
+        </div>
+        <div class="help-frame-card hf-sup">
+          <div class="hf-header"><strong>ブースター</strong><span class="hf-role">EN供給/加速サポート</span></div>
+          <div class="hf-stats">HP40 | OUT2 SHL4 CTRL4</div>
+          <div class="hf-desc">EN+2チャージとチーム加速。フルドライブで次カードのEN-1。チームの行動回数を増やす。</div>
+        </div>
+        <div class="help-frame-card hf-tech">
+          <div class="hf-header"><strong>ファントム</strong><span class="hf-role">速度軸スペシャリスト</span></div>
+          <div class="hf-stats">HP40 | OUT6 SHL1 CTRL3</div>
+          <div class="hf-desc">減速+加速の二刀流。敵を鈍らせ自分は回避、バックスタブで高火力。速度軸を制する者。</div>
+        </div>
+        <div class="help-frame-card hf-atk">
+          <div class="hf-header"><strong>オーバーロード</strong><span class="hf-role">自傷型高火力</span></div>
+          <div class="hf-stats">HP45 | OUT7 SHL1 CTRL2</div>
+          <div class="hf-desc">感電+自傷で最大火力。自分のHPを削って超ダメージを叩き出すハイリスク・ハイリターン。</div>
+        </div>
       </div>
     </div>
 
