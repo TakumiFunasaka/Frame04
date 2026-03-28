@@ -2052,6 +2052,12 @@ function showRewardScreen() {
   state.rewardUpgradeChosen = false;
   state.rewardItemChosen = false;
 
+  // Snapshot current stats as floor (cannot reduce below this)
+  state.rewardStatFloor = {};
+  state.allies.forEach(a => {
+    state.rewardStatFloor[a.id] = { ...a.stats };
+  });
+
   showScreen('reward-screen');
 
   // SP section
@@ -2102,7 +2108,9 @@ function rewardChangeStat(allyId, stat, delta) {
   const newVal = cur + delta;
   if (newVal < 0) return;
   if (delta > 0 && state.rewardSPRemaining <= 0) return;
-  // Don't allow removing below the initial setup value
+  // Cannot reduce below the value at the start of this reward screen
+  const floor = state.rewardStatFloor?.[allyId]?.[stat] ?? 0;
+  if (newVal < floor) return;
   ally.stats[stat] = newVal;
   state.rewardSPRemaining -= delta;
 
@@ -2347,6 +2355,12 @@ function showQuickSP(amount) {
   state.rewardSPRemaining = amount;
   state.rewardUpgradeChosen = true;
   state.rewardItemChosen = true;
+
+  // Snapshot current stats as floor
+  state.rewardStatFloor = {};
+  state.allies.forEach(a => {
+    state.rewardStatFloor[a.id] = { ...a.stats };
+  });
 
   showScreen('reward-screen');
   document.getElementById('reward-sp-amount').textContent = `+${amount} TP`;
